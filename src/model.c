@@ -9,7 +9,8 @@
 
 static ncx_shader_t model_shader;
 
-void ncx_model_shader_create() {
+void ncx_model_shader_create(const vec3 *light_positions, const uint8_t light_count) {
+	/*
 	const vec3 light_positions[] = {
 		{-4.0f,  2.5f,  -3.0f},
 		{-4.0f,  2.5f,   3.0f},
@@ -20,16 +21,23 @@ void ncx_model_shader_create() {
 		{-13.0f, 8.0f, -6.0f},
 		{-21.0f, 8.0f,  6.0f},
 	};
+	*/
 
+	/* initializing with default light properties */
 	vec3 light_diffuse_color;
 	vec3 light_ambient_color;
 	glm_vec3_scale(GLM_VEC3_ONE, 0.5f, light_diffuse_color);
 	glm_vec3_scale(GLM_VEC3_ONE, 0.1f, light_ambient_color);
 
+	/* TODO: Make these parameters more customizable */
 	model_shader = ncx_shader_create("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl");
 	glUseProgram(model_shader);
+
+	/* set material properties */
 	glUniform3f(glGetUniformLocation(model_shader, "material.specular_color"), 0.5f, 0.5f, 0.5f);
 	glUniform1f(glGetUniformLocation(model_shader, "material.shininess"), 32.0f);
+
+	/* set light properties */
 	glUniform3f(glGetUniformLocation(model_shader, "light_dir.dir"), 0.0f, 0.0f, -1.0f);
 	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.ambient_color"), 1, (const float *)light_ambient_color);
 	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.diffuse_color"), 1, (const float *)light_diffuse_color);
@@ -37,8 +45,9 @@ void ncx_model_shader_create() {
 
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), 0);
 
-	/* inserting light properties */
-	for(uint8_t i = 0; i < 7; i++) {
+	/* uploading light properties to shader */
+	/* TODO: Add support for directional lights as well */
+	for(uint8_t i = 0; i < light_count; i++) {
 		uint8_t j;
 		char buffer[128] = { 0 };
 		const char *properties[7] = { "pos", "ambient_color", "diffuse_color", "specular_color", "constant", "linear", "quadratic" };
@@ -176,9 +185,12 @@ void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct ai
 	}
 }
 
-void ncx_model_draw(ncx_model_t m, const uint8_t use_animation) {
+void ncx_model_draw(ncx_model_t m, const uint8_t use_animation, const float *projection, const float *view, const float *model) {
 	glUseProgram(model_shader);
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), use_animation);
+	glUniformMatrix4fv(glGetUniformLocation(model_shader, "projection"), 1, GL_FALSE, projection);
+	glUniformMatrix4fv(glGetUniformLocation(model_shader, "view"), 1, GL_FALSE, view);
+	glUniformMatrix4fv(glGetUniformLocation(model_shader, "model"), 1, GL_FALSE, model);
 	for(uint32_t i = 0; i < m.mesh_count; i++)
 		ncx_mesh_draw(m.meshes[i], model_shader);
 }

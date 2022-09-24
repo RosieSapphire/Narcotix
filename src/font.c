@@ -88,6 +88,7 @@ void ncx_font_draw(const ncx_font_t ncx_font, const char *string, float *pos, co
 	pos_scaled[1] = pos[1] * (window_size[1] * (1080.0f / window_size[1]));
 
 	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glUseProgram(font_shader);
 	glUniform1i(glGetUniformLocation(font_shader, "text"), 0);
 	glUniform3fv(glGetUniformLocation(font_shader, "text_color"), 1, color);

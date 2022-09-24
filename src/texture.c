@@ -42,3 +42,7 @@ ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode, cons
 
 	return t;
 }
+
+void ncx_textures_destroy(ncx_texture_t *start, const uint8_t texture_count) {
+	glDeleteTextures(texture_count, start);
+}

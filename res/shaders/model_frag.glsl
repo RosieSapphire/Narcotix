@@ -1,6 +1,6 @@
 #version 330
 
-#define POINT_LIGHT_COUNT	7
+#define POINT_LIGHT_COUNT	1
 
 in vec3 normal;
 in vec2 uv;

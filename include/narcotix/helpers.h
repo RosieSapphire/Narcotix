@@ -3,6 +3,8 @@
 
 #include "narcotix/cglm/cglm.h"
 
+#define EPSILON 					0.001f
+
 float ncx_clampf(const float val, const float min, const float max);
 float ncx_clampf01(const float val);
 void  ncx_printfv(const float *vec, const uint8_t size);
@@ -16,5 +18,7 @@ float ncx_fmod(const float val, const float mod);
 void  ncx_vec3_lerpc(vec3 a, vec3 b, const float t, vec3 out);
 void  ncx_vec2_lerpc(vec2 a, vec2 b, const float t, vec2 out);
 float ncx_lerpc(const float a, const float b, const float t);
+
+void glfw_error_callback(int code, const char *log);
 
 #endif

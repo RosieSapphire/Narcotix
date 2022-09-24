@@ -71,3 +71,7 @@ void  ncx_vec2_lerpc(vec2 a, vec2 b, const float t, vec2 out) {
 float ncx_lerpc(const float a, const float b, const float t) {
 	return glm_lerp(a, b, ncx_clampf01(t));
 }
+
+void glfw_error_callback(int code, const char *log) {
+	printf("NARCOTIX::GLFW::ERROR: %s : %i\n", log, code);
+}

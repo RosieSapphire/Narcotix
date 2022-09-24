@@ -31,21 +31,19 @@ void ncx_screen_buffer_create_buffers() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	// glDeleteBuffers(1, &screen_vbo);
 }
 
 void ncx_screen_buffer_create_shader() {
 	screen_shader = ncx_shader_create("res/shaders/screen_vert.glsl", "res/shaders/screen_frag.glsl");
 }
 
-void ncx_screen_buffer_create(ncx_screen_buffer_t *buffer, const int32_t width, const int32_t height, const uint8_t use_alpha) {
+void ncx_screen_buffer_create(ncx_screen_buffer_t *buffer, const int32_t width, const int32_t height) {
 	glGenFramebuffers(1, &buffer->fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, buffer->fbo);
 
 	glGenTextures(1, &buffer->texture);
 	glBindTexture(GL_TEXTURE_2D, buffer->texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB + use_alpha, width, height, 0, GL_RGB + use_alpha, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

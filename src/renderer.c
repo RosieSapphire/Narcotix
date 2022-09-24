@@ -1,6 +1,10 @@
 #include "narcotix/renderer.h"
+#include "narcotix/helpers.h"
+#include <GLFW/glfw3.h>
 
-void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float height, const uint8_t sbo_count) {
+#include <assert.h>
+
+void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name) {
 	#ifdef DEBUG
 		if(!glfwInit()) {
 			printf("ERROR: GLFW fucked up.\n");
@@ -10,6 +14,7 @@ void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float hei
 		glfwInit();
 	#endif
 
+	glfwSetErrorCallback((void *)&glfw_error_callback);
 	ren->monitor = glfwGetPrimaryMonitor();
 	ren->vidmode = glfwGetVideoMode(ren->monitor);
 	ren->sbo_count = sbo_count;
@@ -23,7 +28,7 @@ void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float hei
 	glfwWindowHint(GLFW_GREEN_BITS, ren->vidmode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, ren->vidmode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, ren->vidmode->refreshRate);
-	ren->window = glfwCreateWindow((int32_t)width, (int32_t)height, "Hungover", NULL, NULL);
+	ren->window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
 	#ifdef DEBUG
 		if(!ren->window) {
 			fprintf(stderr, "ERROR: Window fucked up.\n");
@@ -51,7 +56,7 @@ void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float hei
 	ncx_screen_buffer_create_shader();
 	ren->sbos = calloc(sbo_count, sizeof(ncx_screen_buffer_t));
 	for(uint8_t i = 0; i < ren->sbo_count; i++) {
-		ncx_screen_buffer_create(&ren->sbos[i], (int32_t)ren->base_size[0], (int32_t)ren->base_size[1], i % 2);
+		ncx_screen_buffer_create(&ren->sbos[i], (int32_t)ren->base_size[0], (int32_t)ren->base_size[1]);
 	}
 	glViewport(0, 0, (int32_t)width, (int32_t)height);
 }
@@ -81,13 +86,31 @@ void ncx_renderer_mouse_pos_set(ncx_renderer_t *ren, vec2 mouse_pos) {
 	glfwSetCursorPos(ren->window, (double)mouse_pos[0], (double)mouse_pos[1]);
 }
 
-void ncx_renderer_draw(const ncx_renderer_t ren, const ncx_texture_t overlay, const float time, const float trip_intensity) {
+void ncx_renderer_clear_color(const float r, const float g, const float b, const float a) {
+	glClearColor(r, g, b, a);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void ncx_renderer_clear_depth(void) {
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void ncx_renderer_bind_sbo(const ncx_renderer_t ren, const uint8_t index) {
+	assert(index < ren.sbo_count);
+	glBindFramebuffer(GL_FRAMEBUFFER, ren.sbos[index].fbo);
+}
+
+void ncx_renderer_unbind_sbo() {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ncx_renderer_display(const ncx_renderer_t ren, const ncx_texture_t overlay, const float time, const float trip_intensity) {
 	for(uint8_t i = 0; i < ren.sbo_count; i++) {
 		ncx_screen_buffer_draw(ren.sbos[i], overlay, time, trip_intensity);
 	}
 }
 
-void ncx_renderer_swap_buffers(const ncx_renderer_t ren) {
+void ncx_renderer_poll(const ncx_renderer_t ren) {
 	glfwSwapBuffers(ren.window);
 	glfwPollEvents();
 }
@@ -101,4 +124,8 @@ void ncx_renderer_destroy(ncx_renderer_t *ren) {
 	free(ren->sbos);
 	glfwDestroyWindow(ren->window);
 	glfwTerminate();
+}
+
+uint8_t ncx_renderer_keep_running(const ncx_renderer_t ren) {
+	return !glfwWindowShouldClose(ren.window);
 }
