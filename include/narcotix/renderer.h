@@ -37,6 +37,7 @@ void ncx_renderer_mouse_pos_set(ncx_renderer_t *ren, vec2 mouse_pos);
 void ncx_renderer_poll(const ncx_renderer_t ren);
 void ncx_renderer_destroy(ncx_renderer_t *ren);
 
-uint8_t ncx_renderer_keep_running(const ncx_renderer_t ren);
+uint8_t ncx_renderer_running_get(const ncx_renderer_t ren);
+void ncx_renderer_running_set(const ncx_renderer_t ren, const uint8_t value);
 
 #endif
