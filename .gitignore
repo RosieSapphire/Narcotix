@@ -1,3 +1,4 @@
 .cache/
 *.a
 test
+compile_commands.json
