@@ -3,14 +3,14 @@
 #include <string.h>
 #include "narcotix/glad/glad.h"
 
-ncx_mesh_t ncx_mesh_create(ncx_vertex_t *vertices, uint32_t *indices, ncx_texture_t *textures, const uint32_t vertex_count, const uint32_t index_count) {
+ncx_mesh_t ncx_mesh_create(ncx_vertex_t *vertices, uint32_t *indices, NCXMaterial material, const uint32_t vertex_count, const uint32_t index_count) {
 	ncx_mesh_t m;
 	m.vertices = malloc(vertex_count * sizeof(ncx_vertex_t));
 	m.indices = malloc(index_count * sizeof(uint32_t));
-	m.textures = malloc(2 * sizeof(ncx_texture_t));
+	m.material = material;
+
 	memcpy(m.vertices, vertices, vertex_count * sizeof(ncx_vertex_t));
 	memcpy(m.indices, indices, index_count * sizeof(uint32_t));
-	memcpy(m.textures, textures, 2 * sizeof(ncx_texture_t));
 
 	glGenVertexArrays(1, &m.vao);
 	glBindVertexArray(m.vao);
@@ -47,8 +47,10 @@ void ncx_mesh_draw(ncx_mesh_t m, uint32_t s) {
 	for(uint8_t i = 0; i < 2; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glUniform1i(glGetUniformLocation(s, texture_slots[i]), (int32_t)i);
-		glBindTexture(GL_TEXTURE_2D, m.textures[i]);
+		glBindTexture(GL_TEXTURE_2D, m.material.textures[i]);
 	}
+
+	glUniform1f(glGetUniformLocation(s, "material.shininess"), m.material.shininess);
 
 	glBindVertexArray(m.vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m.ebo);
@@ -58,5 +60,4 @@ void ncx_mesh_draw(ncx_mesh_t m, uint32_t s) {
 void ncx_mesh_destroy(ncx_mesh_t *m) {
 	free(m->vertices);
 	free(m->indices);
-	free(m->textures);
 }

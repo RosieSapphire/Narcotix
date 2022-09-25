@@ -61,6 +61,7 @@ void main() {
 	uv = a_uv;
 	frag_pos = vec3(model * vec4(a_pos, 1.0));
 
+	/* TODO: Maybe make these uniforms in both shaders idk */
 	o_time = time;
 	o_trip_intensity = trip_intensity;
 }

@@ -104,7 +104,7 @@ void ncx_renderer_unbind_sbo() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_renderer_display(const ncx_renderer_t ren, const ncx_texture_t overlay, const float time, const float trip_intensity) {
+void ncx_renderer_display(const ncx_renderer_t ren, const NCXTexture overlay, const float time, const float trip_intensity) {
 	for(uint8_t i = 0; i < ren.sbo_count; i++) {
 		ncx_screen_buffer_draw(ren.sbos[i], overlay, time, trip_intensity);
 	}

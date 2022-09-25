@@ -1,6 +1,6 @@
 #version 330
 
-#define POINT_LIGHT_COUNT	1
+#define POINT_LIGHT_MAX 32
 
 in vec3 normal;
 in vec2 uv;
@@ -27,7 +27,8 @@ struct light_point_t {
 	float constant;
 	float linear;
 	float quadratic;
-}; uniform light_point_t light_points[POINT_LIGHT_COUNT];
+}; uniform light_point_t light_points[POINT_LIGHT_MAX];
+uniform int light_points_count_current;
 
 float rand(float n) {
 	return fract(sin(n) * 43758.5453123);
@@ -60,13 +61,17 @@ vec3 get_light_point(light_point_t l, vec3 normal, vec3 frag_pos, vec3 view_dir)
 	return (ambient_color + diffuse_color + specular_color);
 }
 
+/* TODO: Add directional lights at some point */
+/*
 struct light_dir_t {
 	vec3 dir;
 	vec3 ambient_color;
 	vec3 diffuse_color;
 	vec3 specular_color;
 }; uniform light_dir_t light_dir;
+*/
 
+/*
 vec3 get_light_dir(light_dir_t l, vec3 normal, vec3 view_dir) {
 	vec3 light_dir = normalize(-l.dir);
 	float diffuse_amount = max(dot(normal, light_dir), 0.0);
@@ -79,13 +84,15 @@ vec3 get_light_dir(light_dir_t l, vec3 normal, vec3 view_dir) {
 	vec3 specular_color = l.specular_color * specular_amount * vec3(texture(material.tex_specular, trip_uv_offset).r);
 	return (ambient_color + diffuse_color + specular_color);
 }
+*/
 
 void main() {
 	vec3 norm = normalize(normal);
 	vec3 view_dir = normalize(view_pos - frag_pos);
-	vec3 final_color = get_light_dir(light_dir, norm, view_dir);
+	// vec3 final_color = get_light_dir(light_dir, norm, view_dir);
+	vec3 final_color = vec3(0.0f);
 
-	for(int i = 0; i < POINT_LIGHT_COUNT; i++)
+	for(int i = 0; i < light_points_count_current; i++)
 		final_color += get_light_point(light_points[i], norm, frag_pos, view_dir);
 
 	vec3 trippy_color;

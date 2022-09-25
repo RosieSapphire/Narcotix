@@ -31,7 +31,7 @@ void ncx_renderer_clear_color(const float r, const float g, const float b, const
 void ncx_renderer_clear_depth(void);
 void ncx_renderer_bind_sbo(const ncx_renderer_t ren, const uint8_t index);
 void ncx_renderer_unbind_sbo(void);
-void ncx_renderer_display(const ncx_renderer_t ren, const ncx_texture_t overlay, const float time, const float trip_intensity);
+void ncx_renderer_display(const ncx_renderer_t ren, const NCXTexture overlay, const float time, const float trip_intensity);
 void ncx_renderer_mouse_pos_get(const ncx_renderer_t ren, vec2 mouse_pos);
 void ncx_renderer_mouse_pos_set(ncx_renderer_t *ren, vec2 mouse_pos);
 void ncx_renderer_poll(const ncx_renderer_t ren);

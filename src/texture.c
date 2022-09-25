@@ -8,10 +8,10 @@
 
 #include "narcotix/debug.h"
 
-ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode, const int32_t min_filter, const int32_t mag_filter, const uint8_t mipmap) {
+NCXTexture ncx_texture_create(const char *path, const int32_t wrap_mode, const int32_t min_filter, const int32_t mag_filter, const uint8_t mipmap) {
 	const int32_t color_formats[5] = { 0, GL_RED, GL_RG, GL_RGB, GL_RGBA };
 	int32_t width, height, channels;
-	ncx_texture_t t;
+	NCXTexture t;
 
 	glGenTextures(1, &t);
 	glBindTexture(GL_TEXTURE_2D, t);
@@ -22,7 +22,7 @@ ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode, cons
 
 	stbi_set_flip_vertically_on_load(1);
 	{
-		GLubyte *data;
+		uint8_t *data;
 		data = stbi_load(path, &width, &height, &channels, 0);
 		#ifdef DEBUG
 			if(!data) {
@@ -43,6 +43,6 @@ ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode, cons
 	return t;
 }
 
-void ncx_textures_destroy(ncx_texture_t *start, const uint8_t texture_count) {
+void ncx_textures_destroy(NCXTexture *start, const uint8_t texture_count) {
 	glDeleteTextures(texture_count, start);
 }

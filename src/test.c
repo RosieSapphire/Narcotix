@@ -13,11 +13,12 @@ int main() {
 	ncx_renderer_t renderer;
 
 	ncx_font_t font;
+	NCXLightPoint lights[2];
 
-	ncx_texture_t pistol_textures[8];
+	NCXMaterial pistol_materials[4];
 	ncx_model_t pistol_model;
 
-	ncx_texture_t bong_textures[6];
+	NCXMaterial bong_materials[3];
 	ncx_model_t bong_model;
 
 	mat4 projection;
@@ -33,7 +34,9 @@ int main() {
 	ncx_font_shader_create("res/shaders/font_vert.glsl", "res/shaders/font_frag.glsl");
 	font = ncx_font_create("res/fonts/shagadelic.ttf");
 
-	ncx_model_shader_create(&GLM_VEC3_ONE, 1);
+	lights[0] = ncx_light_point_create((vec3){1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	lights[1] = ncx_light_point_create((vec3){-1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	ncx_model_shader_create(lights, 2);
 	{
 		const char *paths[2] = {
 			"res/models/weapons/pistol/pistol_diffuse.png",
@@ -41,23 +44,19 @@ int main() {
 		};
 
 		/* loading the two main textures */
-		for(uint8_t i = 0; i < 2; i++) {
-			pistol_textures[i] = ncx_texture_create(paths[i], GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
-		}
+		pistol_materials[0] = ncx_material_create(paths, (float)(1 << 3));
 
 		/* assinging pistol textures */
-		for(uint8_t i = 0; i < 8; i += 2) {
-			pistol_textures[i    ] = pistol_textures[0];
-			pistol_textures[i + 1] = pistol_textures[1];
+		for(uint8_t i = 0; i < 4; i++) {
+			pistol_materials[i] = pistol_materials[0];
 		}
-		pistol_model = ncx_model_create("res/models/weapons/pistol/pistol.glb", pistol_textures);
+		pistol_model = ncx_model_create("res/models/weapons/pistol/pistol.glb", pistol_materials);
 
 		/* assinging bong textures */
-		for(uint8_t i = 0; i < 6; i += 2) {
-			bong_textures[i    ] = pistol_textures[0];
-			bong_textures[i + 1] = pistol_textures[1];
+		for(uint8_t i = 0; i < 3; i++) {
+			bong_materials[i] = pistol_materials[0];
 		}
-		bong_model = ncx_model_create("res/models/weapons/bong/bong.glb", bong_textures);
+		bong_model = ncx_model_create("res/models/weapons/bong/bong.glb", bong_materials);
 	}
 
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
@@ -97,8 +96,8 @@ int main() {
 	ncx_model_destroy(&pistol_model);
 	ncx_model_shader_destroy();
 
-	ncx_textures_destroy(bong_textures, 6);
-	ncx_textures_destroy(pistol_textures, 8);
+	ncx_materials_destroy(bong_materials, 3);
+	ncx_materials_destroy(pistol_materials, 4);
 
 	ncx_font_destroy(&font);
 	ncx_font_shader_destroy();

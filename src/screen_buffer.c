@@ -67,7 +67,7 @@ void ncx_screen_buffer_create(ncx_screen_buffer_t *buffer, const int32_t width, 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_screen_buffer_draw(const ncx_screen_buffer_t buffer, const ncx_texture_t overlay, const float time, const float trip_intensity) {
+void ncx_screen_buffer_draw(const ncx_screen_buffer_t buffer, const NCXTexture overlay, const float time, const float trip_intensity) {
 	glDisable(GL_DEPTH_TEST);
 	glUseProgram(screen_shader);
 	glUniform1i(glGetUniformLocation(screen_shader, "screen_texture"), 0);

@@ -42,11 +42,11 @@ void ncx_ui_elements_set_flash(const float flash) {
 	glUniform1f(glGetUniformLocation(ui_shader, "flash_amount"), flash);
 }
 
-void ncx_ui_element_create(ncx_ui_element_t *ncx_ui_element, float *pos, float *size, const ncx_texture_t *textures, const uint8_t texture_count) {
+void ncx_ui_element_create(ncx_ui_element_t *ncx_ui_element, float *pos, float *size, const NCXTexture *textures, const uint8_t texture_count) {
 	glm_vec2_copy(pos, ncx_ui_element->pos);
 	glm_vec2_copy(size, ncx_ui_element->size);
-	ncx_ui_element->textures = calloc(texture_count, sizeof(ncx_texture_t));
-	memcpy(ncx_ui_element->textures, textures, texture_count * sizeof(ncx_texture_t));
+	ncx_ui_element->textures = calloc(texture_count, sizeof(NCXTexture));
+	memcpy(ncx_ui_element->textures, textures, texture_count * sizeof(NCXTexture));
 }
 
 void ncx_ui_element_draw(const ncx_ui_element_t ncx_ui_element, const uint8_t texture_index) {

@@ -1,15 +1,16 @@
 #include "narcotix/model.h"
 #include "narcotix/helpers.h"
+#include "narcotix/glad/glad.h"
+#include "narcotix/light_point.h"
+#include "narcotix/shader.h"
 
 #include <assimp/cimport.h>
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
-#include "narcotix/glad/glad.h"
-
 static ncx_shader_t model_shader;
 
-void ncx_model_shader_create(const vec3 *light_positions, const uint8_t light_count) {
+void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_count) {
 	/*
 	const vec3 light_positions[] = {
 		{-4.0f,  2.5f,  -3.0f},
@@ -24,41 +25,50 @@ void ncx_model_shader_create(const vec3 *light_positions, const uint8_t light_co
 	*/
 
 	/* initializing with default light properties */
+	/*
 	vec3 light_diffuse_color;
 	vec3 light_ambient_color;
 	glm_vec3_scale(GLM_VEC3_ONE, 0.5f, light_diffuse_color);
 	glm_vec3_scale(GLM_VEC3_ONE, 0.1f, light_ambient_color);
+	*/
 
 	/* TODO: Make these parameters more customizable */
 	model_shader = ncx_shader_create("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl");
 	glUseProgram(model_shader);
 
 	/* set material properties */
+	/*
 	glUniform3f(glGetUniformLocation(model_shader, "material.specular_color"), 0.5f, 0.5f, 0.5f);
 	glUniform1f(glGetUniformLocation(model_shader, "material.shininess"), 32.0f);
+	*/
 
 	/* set light properties */
+	/*
 	glUniform3f(glGetUniformLocation(model_shader, "light_dir.dir"), 0.0f, 0.0f, -1.0f);
 	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.ambient_color"), 1, (const float *)light_ambient_color);
 	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.diffuse_color"), 1, (const float *)light_diffuse_color);
 	glUniform3f(glGetUniformLocation(model_shader, "light_dir.specular_color"), 1.0f, 1.0f, 1.0f);
+	*/
 
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), 0);
+	glUniform1i(glGetUniformLocation(model_shader, "light_points_count_current"), light_count);
 
 	/* uploading light properties to shader */
 	/* TODO: Add support for directional lights as well */
 	for(uint8_t i = 0; i < light_count; i++) {
 		uint8_t j;
 		char buffer[128] = { 0 };
+		const NCXLightPoint light_cur = lights[i];
 		const char *properties[7] = { "pos", "ambient_color", "diffuse_color", "specular_color", "constant", "linear", "quadratic" };
-		const float *vectors[4] = { light_positions[i], light_ambient_color, light_diffuse_color, GLM_VEC3_ONE };
-		const float values[3] = { 1.0f, 0.09f, 0.032f };
+		const float *vectors[4] = { light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color, light_cur.specular_color };
+		const float values[3] = { light_cur.constant, light_cur.linear, light_cur.quadratic };
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%d].%s", i, properties[j]);
 			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, vectors[j]);
 		}
 
+		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(; j < 7; j++) {
 			sprintf(buffer, "light_points[%d].%s", i, properties[j]);
 			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
@@ -107,7 +117,7 @@ void aimesh_process_bone(const struct aiMesh *m) {
 	}
 }
 
-ncx_model_t ncx_model_create(const char *path, ncx_texture_t *textures) {
+ncx_model_t ncx_model_create(const char *path, NCXMaterial *materials) {
 	ncx_model_t ncx_model;
 	const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_RemoveRedundantMaterials);
 	ncx_model.meshes = NULL;
@@ -119,11 +129,11 @@ ncx_model_t ncx_model_create(const char *path, ncx_texture_t *textures) {
 		}
 	#endif
 
-	ncx_model_process_node(&ncx_model, scene->mRootNode, scene, textures);
+	ncx_model_process_node(&ncx_model, scene->mRootNode, scene, materials);
 	return ncx_model;
 }
 
-void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct aiScene *scene, ncx_texture_t *textures) {
+void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct aiScene *scene, NCXMaterial *materials) {
 	if(!m->mesh_count) {
 		m->mesh_count = node->mNumMeshes;
 		m->meshes = malloc(m->mesh_count * sizeof(ncx_mesh_t));
@@ -136,7 +146,6 @@ void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct ai
 		const struct aiMesh *const mesh = scene->mMeshes[i];
 		ncx_vertex_t *vertices = NULL;
 		uint32_t *indices = NULL;
-		ncx_texture_t selected_textures[2];
 
 		vertices = malloc(mesh->mNumVertices * sizeof(ncx_vertex_t));
 		for(uint32_t j = 0; j < mesh->mNumVertices; j++) {
@@ -167,21 +176,16 @@ void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct ai
 			}
 		}
 
-		if(textures) {
-			selected_textures[0] = textures[0 + (i * 2)];
-			selected_textures[1] = textures[1 + (i * 2)];
-		}
-
 		/* TODO: ADD BONE CODE HERE */
 		aimesh_process_bone(mesh);
 
-		m->meshes[i] = ncx_mesh_create(vertices, indices, selected_textures, mesh->mNumVertices, mesh->mNumFaces * 3);
+		m->meshes[i] = ncx_mesh_create(vertices, indices, materials[i], mesh->mNumVertices, mesh->mNumFaces * 3);
 		free(indices);
 		free(vertices);
 	}
 
 	for(uint32_t i = 0; i < node->mNumChildren; i++) {
-		ncx_model_process_node(m, node->mChildren[i], scene, textures);
+		ncx_model_process_node(m, node->mChildren[i], scene, materials);
 	}
 }
 
