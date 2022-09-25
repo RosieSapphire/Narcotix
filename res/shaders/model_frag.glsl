@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 #define POINT_LIGHT_MAX 32
 
