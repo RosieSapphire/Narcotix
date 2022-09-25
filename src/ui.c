@@ -8,7 +8,7 @@
 
 static mat4 projection;
 static uint32_t vao, vbo;
-static ncx_shader_t ui_shader;
+static NCXShader ui_shader;
 
 void ncx_ui_elements_init(const float width, const float height) {
 	const float vertices[] = {
@@ -42,14 +42,14 @@ void ncx_ui_elements_set_flash(const float flash) {
 	glUniform1f(glGetUniformLocation(ui_shader, "flash_amount"), flash);
 }
 
-void ncx_ui_element_create(ncx_ui_element_t *ncx_ui_element, float *pos, float *size, const NCXTexture *textures, const uint8_t texture_count) {
+void ncx_ui_element_create(NCXUIElement *ncx_ui_element, float *pos, float *size, const NCXTexture *textures, const uint8_t texture_count) {
 	glm_vec2_copy(pos, ncx_ui_element->pos);
 	glm_vec2_copy(size, ncx_ui_element->size);
 	ncx_ui_element->textures = calloc(texture_count, sizeof(NCXTexture));
 	memcpy(ncx_ui_element->textures, textures, texture_count * sizeof(NCXTexture));
 }
 
-void ncx_ui_element_draw(const ncx_ui_element_t ncx_ui_element, const uint8_t texture_index) {
+void ncx_ui_element_draw(const NCXUIElement ncx_ui_element, const uint8_t texture_index) {
 	mat4 model;
 	glDisable(GL_DEPTH_TEST);
 	glm_mat4_identity(model);
@@ -66,7 +66,7 @@ void ncx_ui_element_draw(const ncx_ui_element_t ncx_ui_element, const uint8_t te
 	glEnable(GL_DEPTH_TEST);
 }
 
-void ncx_ui_element_destroy(ncx_ui_element_t *ncx_ui_element) {
+void ncx_ui_element_destroy(NCXUIElement *ncx_ui_element) {
 	free(ncx_ui_element->textures);
 }
 

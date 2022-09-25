@@ -5,25 +5,26 @@
 #include <sndfile.h>
 #include <limits.h>
 
-void ncx_sound_create(ncx_sound_t *ncx_sound, const char *paths, const uint8_t sample_count, const uint8_t use_delay) {
+NCXSound ncx_sound_create(const char *paths, const uint8_t sample_count, const uint8_t use_delay) {
+	NCXSound sound;
 	uint32_t path_length;
 	const int32_t formats[2] = {
 		AL_FORMAT_MONO16,
 		AL_FORMAT_STEREO16,
 	};
 
-	ncx_sound->buffer_count = sample_count;
-	ncx_sound->buffers = calloc(sample_count, sizeof(uint32_t));
-	ncx_sound->delay_timer = 500.0f;
+	sound.buffer_count = sample_count;
+	sound.buffers = calloc(sample_count, sizeof(uint32_t));
+	sound.delay_timer = 500.0f;
 
-	alGenSources(1, &ncx_sound->source);
-	alSourcefv(ncx_sound->source, AL_VELOCITY, GLM_VEC3_ZERO);
+	alGenSources(1, &sound.source);
+	alSourcefv(sound.source, AL_VELOCITY, GLM_VEC3_ZERO);
 
-	ncx_sound->delay_sources = NULL;
-	ncx_sound->use_delay = use_delay;
+	sound.delay_sources = NULL;
+	sound.use_delay = use_delay;
 	if(use_delay) {
-		ncx_sound->delay_sources = calloc(8, sizeof(uint32_t));
-		alGenSources(8, ncx_sound->delay_sources);
+		sound.delay_sources = calloc(8, sizeof(uint32_t));
+		alGenSources(8, sound.delay_sources);
 	}
 
 	{
@@ -47,19 +48,19 @@ void ncx_sound_create(ncx_sound_t *ncx_sound, const char *paths, const uint8_t s
 		#ifdef DEBUG
 			if(!file) {
 				printf("ERROR: Sound loading fucked up: %s\n", paths + (i * path_length));
-				return;
+				return sound;
 			}
 
 			if(file_info.frames < 1 || file_info.frames > (sf_count_t)(INT_MAX / sizeof(int16_t)) / file_info.channels) {
 				sf_close(file);
 				printf("ERROR: Sample rate fucked up\n");
-				return;
+				return sound;
 			}
 
 			if(!format) {
 				sf_close(file);
 				printf("ERROR: Sound format fucked up\n");
-				return;
+				return sound;
 			}
 		#endif
 
@@ -70,20 +71,20 @@ void ncx_sound_create(ncx_sound_t *ncx_sound, const char *paths, const uint8_t s
 				free(data);
 				sf_close(file);
 				printf("ERROR: Sound frame count fucked up\n");
-				return;
+				return sound;
 			}
 		#endif
 
 		size = frame_count * (uint64_t)file_info.channels * sizeof(int16_t);
 
-		alGenBuffers(1, &ncx_sound->buffers[i]);
-		alBufferData(ncx_sound->buffers[i], format, (const void *)data, (int32_t)size, file_info.samplerate);
+		alGenBuffers(1, &sound.buffers[i]);
+		alBufferData(sound.buffers[i], format, (const void *)data, (int32_t)size, file_info.samplerate);
 
 		#ifdef DEBUG
 		{
 			if(alGetError()) {
-				if(ncx_sound->buffers[i] && alIsBuffer(ncx_sound->buffers[i])) {
-					alDeleteBuffers(1, &ncx_sound->buffers[i]);
+				if(sound.buffers[i] && alIsBuffer(sound.buffers[i])) {
+					alDeleteBuffers(1, &sound.buffers[i]);
 				}
 			}
 		}
@@ -92,45 +93,46 @@ void ncx_sound_create(ncx_sound_t *ncx_sound, const char *paths, const uint8_t s
 		sf_close(file);
 	}
 	
-	alSourcei(ncx_sound->source, AL_BUFFER, (int32_t)ncx_sound->buffers[0]);
+	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[0]);
+	return sound;
 }
 
-void ncx_sound_play(const ncx_sound_t ncx_sound, const float gain, const float pitch, const float *pos, const uint8_t looping, const uint8_t index) {
-	alSourceStop(ncx_sound.source);
-	alSourcef(ncx_sound.source, AL_GAIN, gain);
-	alSourcef(ncx_sound.source, AL_PITCH, pitch);
-	alSourcefv(ncx_sound.source, AL_POSITION, pos);
-	alSourcei(ncx_sound.source, AL_LOOPING, looping);
-	alSourcei(ncx_sound.source, AL_BUFFER, (int32_t)ncx_sound.buffers[index]);
-	alSourcePlay(ncx_sound.source);
+void ncx_sound_play(const NCXSound sound, const float gain, const float pitch, const float *pos, const uint8_t looping, const uint8_t index) {
+	alSourceStop(sound.source);
+	alSourcef(sound.source, AL_GAIN, gain);
+	alSourcef(sound.source, AL_PITCH, pitch);
+	alSourcefv(sound.source, AL_POSITION, pos);
+	alSourcei(sound.source, AL_LOOPING, looping);
+	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[index]);
+	alSourcePlay(sound.source);
 }
 
-void ncx_sound_play_delay(ncx_sound_t *ncx_sound, const float gain, const float pitch, const float *pos, const uint8_t index, const float time_delta) {
-	const float delay_timer_last = ncx_sound->delay_timer;
+void ncx_sound_play_delay(NCXSound *sound, const float gain, const float pitch, const float *pos, const uint8_t index, const float time_delta) {
+	const float delay_timer_last = sound->delay_timer;
 	float times[8];
 	float gains[8];
-	ncx_sound->delay_timer += time_delta;
+	sound->delay_timer += time_delta;
 	for(uint8_t i = 0; i < 8; i++) {
 		times[i] = ((8.0f - (i + 1)) / 8);
 		gains[i] = (1.0f - (times[i])) * gain * gain;
-		alSourcei(ncx_sound->delay_sources[i], AL_BUFFER, (int32_t)ncx_sound->buffers[index]);
-		alSourcef(ncx_sound->delay_sources[i], AL_GAIN, gains[i]);
-		alSourcef(ncx_sound->delay_sources[i], AL_PITCH, pitch + pitch / i);
-		alSourcefv(ncx_sound->delay_sources[i], AL_POSITION, pos);
-		alSourcei(ncx_sound->delay_sources[i], AL_LOOPING, 0);
-		if(ncx_sound->delay_timer >= times[i] && delay_timer_last < times[i]) {
-			alSourcePlay(ncx_sound->delay_sources[i]);
-			// printf("%i: %f\n", ncx_sound->delay_sources[i], (double)(gains[i]));
+		alSourcei(sound->delay_sources[i], AL_BUFFER, (int32_t)sound->buffers[index]);
+		alSourcef(sound->delay_sources[i], AL_GAIN, gains[i]);
+		alSourcef(sound->delay_sources[i], AL_PITCH, pitch + pitch / i);
+		alSourcefv(sound->delay_sources[i], AL_POSITION, pos);
+		alSourcei(sound->delay_sources[i], AL_LOOPING, 0);
+		if(sound->delay_timer >= times[i] && delay_timer_last < times[i]) {
+			alSourcePlay(sound->delay_sources[i]);
+			// printf("%i: %f\n", sound->delay_sources[i], (double)(gains[i]));
 		}
 	}
 }
 
-void ncx_sound_destroy(ncx_sound_t *ncx_sound) {
-	alDeleteBuffers(ncx_sound->buffer_count, ncx_sound->buffers);
-	free(ncx_sound->buffers);
+void ncx_sound_destroy(NCXSound *sound) {
+	alDeleteBuffers(sound->buffer_count, sound->buffers);
+	free(sound->buffers);
 
-	if(ncx_sound->use_delay) {
-		alDeleteSources(8, ncx_sound->delay_sources);
-		free(ncx_sound->delay_sources);
+	if(sound->use_delay) {
+		alDeleteSources(8, sound->delay_sources);
+		free(sound->delay_sources);
 	}
 }

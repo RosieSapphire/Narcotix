@@ -6,17 +6,17 @@
 #include "narcotix/bone.h"
 
 typedef struct {
-	ncx_vertex_t *vertices;
+	NCXVertex *vertices;
 	uint32_t *indices;
 	NCXMaterial material;
-	ncx_bone_t *bones;
+	NCXBone *bones;
 
 	uint32_t vao, vbo, ebo;
 	uint32_t vertex_count, index_count, bone_count;
-} ncx_mesh_t;
+} NCXMesh;
 
-ncx_mesh_t ncx_mesh_create(ncx_vertex_t *vertices, uint32_t *indices, NCXMaterial material, const uint32_t vertex_count, const uint32_t index_count);
-void ncx_mesh_draw(ncx_mesh_t m, uint32_t s);
-void ncx_mesh_destroy(ncx_mesh_t *m);
+NCXMesh ncx_mesh_create(NCXVertex *vertices, uint32_t *indices, NCXMaterial material, const uint32_t vertex_count, const uint32_t index_count);
+void ncx_mesh_draw(NCXMesh m, uint32_t s);
+void ncx_mesh_destroy(NCXMesh *m);
 
 #endif

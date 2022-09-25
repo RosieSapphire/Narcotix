@@ -6,7 +6,7 @@
 
 static uint32_t screen_vao;
 static uint32_t screen_vbo;
-static ncx_shader_t screen_shader;
+static NCXShader screen_shader;
 
 void ncx_screen_buffer_create_buffers() {
 	const float screen_vertices[] = {
@@ -37,7 +37,7 @@ void ncx_screen_buffer_create_shader() {
 	screen_shader = ncx_shader_create("res/shaders/screen_vert.glsl", "res/shaders/screen_frag.glsl");
 }
 
-void ncx_screen_buffer_create(ncx_screen_buffer_t *buffer, const int32_t width, const int32_t height) {
+void ncx_screen_buffer_create(NCXScreenBuffer *buffer, const int32_t width, const int32_t height) {
 	glGenFramebuffers(1, &buffer->fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, buffer->fbo);
 
@@ -67,7 +67,7 @@ void ncx_screen_buffer_create(ncx_screen_buffer_t *buffer, const int32_t width, 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_screen_buffer_draw(const ncx_screen_buffer_t buffer, const NCXTexture overlay, const float time, const float trip_intensity) {
+void ncx_screen_buffer_draw(const NCXScreenBuffer buffer, const NCXTexture overlay, const float time, const float trip_intensity) {
 	glDisable(GL_DEPTH_TEST);
 	glUseProgram(screen_shader);
 	glUniform1i(glGetUniformLocation(screen_shader, "screen_texture"), 0);
@@ -90,7 +90,7 @@ void ncx_screen_buffer_draw(const ncx_screen_buffer_t buffer, const NCXTexture o
 	glEnable(GL_DEPTH_TEST);
 }
 
-void ncx_screen_buffer_destroy(ncx_screen_buffer_t *buffer) {
+void ncx_screen_buffer_destroy(NCXScreenBuffer *buffer) {
 	glDeleteRenderbuffers(1, &buffer->rbo);
 	glDeleteTextures(1, &buffer->texture);
 	glDeleteFramebuffers(1, &buffer->fbo);

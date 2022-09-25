@@ -12,7 +12,7 @@
 	#include "narcotix/debug.h"
 #endif
 
-static ncx_shader_t font_shader;
+static NCXShader font_shader;
 
 void ncx_font_shader_create(const char *font_path_vert, const char *font_path_frag) {
 	mat4 matrix_projection;
@@ -22,10 +22,10 @@ void ncx_font_shader_create(const char *font_path_vert, const char *font_path_fr
 	glUniformMatrix4fv(glGetUniformLocation(font_shader, "projection"), 1, GL_FALSE, (const float *)matrix_projection);
 }
 
-ncx_font_t ncx_font_create(const char *path) {
+NCXFont ncx_font_create(const char *path) {
 	FT_Library ft;
 	FT_Face face;
-	ncx_font_t ncx_font;
+	NCXFont ncx_font;
 	ncx_font.characters = NULL;
 	#ifdef DEBUG
 		if(FT_Init_FreeType(&ft)) {
@@ -45,7 +45,7 @@ ncx_font_t ncx_font_create(const char *path) {
 	FT_Set_Pixel_Sizes(face, 0, 48);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	ncx_font.characters = calloc(128, sizeof(ncx_character_t));
+	ncx_font.characters = calloc(128, sizeof(NCXCharacter));
 	for(uint8_t c = 0; c < 128; c++) {
 		if(FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			fprintf(stderr, "ERROR: Character '%c' loading fucked up\n", c);
@@ -81,7 +81,7 @@ ncx_font_t ncx_font_create(const char *path) {
 	return ncx_font;
 }
 
-void ncx_font_draw(const ncx_font_t ncx_font, const char *string, float *pos, const float *color, const float scale, float *window_size) {
+void ncx_font_draw(const NCXFont ncx_font, const char *string, float *pos, const float *color, const float scale, float *window_size) {
 	const char *string_pointer;
 	vec2 pos_scaled;
 	pos_scaled[0] = pos[0] * (window_size[0] * (1920.0f / window_size[0]));
@@ -95,7 +95,7 @@ void ncx_font_draw(const ncx_font_t ncx_font, const char *string, float *pos, co
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(ncx_font.vao);
 	for(string_pointer = string; *string_pointer; string_pointer++) {
-		const ncx_character_t char_current = ncx_font.characters[(uint8_t)*string_pointer];
+		const NCXCharacter char_current = ncx_font.characters[(uint8_t)*string_pointer];
 		const vec2 char_pos = {pos_scaled[0] + (float)char_current.bearing[0] * scale, pos_scaled[1] - (float)(char_current.size[1] - char_current.bearing[1]) * scale};
 		const vec2 char_size = {(float)char_current.size[0] * scale, (float)char_current.size[1] * scale};
 		const float vertices[6][4] = {
@@ -121,7 +121,7 @@ void ncx_font_draw(const ncx_font_t ncx_font, const char *string, float *pos, co
 	glEnable(GL_DEPTH_TEST);
 }
 
-void ncx_font_destroy(ncx_font_t *ncx_font) {
+void ncx_font_destroy(NCXFont *ncx_font) {
 	for(uint8_t i = 0; i < 128; i++) {
 		glDeleteTextures(1, &ncx_font->characters[i].texture);
 	}

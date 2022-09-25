@@ -8,7 +8,7 @@
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
-static ncx_shader_t model_shader;
+static NCXShader model_shader;
 
 void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_count) {
 	/*
@@ -117,8 +117,8 @@ void aimesh_process_bone(const struct aiMesh *m) {
 	}
 }
 
-ncx_model_t ncx_model_create(const char *path, NCXMaterial *materials) {
-	ncx_model_t ncx_model;
+NCXModel ncx_model_create(const char *path, NCXMaterial *materials) {
+	NCXModel ncx_model;
 	const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_RemoveRedundantMaterials);
 	ncx_model.meshes = NULL;
 	ncx_model.mesh_count = 0;
@@ -133,21 +133,21 @@ ncx_model_t ncx_model_create(const char *path, NCXMaterial *materials) {
 	return ncx_model;
 }
 
-void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct aiScene *scene, NCXMaterial *materials) {
+void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiScene *scene, NCXMaterial *materials) {
 	if(!m->mesh_count) {
 		m->mesh_count = node->mNumMeshes;
-		m->meshes = malloc(m->mesh_count * sizeof(ncx_mesh_t));
+		m->meshes = malloc(m->mesh_count * sizeof(NCXMesh));
 	} else {
 		m->mesh_count += node->mNumMeshes;
-		m->meshes = realloc(m->meshes, m->mesh_count * sizeof(ncx_mesh_t));
+		m->meshes = realloc(m->meshes, m->mesh_count * sizeof(NCXMesh));
 	}
 
 	for(uint32_t i = m->mesh_count - node->mNumMeshes; i < m->mesh_count; i++) {
 		const struct aiMesh *const mesh = scene->mMeshes[i];
-		ncx_vertex_t *vertices = NULL;
+		NCXVertex *vertices = NULL;
 		uint32_t *indices = NULL;
 
-		vertices = malloc(mesh->mNumVertices * sizeof(ncx_vertex_t));
+		vertices = malloc(mesh->mNumVertices * sizeof(NCXVertex));
 		for(uint32_t j = 0; j < mesh->mNumVertices; j++) {
 			glm_vec3_copy((float *)&mesh->mVertices[j], vertices[j].pos);
 			glm_vec3_copy((float *)&mesh->mNormals[j], vertices[j].normal);
@@ -189,7 +189,7 @@ void ncx_model_process_node(ncx_model_t *m, struct aiNode *node, const struct ai
 	}
 }
 
-void ncx_model_draw(ncx_model_t m, const uint8_t use_animation, const float *projection, const float *view, const float *model) {
+void ncx_model_draw(NCXModel m, const uint8_t use_animation, const float *projection, const float *view, const float *model) {
 	glUseProgram(model_shader);
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), use_animation);
 	glUniformMatrix4fv(glGetUniformLocation(model_shader, "projection"), 1, GL_FALSE, projection);
@@ -199,7 +199,7 @@ void ncx_model_draw(ncx_model_t m, const uint8_t use_animation, const float *pro
 		ncx_mesh_draw(m.meshes[i], model_shader);
 }
 
-void ncx_model_destroy(ncx_model_t *m) {
+void ncx_model_destroy(NCXModel *m) {
 	free(m->meshes);
 }
 

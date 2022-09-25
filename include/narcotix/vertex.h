@@ -9,6 +9,6 @@ typedef struct {
 	float uv[2];
 	int32_t bone_ids[3];
 	float weights[3];
-} ncx_vertex_t;
+} NCXVertex;
 
 #endif

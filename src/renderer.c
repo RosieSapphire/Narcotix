@@ -6,7 +6,7 @@
 
 #include "narcotix/debug.h"
 
-void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name) {
+void ncx_renderer_create(NCXRenderer *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name) {
 	#ifdef DEBUG
 		if(!glfwInit()) {
 			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
@@ -52,35 +52,35 @@ void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float hei
 
 	ncx_screen_buffer_create_buffers();
 	ncx_screen_buffer_create_shader();
-	ren->sbos = calloc(sbo_count, sizeof(ncx_screen_buffer_t));
+	ren->sbos = calloc(sbo_count, sizeof(NCXScreenBuffer));
 	for(uint8_t i = 0; i < ren->sbo_count; i++) {
 		ncx_screen_buffer_create(&ren->sbos[i], (int32_t)ren->base_size[0], (int32_t)ren->base_size[1]);
 	}
 	glViewport(0, 0, (int32_t)width, (int32_t)height);
 }
 
-void ncx_renderer_center_mouse(ncx_renderer_t *ren) {
+void ncx_renderer_center_mouse(NCXRenderer *ren) {
 	glfwSetInputMode(ren->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPos(ren->window, (double)ren->base_size[0] / 2, (double)ren->base_size[1] / 2);
 }
 
-uint8_t ncx_renderer_key_get_press(const ncx_renderer_t ren, int32_t key) {
+uint8_t ncx_renderer_key_get_press(const NCXRenderer ren, int32_t key) {
 	return glfwGetKey(ren.window, key) == GLFW_PRESS;
 }
 
-uint8_t ncx_renderer_mouse_button_get(const ncx_renderer_t ren, int32_t button) {
+uint8_t ncx_renderer_mouse_button_get(const NCXRenderer ren, int32_t button) {
 	return (uint8_t)glfwGetMouseButton(ren.window, button);
 }
 
 
-void ncx_renderer_mouse_pos_get(const ncx_renderer_t ren, vec2 mouse_pos) {
+void ncx_renderer_mouse_pos_get(const NCXRenderer ren, vec2 mouse_pos) {
 	double mouse_x, mouse_y;
 	glfwGetCursorPos(ren.window, &mouse_x, &mouse_y);
 	mouse_pos[0] = (float)mouse_x;
 	mouse_pos[1] = (float)mouse_y;
 }
 
-void ncx_renderer_mouse_pos_set(ncx_renderer_t *ren, vec2 mouse_pos) {
+void ncx_renderer_mouse_pos_set(NCXRenderer *ren, vec2 mouse_pos) {
 	glfwSetCursorPos(ren->window, (double)mouse_pos[0], (double)mouse_pos[1]);
 }
 
@@ -93,7 +93,7 @@ void ncx_renderer_clear_depth(void) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void ncx_renderer_bind_sbo(const ncx_renderer_t ren, const uint8_t index) {
+void ncx_renderer_bind_sbo(const NCXRenderer ren, const uint8_t index) {
 	assert(index < ren.sbo_count);
 	glBindFramebuffer(GL_FRAMEBUFFER, ren.sbos[index].fbo);
 }
@@ -102,18 +102,18 @@ void ncx_renderer_unbind_sbo() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_renderer_display(const ncx_renderer_t ren, const NCXTexture overlay, const float time, const float trip_intensity) {
+void ncx_renderer_display(const NCXRenderer ren, const NCXTexture overlay, const float time, const float trip_intensity) {
 	for(uint8_t i = 0; i < ren.sbo_count; i++) {
 		ncx_screen_buffer_draw(ren.sbos[i], overlay, time, trip_intensity);
 	}
 }
 
-void ncx_renderer_poll(const ncx_renderer_t ren) {
+void ncx_renderer_poll(const NCXRenderer ren) {
 	glfwSwapBuffers(ren.window);
 	glfwPollEvents();
 }
 
-void ncx_renderer_destroy(ncx_renderer_t *ren) {
+void ncx_renderer_destroy(NCXRenderer *ren) {
 	for(uint8_t i = 0; i < ren->sbo_count; i++) {
 		ncx_screen_buffer_destroy(&ren->sbos[i]);
 	}
@@ -124,10 +124,10 @@ void ncx_renderer_destroy(ncx_renderer_t *ren) {
 	glfwTerminate();
 }
 
-uint8_t ncx_renderer_running_get(const ncx_renderer_t ren) {
+uint8_t ncx_renderer_running_get(const NCXRenderer ren) {
 	return !glfwWindowShouldClose(ren.window);
 }
 
-void ncx_renderer_running_set(const ncx_renderer_t ren, const uint8_t value) {
+void ncx_renderer_running_set(const NCXRenderer ren, const uint8_t value) {
 	glfwSetWindowShouldClose(ren.window, value);
 }

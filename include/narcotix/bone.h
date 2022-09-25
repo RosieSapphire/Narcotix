@@ -16,9 +16,9 @@ typedef struct {
 	uint64_t pad2;
 	mat4 transform_animated;
 	mat4 transform_bind;
-} ncx_bone_t;
+} NCXBone;
 
-ncx_bone_t ncx_bone_create(const char *name, const int32_t id, mat4 transform_bind, const uint32_t children_count);
-void ncx_bone_destroy(ncx_bone_t *bone);
+NCXBone ncx_bone_create(const char *name, const int32_t id, mat4 transform_bind, const uint32_t children_count);
+void ncx_bone_destroy(NCXBone *bone);
 
 #endif

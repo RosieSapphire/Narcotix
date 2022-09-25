@@ -8,9 +8,9 @@
 typedef struct {
 	uint32_t bone_ids[MAX_BONES_PER_VERTEX];
 	float weights[MAX_BONES_PER_VERTEX];
-} bone_data_t;
+} NCXBoneData;
 
-bone_data_t bone_data_create(void);
-void bone_data_add(bone_data_t *data, const uint32_t bone_id, const float weight);
+NCXBoneData bone_data_create(void);
+void bone_data_add(NCXBoneData *data, const uint32_t bone_id, const float weight);
 
 #endif

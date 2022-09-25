@@ -6,8 +6,9 @@
 typedef struct {
 	ALCdevice *sound_device;
 	ALCcontext *sound_context;
-} ncx_sound_engine_t;
+} NCXSoundEngine;
 
-void ncx_sound_engine_create(ncx_sound_engine_t *engine);
+NCXSoundEngine ncx_sound_engine_create();
+void ncx_sound_engine_destroy(const NCXSoundEngine engine);
 
 #endif

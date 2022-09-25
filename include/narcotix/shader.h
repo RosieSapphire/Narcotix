@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef uint32_t ncx_shader_t;
-ncx_shader_t ncx_shader_create(const char *vert_path, const char *frag_path);
+typedef uint32_t NCXShader;
+NCXShader ncx_shader_create(const char *vert_path, const char *frag_path);
 
 #endif

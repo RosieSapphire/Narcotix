@@ -3,6 +3,8 @@
 #include "narcotix/renderer.h"
 #include "narcotix/font.h"
 #include "narcotix/texture.h"
+#include "narcotix/sound_engine.h"
+#include "narcotix/sound.h"
 
 #define WINDOW_WIDTH  1280
 #define WINDOW_HEIGHT  720
@@ -10,16 +12,19 @@
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
-	ncx_renderer_t renderer;
+	NCXRenderer renderer;
+	NCXSoundEngine sound_engine;
 
-	ncx_font_t font;
+	NCXFont font;
 	NCXLightPoint lights[2];
 
 	NCXMaterial pistol_materials[4];
-	ncx_model_t pistol_model;
+	NCXModel pistol_model;
 
 	NCXMaterial bong_materials[3];
-	ncx_model_t bong_model;
+	NCXModel bong_model;
+
+	NCXSound test_sound;
 
 	mat4 projection;
 	mat4 view;
@@ -30,6 +35,9 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	ncx_sound_engine_create(&sound_engine);
+	test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
 	ncx_font_shader_create("res/shaders/font_vert.glsl", "res/shaders/font_frag.glsl");
 	font = ncx_font_create("res/fonts/shagadelic.ttf");
@@ -62,6 +70,7 @@ int main() {
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
 	glm_mat4_identity(view);
 	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
+	ncx_sound_play(test_sound, 0.2f, 1.0f, GLM_VEC3_ZERO, 1, 0);
 	while(ncx_renderer_running_get(renderer)) {
 		const float time_now = (float)glfwGetTime();
 
@@ -99,6 +108,9 @@ int main() {
 		ncx_renderer_poll(renderer);
 	}
 
+	ncx_sound_destroy(&test_sound);
+	ncx_sound_engine_destroy(sound_engine);
+	
 	ncx_model_destroy(&bong_model);
 	ncx_model_destroy(&pistol_model);
 	ncx_model_shader_destroy();
