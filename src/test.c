@@ -36,7 +36,7 @@ int main() {
 
 	lights[0] = ncx_light_point_create((vec3){1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
 	lights[1] = ncx_light_point_create((vec3){-1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	ncx_model_shader_create(lights, 2);
+	ncx_model_shader_create(lights, 1);
 	{
 		const char *paths[2] = {
 			"res/models/weapons/pistol/pistol_diffuse.png",
