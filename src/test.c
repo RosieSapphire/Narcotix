@@ -4,8 +4,8 @@
 #include "narcotix/font.h"
 #include "narcotix/texture.h"
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT  720
 #define WINDOW_SIZE ((vec2){WINDOW_WIDTH, WINDOW_HEIGHT})
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
@@ -62,8 +62,15 @@ int main() {
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
 	glm_mat4_identity(view);
 	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
-	while(ncx_renderer_keep_running(renderer)) {
+	while(ncx_renderer_running_get(renderer)) {
 		const float time_now = (float)glfwGetTime();
+
+		/* checking for quit */
+		if(ncx_renderer_key_get_press(renderer, GLFW_KEY_ESCAPE)) {
+			ncx_renderer_running_set(renderer, 0);
+			break;
+		}
+
 		/* drawing gun */
 		glm_mat4_identity(model_matrix);
 		glm_translate(model_matrix, (vec3){-0.2f, 0.0f, 0.0f});

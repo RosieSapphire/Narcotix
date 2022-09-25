@@ -1,6 +1,6 @@
 CC=gcc
 INC=-Iinclude -I/usr/include/freetype2
-LIB=-lglfw3 -lcglm -lopenal -lfreetype -lsndfile -lassimp -lm
+LIB=-lglfw3 -lcglm -lopenal -lfreetype -lsndfile -lassimp -ldl -lpthread -lm
 CORES=-j8
 
 CFLAGS=-std=c99

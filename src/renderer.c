@@ -4,10 +4,12 @@
 
 #include <assert.h>
 
+#include "narcotix/debug.h"
+
 void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name) {
 	#ifdef DEBUG
 		if(!glfwInit()) {
-			printf("ERROR: GLFW fucked up.\n");
+			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
 			return;
 		}
 	#else
@@ -23,15 +25,11 @@ void ncx_renderer_create(ncx_renderer_t *ren, const float width, const float hei
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-	glfwWindowHint(GLFW_RED_BITS, ren->vidmode->redBits);
-	glfwWindowHint(GLFW_GREEN_BITS, ren->vidmode->greenBits);
-	glfwWindowHint(GLFW_BLUE_BITS, ren->vidmode->blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, ren->vidmode->refreshRate);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	ren->window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
 	#ifdef DEBUG
 		if(!ren->window) {
-			fprintf(stderr, "ERROR: Window fucked up.\n");
+			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
 			glfwTerminate();
 			return;
 		}
@@ -126,6 +124,10 @@ void ncx_renderer_destroy(ncx_renderer_t *ren) {
 	glfwTerminate();
 }
 
-uint8_t ncx_renderer_keep_running(const ncx_renderer_t ren) {
+uint8_t ncx_renderer_running_get(const ncx_renderer_t ren) {
 	return !glfwWindowShouldClose(ren.window);
+}
+
+void ncx_renderer_running_set(const ncx_renderer_t ren, const uint8_t value) {
+	glfwSetWindowShouldClose(ren.window, value);
 }
