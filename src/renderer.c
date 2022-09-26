@@ -6,45 +6,47 @@
 
 #include "narcotix/debug.h"
 
-void ncx_renderer_create(NCXRenderer *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name) {
+NCXRenderer ncx_renderer_create(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const uint8_t use_depth) {
+	NCXRenderer ren;
 	#ifdef DEBUG
 		if(!glfwInit()) {
 			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
-			return;
+			ren.monitor = NULL;
+			return ren;
 		}
 	#else
 		glfwInit();
 	#endif
 
 	glfwSetErrorCallback((void *)&glfw_error_callback);
-	ren->monitor = glfwGetPrimaryMonitor();
-	ren->vidmode = glfwGetVideoMode(ren->monitor);
-	ren->sbo_count = sbo_count;
-	glm_vec2_copy((vec2){(float)ren->vidmode->width, (float)ren->vidmode->height}, ren->monitor_size);
-	glm_vec2_copy((vec2){width, height}, ren->base_size);
+	ren.monitor = glfwGetPrimaryMonitor();
+	ren.vidmode = glfwGetVideoMode(ren.monitor);
+	ren.sbo_count = sbo_count;
+	glm_vec2_copy((vec2){(float)ren.vidmode->width, (float)ren.vidmode->height}, ren.monitor_size);
+	glm_vec2_copy((vec2){width, height}, ren.base_size);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	ren->window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
+	ren.window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
 	#ifdef DEBUG
-		if(!ren->window) {
+		if(!ren.window) {
 			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
 			glfwTerminate();
-			return;
+			return ren;
 		}
 	#endif
-	glfwMakeContextCurrent(ren->window);
+	glfwMakeContextCurrent(ren.window);
 
-	ren->window_position[0] = (int32_t)((ren->monitor_size[0] / 2) - (width / 2));
-	ren->window_position[1] = (int32_t)((ren->monitor_size[1] / 2) - (height / 2));
-	glfwSetWindowPos(ren->window, ren->window_position[0], ren->window_position[1]);
+	ren.window_position[0] = (int32_t)((ren.monitor_size[0] / 2) - (width / 2));
+	ren.window_position[1] = (int32_t)((ren.monitor_size[1] / 2) - (height / 2));
+	glfwSetWindowPos(ren.window, ren.window_position[0], ren.window_position[1]);
 
 	#ifdef DEBUG
 		if(!gladLoadGL()) {
 			printf("ERROR: GLAD fucked up.\n");
 			glfwTerminate();
-			return;
+			return ren;
 		}
 	#else 
 		gladLoadGL();
@@ -52,11 +54,23 @@ void ncx_renderer_create(NCXRenderer *ren, const float width, const float height
 
 	ncx_screen_buffer_create_buffers();
 	ncx_screen_buffer_create_shader();
-	ren->sbos = calloc(sbo_count, sizeof(NCXScreenBuffer));
-	for(uint8_t i = 0; i < ren->sbo_count; i++) {
-		ncx_screen_buffer_create(&ren->sbos[i], (int32_t)ren->base_size[0], (int32_t)ren->base_size[1]);
+	ren.sbos = calloc(sbo_count, sizeof(NCXScreenBuffer));
+	for(uint8_t i = 0; i < ren.sbo_count; i++) {
+		ncx_screen_buffer_create(&ren.sbos[i], (int32_t)ren.base_size[0], (int32_t)ren.base_size[1]);
 	}
 	glViewport(0, 0, (int32_t)width, (int32_t)height);
+
+	if(use_blending) {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	if(use_depth) {
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+	}
+
+	return ren;
 }
 
 void ncx_renderer_center_mouse(NCXRenderer *ren) {

@@ -22,20 +22,20 @@ void ncx_font_shader_create(const char *font_path_vert, const char *font_path_fr
 	glUniformMatrix4fv(glGetUniformLocation(font_shader, "projection"), 1, GL_FALSE, (const float *)matrix_projection);
 }
 
-NCXFont ncx_font_create(const char *path) {
+NCXFont ncx_font_create_internal(const char *path, const char *file, const uint32_t line) {
 	FT_Library ft;
 	FT_Face face;
-	NCXFont ncx_font;
-	ncx_font.characters = NULL;
+	NCXFont font;
+	font.characters = NULL;
 	#ifdef DEBUG
 		if(FT_Init_FreeType(&ft)) {
-			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\t\tFreetype Library initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
-			return ncx_font;
+			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\t\tFreetype Library initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			return font;
 		}
 
 		if(FT_New_Face(ft, path, 0, &face)) {
-			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\tFreetype failed to load font from file '%s'. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW,  path, D_COLOR_DEFAULT, __FILE__, __LINE__);
-			return ncx_font;
+			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\tFreetype failed to load font from file '%s'. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW,  path, D_COLOR_DEFAULT, file, line);
+			return font;
 		}
 	#else
 		FT_Init_FreeType(&ft);
@@ -45,43 +45,43 @@ NCXFont ncx_font_create(const char *path) {
 	FT_Set_Pixel_Sizes(face, 0, 48);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	ncx_font.characters = calloc(128, sizeof(NCXCharacter));
+	font.characters = calloc(128, sizeof(NCXCharacter));
 	for(uint8_t c = 0; c < 128; c++) {
 		if(FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			fprintf(stderr, "ERROR: Character '%c' loading fucked up\n", c);
 			continue;
 		}
 
-		glGenTextures(1, &ncx_font.characters[c].texture);
-		glBindTexture(GL_TEXTURE_2D, ncx_font.characters[c].texture);
+		glGenTextures(1, &font.characters[c].texture);
+		glBindTexture(GL_TEXTURE_2D, font.characters[c].texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, (int32_t)face->glyph->bitmap.width, (int32_t)face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glm_ivec2_copy((ivec2){(int32_t)face->glyph->bitmap.width, (int32_t)face->glyph->bitmap.rows}, ncx_font.characters[c].size);
-		glm_ivec2_copy((ivec2){(int32_t)face->glyph->bitmap_left, (int32_t)face->glyph->bitmap_top}, ncx_font.characters[c].bearing);
-		ncx_font.characters[c].advance = (uint32_t)face->glyph->advance.x;
+		glm_ivec2_copy((ivec2){(int32_t)face->glyph->bitmap.width, (int32_t)face->glyph->bitmap.rows}, font.characters[c].size);
+		glm_ivec2_copy((ivec2){(int32_t)face->glyph->bitmap_left, (int32_t)face->glyph->bitmap_top}, font.characters[c].bearing);
+		font.characters[c].advance = (uint32_t)face->glyph->advance.x;
 	}
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
-	glGenVertexArrays(1, &ncx_font.vao);
-	glBindVertexArray(ncx_font.vao);
-	glGenBuffers(1, &ncx_font.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, ncx_font.vbo);
+	glGenVertexArrays(1, &font.vao);
+	glBindVertexArray(font.vao);
+	glGenBuffers(1, &font.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, font.vbo);
 	glBufferData(GL_ARRAY_BUFFER, 6 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	return ncx_font;
+	return font;
 }
 
-void ncx_font_draw(const NCXFont ncx_font, const char *string, float *pos, const float *color, const float scale, float *window_size) {
+void ncx_font_draw(const NCXFont font, const char *string, float *pos, const float *color, const float scale, float *window_size) {
 	const char *string_pointer;
 	vec2 pos_scaled;
 	pos_scaled[0] = pos[0] * (window_size[0] * (1920.0f / window_size[0]));
@@ -93,9 +93,9 @@ void ncx_font_draw(const NCXFont ncx_font, const char *string, float *pos, const
 	glUniform1i(glGetUniformLocation(font_shader, "text"), 0);
 	glUniform3fv(glGetUniformLocation(font_shader, "text_color"), 1, color);
 	glActiveTexture(GL_TEXTURE0);
-	glBindVertexArray(ncx_font.vao);
+	glBindVertexArray(font.vao);
 	for(string_pointer = string; *string_pointer; string_pointer++) {
-		const NCXCharacter char_current = ncx_font.characters[(uint8_t)*string_pointer];
+		const NCXCharacter char_current = font.characters[(uint8_t)*string_pointer];
 		const vec2 char_pos = {pos_scaled[0] + (float)char_current.bearing[0] * scale, pos_scaled[1] - (float)(char_current.size[1] - char_current.bearing[1]) * scale};
 		const vec2 char_size = {(float)char_current.size[0] * scale, (float)char_current.size[1] * scale};
 		const float vertices[6][4] = {
@@ -109,7 +109,7 @@ void ncx_font_draw(const NCXFont ncx_font, const char *string, float *pos, const
 		};
 
 		glBindTexture(GL_TEXTURE_2D, char_current.texture);
-		glBindBuffer(GL_ARRAY_BUFFER, ncx_font.vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, font.vbo);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -17,9 +17,13 @@ typedef struct {
 } NCXFont;
 
 void ncx_font_shader_create(const char *font_path_vert, const char *font_path_frag);
-NCXFont ncx_font_create(const char *path);
-void ncx_font_draw(const NCXFont ncx_font, const char *string, float *pos, const float *color, const float scale, float *window_size);
-void ncx_font_destroy(NCXFont *ncx_font);
+
+NCXFont ncx_font_create_internal(const char *path, const char *file, const uint32_t line);
+#define ncx_font_create(P) ncx_font_create_internal(P, __FILE__, __LINE__)
+
+void ncx_font_draw(const NCXFont font, const char *string, float *pos, const float *color, const float scale, float *window_size);
+void ncx_font_destroy(NCXFont *font);
+
 void ncx_font_shader_destroy(void);
 
 #endif

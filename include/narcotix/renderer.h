@@ -23,7 +23,7 @@ typedef struct {
 	uint32_t pad3;
 } NCXRenderer;
 
-void ncx_renderer_create(NCXRenderer *ren, const float width, const float height, const uint8_t sbo_count, const char *window_name);
+NCXRenderer ncx_renderer_create(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const uint8_t use_depth);
 void ncx_renderer_center_mouse(NCXRenderer *ren);
 uint8_t ncx_renderer_key_get_press(const NCXRenderer ren, int32_t key);
 uint8_t ncx_renderer_mouse_button_get(const NCXRenderer ren, int32_t button);

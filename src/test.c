@@ -15,7 +15,8 @@ int main() {
 	NCXRenderer renderer;
 	NCXSoundEngine sound_engine;
 
-	NCXFont font;
+	NCXFont trippy_font;
+	NCXFont normal_font;
 	NCXLightPoint lights[2];
 
 	NCXMaterial pistol_materials[4];
@@ -30,17 +31,13 @@ int main() {
 	mat4 view;
 	mat4 model_matrix;
 
-	ncx_renderer_create(&renderer, WINDOW_WIDTH, WINDOW_HEIGHT, 2, "Narcotix Test");
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	ncx_sound_engine_create(&sound_engine);
+	renderer = ncx_renderer_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, "Narcotix Test", 1, 1);
+	sound_engine = ncx_sound_engine_create();
 	test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
 	ncx_font_shader_create("res/shaders/font_vert.glsl", "res/shaders/font_frag.glsl");
-	font = ncx_font_create("res/fonts/shagadelic.ttf");
+	trippy_font = ncx_font_create("res/fonts/shagadelic.ttf");
+	normal_font = ncx_font_create("res/fonts/jetbrainsmono-bold.ttf");
 
 	lights[0] = ncx_light_point_create((vec3){1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
 	lights[1] = ncx_light_point_create((vec3){-1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
@@ -101,7 +98,8 @@ int main() {
 		ncx_renderer_bind_sbo(renderer, 1);
 		ncx_model_shader_set_render_layer(1);
 		ncx_renderer_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
-		ncx_font_draw(font, "Narcotix Engine Test", (vec2){64.0f / WINDOW_WIDTH, 64.0f / WINDOW_HEIGHT}, GLM_VEC3_ONE, 1.0f, WINDOW_SIZE);
+		ncx_font_draw(trippy_font, "Narcotix Engine Test", (vec2){0.02f, 0.92f}, GLM_VEC3_ONE, 1.0f, WINDOW_SIZE);
+		ncx_font_draw(normal_font, "Music: 'Sandworms - Andy Caldwell VS. Darkhorse' from Mushroom Jazz 2", (vec2){0.02f, 0.04f}, GLM_VEC3_ONE, 1.0f, WINDOW_SIZE);
 
 		ncx_renderer_unbind_sbo();
 		ncx_renderer_display(renderer, 0, time_now, 0.0f);
@@ -118,7 +116,8 @@ int main() {
 	ncx_materials_destroy(bong_materials, 3);
 	ncx_materials_destroy(pistol_materials, 4);
 
-	ncx_font_destroy(&font);
+	ncx_font_destroy(&normal_font);
+	ncx_font_destroy(&trippy_font);
 	ncx_font_shader_destroy();
 
 	ncx_renderer_destroy(&renderer);
