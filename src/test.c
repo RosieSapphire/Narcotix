@@ -6,8 +6,8 @@
 #include "narcotix/sound_engine.h"
 #include "narcotix/sound.h"
 
-#define WINDOW_WIDTH  1280
-#define WINDOW_HEIGHT  720
+#define WINDOW_WIDTH  1920
+#define WINDOW_HEIGHT 1080
 #define WINDOW_SIZE ((vec2){WINDOW_WIDTH, WINDOW_HEIGHT})
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
@@ -98,8 +98,8 @@ int main() {
 		ncx_renderer_bind_sbo(renderer, 1);
 		ncx_model_shader_set_render_layer(1);
 		ncx_renderer_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
-		ncx_font_draw(trippy_font, "Narcotix Engine Test", (vec2){0.02f, 0.92f}, GLM_VEC3_ONE, 1.0f, WINDOW_SIZE);
-		ncx_font_draw(normal_font, "Music: 'Sandworms - Andy Caldwell VS. Darkhorse' from Mushroom Jazz 2", (vec2){0.02f, 0.04f}, GLM_VEC3_ONE, 1.0f, WINDOW_SIZE);
+		ncx_font_draw(trippy_font, "Narcotix Engine Test", (vec2){0.02f, 0.92f}, GLM_VEC3_ONE, 0.8f, WINDOW_SIZE);
+		ncx_font_draw(normal_font, "Music: 'Sandworms - Andy Caldwell VS. Darkhorse' from Mushroom Jazz 2", (vec2){0.02f, 0.04f}, GLM_VEC3_ONE, 0.5f, WINDOW_SIZE);
 
 		ncx_renderer_unbind_sbo();
 		ncx_renderer_display(renderer, 0, time_now, 0.0f);

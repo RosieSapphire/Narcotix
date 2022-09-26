@@ -42,7 +42,7 @@ NCXFont ncx_font_create_internal(const char *path, const char *file, const uint3
 		FT_New_Face(ft, path, 0, &face);
 	#endif
 
-	FT_Set_Pixel_Sizes(face, 0, 48);
+	FT_Set_Pixel_Sizes(face, 0, 72);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	font.characters = calloc(128, sizeof(NCXCharacter));
