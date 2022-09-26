@@ -1,12 +1,20 @@
 #include "narcotix/material.h"
 #include "narcotix/glad/glad.h"
 
-NCXMaterial ncx_material_create(const char **texture_paths, const float shininess) {
+#ifdef DEBUG
+	#include <stdio.h>
+	#include "narcotix/debug.h"
+#endif
+
+NCXMaterial ncx_material_create_internal(const char **texture_paths, const float shininess, const char *file, const uint32_t line) {
 	NCXMaterial mat;
-	for(uint8_t i = 0; i < 2; i++)
-		mat.textures[i] = ncx_texture_create(texture_paths[i], GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+	for(uint8_t i = 0; i < M_COUNT; i++)
+		mat.textures[i] = ncx_texture_create_internal(texture_paths[i], GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, file, line);
 
 	mat.shininess = shininess;
+	#ifdef DEBUG
+		printf("%sNARCOTIX::MATERIAL::CREATE: %sSuccessfully created material with shininess level %.0f. %s(Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, shininess, D_COLOR_DEFAULT, file, line);
+	#endif
 	return mat;
 }
 

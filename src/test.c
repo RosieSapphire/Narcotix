@@ -5,6 +5,7 @@
 #include "narcotix/texture.h"
 #include "narcotix/sound_engine.h"
 #include "narcotix/sound.h"
+#include "narcotix/helpers.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -43,8 +44,8 @@ int main() {
 
 	trippy_texture = ncx_texture_create("res/textures/trippy-overlay-texture.png", GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
-	lights[0] = ncx_light_point_create((vec3){1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	lights[1] = ncx_light_point_create((vec3){-1.0f, 1.0f, 1.0f}, (vec3){0.1f, 0.1f, 0.1f}, (vec3){0.5f, 0.5f, 0.5f}, GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	lights[0] = ncx_light_point_create(GLM_VEC3_ONE, GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.5f, 0.5f, 0.5f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	lights[1] = ncx_light_point_create(GLM_VEC3(-1.0f, 1.0f, 1.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.5f, 0.5f, 0.5f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
 	ncx_model_shader_create(lights, 1);
 	{
 		const char *paths[2] = {

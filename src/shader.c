@@ -27,12 +27,15 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 		#endif
 		int32_t success;
 		shaders[i] = glCreateShader(shader_types[i]);
-		shader_sources[i] = ncx_file_load_contents(paths[i]);
+		shader_sources[i] = ncx_file_load_contents_internal(paths[i], file, line);
 		#ifdef DEBUG
 			if(!shader_sources[i]) {
-				fprintf(stderr, "%sNARCOTIX::SHADER::ERROR:\t%sCouldn't find %s Shader code from file %s'%s'%s. %s(Caused at '%s' line %i)\n",
+				fprintf(stderr, "%sNARCOTIX::SHADER::ERROR: %sCouldn't find %s Shader code from file %s'%s'%s. %s(Caused at '%s' line %i)\n",
 						D_COLOR_RED, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return 0;
+			} else {
+				printf("%sNARCOTIX::SHADER::CREATE: %s%s Shader code from file %s'%s'%s was successfully loaded. %s(Caused at '%s' line %i)\n",
+						D_COLOR_GREEN, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 
@@ -43,10 +46,13 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 		#ifdef DEBUG
 			if(!success) {
 				glGetShaderInfoLog(shaders[i], 512, NULL, info_log);
-				fprintf(stderr, "%sNARCOTIX::SHADER::ERROR:\t%s%s shader from %s'%s'%s fucked up: %s%s(Caused at '%s' line %i)\n",
+				fprintf(stderr, "%sNARCOTIX::SHADER::ERROR: %s%s shader from %s'%s'%s fucked up: %s%s(Caused at '%s' line %i)\n",
 						D_COLOR_RED, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, info_log, D_COLOR_DEFAULT, file, line);
 				glfwTerminate();
 				return 0;
+			} else {
+				printf("%sNARCOTIX::SHADER::CREATE: %s%s Shader code from file %s'%s'%s has not encountered any errors. %s(Caused at '%s' line %i)\n",
+						D_COLOR_GREEN, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 

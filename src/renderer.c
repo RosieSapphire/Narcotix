@@ -10,7 +10,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	NCXRenderer ren;
 	#ifdef DEBUG
 		if(!glfwInit()) {
-			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			ren.monitor = NULL;
 			return ren;
 		}
@@ -31,7 +31,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	ren.window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
 	#ifdef DEBUG
 		if(!ren.window) {
-			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			glfwTerminate();
 			return ren;
 		}
@@ -44,7 +44,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 
 	#ifdef DEBUG
 		if(!gladLoadGL()) {
-			fprintf(stderr, "%sNARCOTIX::GLAD::ERROR: %sGLAD failed to load OpenGL functions. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			fprintf(stderr, "%sNARCOTIX::GLAD::ERROR: %sGLAD failed to load OpenGL functions. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			glfwTerminate();
 			return ren;
 		}
@@ -53,7 +53,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	#endif
 
 	ncx_screen_buffer_create_buffers();
-	ncx_screen_buffer_create_shader();
+	ncx_screen_buffer_create_shader_internal(file, line);
 	ren.sbos = calloc(sbo_count, sizeof(NCXScreenBuffer));
 	for(uint8_t i = 0; i < ren.sbo_count; i++) {
 		ncx_screen_buffer_create(&ren.sbos[i], (int32_t)ren.base_size[0], (int32_t)ren.base_size[1]);
@@ -65,6 +65,9 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+	#ifdef DEBUG
+		printf("%sNARCOTIX::RENDERER::CREATE: %sRenderer has successfully been created, as well as loading GLFW and GLAD. %s(Caused at %s line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+	#endif
 	return ren;
 }
 

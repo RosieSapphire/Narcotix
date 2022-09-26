@@ -4,7 +4,11 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-NCXSoundEngine ncx_sound_engine_create() {
+#ifdef DEBUG
+#include "narcotix/debug.h"
+#endif
+
+NCXSoundEngine ncx_sound_engine_create_internal(const char *file, const uint32_t line) {
 	NCXSoundEngine engine;
 	#ifdef DEBUG
 	    const char *sound_device_name;
@@ -12,32 +16,41 @@ NCXSoundEngine ncx_sound_engine_create() {
 	engine.sound_device = alcOpenDevice(NULL);
 	#ifdef DEBUG
 	    if(!engine.sound_device) {
-	        printf("ERROR: Audio Device fucked up.");
+	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL failed to load the current audio device. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 	        return engine;
-	    }
+	    } else {
+	        printf("%sNARCOTIX::SOUND::ENGINE::CREATE: %sOpenAL has successfully loaded the current audio device. %s(Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+		}
 	#endif
 	
 	engine.sound_context = alcCreateContext(engine.sound_device, NULL);
 	#ifdef DEBUG
 	    if(!engine.sound_context) {
-	        printf("ERROR: Audio Context fucked up.");
+	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL fucked up creating an audio context. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 	        return engine;
-	    }
+	    } else {
+	        printf("%sNARCOTIX::SOUND::ENGINE::CREATE: %sOpenAL successfully created an audio context. %s(Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+		}
 	
 		if(!alcMakeContextCurrent(engine.sound_context)) {
-		    printf("ERROR: Making context fucked up.");
+	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL failed to make context current. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 		    return engine;
+		} else {
+	        printf("%sNARCOTIX::SOUND::ENGINE::CREATE: %sOpenAL successfully made the context current. %s(Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 		}
 
 	    sound_device_name = NULL;
 	    if(alcIsExtensionPresent(engine.sound_device, "ALC_ENUMERATE_ALL_EXT")) {
 	        sound_device_name = alcGetString(engine.sound_device, ALC_ALL_DEVICES_SPECIFIER);
-	    }
+	    } else {
+	    	fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sFucked up finding name of current audio device. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			return engine;
+		}
 	    
 	    if(!sound_device_name || alcGetError(engine.sound_device) != AL_NO_ERROR) {
 	        sound_device_name = alcGetString(engine.sound_device, ALC_DEVICE_SPECIFIER);
 	    }
-	    printf("SOUND DEVICE: %s\n", sound_device_name);
+	    printf("%sNARCOTIX::SOUND::ENGINE::DEVICE: %sCurrent audio device being used: %s'%s'%s (Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, sound_device_name, D_COLOR_DEFAULT, file, line);
 	#else
 		alcMakeContextCurrent(engine.sound_context);
 	#endif

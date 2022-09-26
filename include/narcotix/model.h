@@ -12,7 +12,8 @@ typedef struct {
 	uint32_t padding;
 } NCXModel;
 
-void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_count);
+void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line);
+#define ncx_model_shader_create(LIGHTS, LIGHT_COUNT) ncx_model_shader_create_internal(LIGHTS, LIGHT_COUNT, __FILE__, __LINE__)
 
 void ncx_model_shader_set_matrix_projection(const mat4 ncx_model_matrix);
 void ncx_model_shader_set_matrix_view(const mat4 ncx_model_matrix);

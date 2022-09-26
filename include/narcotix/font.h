@@ -16,7 +16,8 @@ typedef struct {
 	NCXCharacter *characters;
 } NCXFont;
 
-void ncx_font_shader_create(const char *font_path_vert, const char *font_path_frag);
+void ncx_font_shader_create_internal(const char *font_path_vert, const char *font_path_frag, const char *file, const uint32_t line);
+#define ncx_font_shader_create(FONT_PATH_VERT, FONT_PATH_FRAG) ncx_font_shader_create_internal(FONT_PATH_VERT, FONT_PATH_FRAG, __FILE__, __LINE__)
 
 NCXFont ncx_font_create_internal(const char *path, const char *file, const uint32_t line);
 #define ncx_font_create(P) ncx_font_create_internal(P, __FILE__, __LINE__)

@@ -14,7 +14,7 @@
 
 static NCXShader model_shader;
 
-void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_count) {
+void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line) {
 	/*
 	const vec3 light_positions[] = {
 		{-4.0f,  2.5f,  -3.0f},
@@ -37,7 +37,7 @@ void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_co
 	*/
 
 	/* TODO: Make these parameters more customizable */
-	model_shader = ncx_shader_create("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl");
+	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", file, line);
 	glUseProgram(model_shader);
 
 	/* set material properties */

@@ -14,10 +14,10 @@
 
 static NCXShader font_shader;
 
-void ncx_font_shader_create(const char *font_path_vert, const char *font_path_frag) {
+void ncx_font_shader_create_internal(const char *font_path_vert, const char *font_path_frag, const char *file, const uint32_t line) {
 	mat4 matrix_projection;
 	glm_ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f, matrix_projection);
-	font_shader = ncx_shader_create(font_path_vert, font_path_frag);
+	font_shader = ncx_shader_create_internal(font_path_vert, font_path_frag, file, line);
 	glUseProgram(font_shader);
 	glUniformMatrix4fv(glGetUniformLocation(font_shader, "projection"), 1, GL_FALSE, (const float *)matrix_projection);
 }
