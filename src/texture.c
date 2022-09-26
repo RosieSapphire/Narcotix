@@ -26,7 +26,7 @@ NCXTexture ncx_texture_create(const char *path, const int32_t wrap_mode, const i
 		data = stbi_load(path, &width, &height, &channels, 0);
 		#ifdef DEBUG
 			if(!data) {
-				printf("%sNARCOTIX::TEXTURE::ERROR:\t%sFucked up loading a texture from file: %s'%s'%s. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
+				printf("%sNARCOTIX::TEXTURE::ERROR: %sFucked up loading a texture from file: %s'%s'%s. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
 				glfwTerminate();
 				return t;
 			}

@@ -5,7 +5,11 @@
 #include <sndfile.h>
 #include <limits.h>
 
-NCXSound ncx_sound_create(const char *paths, const uint8_t sample_count, const uint8_t use_delay) {
+#ifdef DEBUG
+	#include "narcotix/debug.h"
+#endif
+
+NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count, const uint8_t use_delay, const char *file, const uint32_t line) {
 	NCXSound sound;
 	uint32_t path_length;
 	const int32_t formats[2] = {
@@ -36,41 +40,47 @@ NCXSound ncx_sound_create(const char *paths, const uint8_t sample_count, const u
 	}
 	
 	for(uint8_t i = 0; i < sample_count; i++) {
-		SNDFILE *file;
+		const char *current_path = paths + (i * path_length);
+		SNDFILE *snd_file;
 		SF_INFO file_info;
 		uint64_t frame_count;
 		int32_t format;
 		int16_t *data;
 		uint64_t size;
 
-		file = sf_open(paths + (i * path_length), SFM_READ, &file_info);
-		format = formats[file_info.channels - 1];
+		snd_file = sf_open(current_path, SFM_READ, &file_info);
 		#ifdef DEBUG
-			if(!file) {
-				printf("ERROR: Sound loading fucked up: %s\n", paths + (i * path_length));
+		{
+			if(!snd_file) {
+				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sLoading sound from path: %s'%s'%s fucked up. %s(Caused at '%s' line %u).\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
 			}
 
 			if(file_info.frames < 1 || file_info.frames > (sf_count_t)(INT_MAX / sizeof(int16_t)) / file_info.channels) {
-				sf_close(file);
-				printf("ERROR: Sample rate fucked up\n");
+				sf_close(snd_file);
+				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sSound loaded from %s'%s'%s has a fucked up sample rate. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
 			}
-
+		}
+		#endif
+		format = formats[file_info.channels - 1];
+		#ifdef DEBUG
 			if(!format) {
-				sf_close(file);
-				printf("ERROR: Sound format fucked up\n");
+				sf_close(snd_file);
+				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sSound loaded from %s'%s'%s has an invalid format/channel count. %s(Caused at '%s' line '%u)\n",
+						D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
 			}
 		#endif
 
 		data = malloc((size_t)(file_info.frames * file_info.channels) * sizeof(int16_t));
-		frame_count = (size_t)sf_readf_short(file, data, file_info.frames);
+		frame_count = (size_t)sf_readf_short(snd_file, data, file_info.frames);
 		#ifdef DEBUG
 			if(frame_count < 1) {
 				free(data);
-				sf_close(file);
-				printf("ERROR: Sound frame count fucked up\n");
+				sf_close(snd_file);
+				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sLoaded sound from %s'%s'%s seems to have an invalid length. %s(Caused at '%s' line '%u'\n",
+						D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
 			}
 		#endif
@@ -90,7 +100,7 @@ NCXSound ncx_sound_create(const char *paths, const uint8_t sample_count, const u
 		}
 		#endif
 		free(data);
-		sf_close(file);
+		sf_close(snd_file);
 	}
 	
 	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[0]);

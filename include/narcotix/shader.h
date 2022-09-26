@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 typedef uint32_t NCXShader;
-NCXShader ncx_shader_create(const char *vert_path, const char *frag_path);
+NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_path, const char *file, const uint32_t line);
+#define ncx_shader_create(VERT_PATH, FRAG_PATH) ncx_shader_create_internal(VERT_PATH, FRAG_PATH, __FILE__, __LINE__)
 
 #endif

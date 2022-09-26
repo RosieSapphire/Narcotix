@@ -23,7 +23,9 @@ typedef struct {
 	uint32_t pad3;
 } NCXRenderer;
 
-NCXRenderer ncx_renderer_create(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const uint8_t use_depth);
+NCXRenderer ncx_renderer_create_internal(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const char *file, const uint32_t line);
+#define ncx_renderer_create(W, H, SBO_C, WN, UB) ncx_renderer_create_internal(W, H, SBO_C, WN, UB, __FILE__, __LINE__)
+
 void ncx_renderer_center_mouse(NCXRenderer *ren);
 uint8_t ncx_renderer_key_get_press(const NCXRenderer ren, int32_t key);
 uint8_t ncx_renderer_mouse_button_get(const NCXRenderer ren, int32_t button);

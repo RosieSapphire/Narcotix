@@ -29,12 +29,12 @@ NCXFont ncx_font_create_internal(const char *path, const char *file, const uint3
 	font.characters = NULL;
 	#ifdef DEBUG
 		if(FT_Init_FreeType(&ft)) {
-			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\t\tFreetype Library initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			fprintf(stderr, "%sNARCOTIX::FONT::ERROR: %sFreetype Library initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			return font;
 		}
 
 		if(FT_New_Face(ft, path, 0, &face)) {
-			fprintf(stderr, "%sNARCOTIX::FONT::ERROR:%s\tFreetype failed to load font from file '%s'. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW,  path, D_COLOR_DEFAULT, file, line);
+			fprintf(stderr, "%sNARCOTIX::FONT::ERROR: %sFreetype failed to load font from file %s'%s'%s. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW,  D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			return font;
 		}
 	#else

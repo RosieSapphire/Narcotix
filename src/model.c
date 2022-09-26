@@ -8,6 +8,10 @@
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
+#ifdef DEBUG
+#include "narcotix/debug.h"
+#endif
+
 static NCXShader model_shader;
 
 void ncx_model_shader_create(const NCXLightPoint *lights, const uint8_t light_count) {
@@ -117,7 +121,7 @@ void aimesh_process_bone(const struct aiMesh *m) {
 	}
 }
 
-NCXModel ncx_model_create(const char *path, NCXMaterial *materials) {
+NCXModel ncx_model_create_internal(const char *path, NCXMaterial *materials, const char *file, const uint32_t line) {
 	NCXModel ncx_model;
 	const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_RemoveRedundantMaterials);
 	ncx_model.meshes = NULL;
@@ -125,7 +129,8 @@ NCXModel ncx_model_create(const char *path, NCXMaterial *materials) {
 
 	#ifdef DEBUG
 		if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			printf("ERROR: %s\n", aiGetErrorString());
+			fprintf(stderr, "%sNARCOTIX::ASSIMP::ERROR: %sAssimp fucked up loading a model from %s'%s'%s: %s %s(Caused at '%s' line %u)\n",
+					D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, aiGetErrorString(), D_COLOR_DEFAULT, file, line);
 		}
 	#endif
 
@@ -189,12 +194,9 @@ void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiSce
 	}
 }
 
-void ncx_model_draw(NCXModel m, const uint8_t use_animation, const float *projection, const float *view, const float *model) {
+void ncx_model_draw(NCXModel m, const uint8_t use_animation) {
 	glUseProgram(model_shader);
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), use_animation);
-	glUniformMatrix4fv(glGetUniformLocation(model_shader, "projection"), 1, GL_FALSE, projection);
-	glUniformMatrix4fv(glGetUniformLocation(model_shader, "view"), 1, GL_FALSE, view);
-	glUniformMatrix4fv(glGetUniformLocation(model_shader, "model"), 1, GL_FALSE, model);
 	for(uint32_t i = 0; i < m.mesh_count; i++)
 		ncx_mesh_draw(m.meshes[i], model_shader);
 }

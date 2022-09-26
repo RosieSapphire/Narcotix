@@ -6,11 +6,11 @@
 
 #include "narcotix/debug.h"
 
-NCXRenderer ncx_renderer_create(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const uint8_t use_depth) {
+NCXRenderer ncx_renderer_create_internal(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const char *file, const uint32_t line) {
 	NCXRenderer ren;
 	#ifdef DEBUG
 		if(!glfwInit()) {
-			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
+			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			ren.monitor = NULL;
 			return ren;
 		}
@@ -31,7 +31,7 @@ NCXRenderer ncx_renderer_create(const float width, const float height, const uin
 	ren.window = glfwCreateWindow((int32_t)width, (int32_t)height, window_name, NULL, NULL);
 	#ifdef DEBUG
 		if(!ren.window) {
-			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, __FILE__, __LINE__);
+			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR: %sWindow creation fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			glfwTerminate();
 			return ren;
 		}
@@ -44,7 +44,7 @@ NCXRenderer ncx_renderer_create(const float width, const float height, const uin
 
 	#ifdef DEBUG
 		if(!gladLoadGL()) {
-			printf("ERROR: GLAD fucked up.\n");
+			fprintf(stderr, "%sNARCOTIX::GLAD::ERROR: %sGLAD failed to load OpenGL functions. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			glfwTerminate();
 			return ren;
 		}
@@ -63,11 +63,6 @@ NCXRenderer ncx_renderer_create(const float width, const float height, const uin
 	if(use_blending) {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	if(use_depth) {
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
 	}
 
 	return ren;
