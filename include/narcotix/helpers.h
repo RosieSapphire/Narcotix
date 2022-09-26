@@ -4,6 +4,7 @@
 #include "narcotix/cglm/cglm.h"
 
 #define EPSILON 					0.001f
+#define GLM_VEC3(X, Y, Z) ((vec3){X, Y, Z})
 
 float ncx_clampf(const float val, const float min, const float max);
 float ncx_clampf01(const float val);
