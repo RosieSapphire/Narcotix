@@ -11,18 +11,18 @@
 	#include "narcotix/debug.h"
 #endif
 
-NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_path, const char *file, const uint32_t line) {
-	const char *paths[2] = {vert_path, frag_path};
-	const uint32_t shader_types[2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-	char *shader_sources[2];
-	uint32_t shaders[2];
+NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_path, const char *geom_path, const char *file, const uint32_t line) {
+	const char *paths[3] = {vert_path, frag_path, geom_path};
+	const uint32_t shader_types[3] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_GEOMETRY_SHADER};
+	char *shader_sources[3];
+	uint32_t shaders[3];
 	NCXShader shader_program;
 
 	/* creating shader program and binding vert and frag */
 	shader_program = glCreateProgram();
-	for(uint8_t i = 0; i < 2; i++) {
+	for(uint8_t i = 0; i < 2 + (geom_path != NULL); i++) {
 		#ifdef DEBUG
-			const char *shader_type_names[2] = {"Vertex", "Fragment"};
+			const char *shader_type_names[3] = {"Vertex", "Fragment", "Geometry"};
 			char info_log[512];
 		#endif
 		int32_t success;

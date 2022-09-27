@@ -31,7 +31,7 @@ void ncx_ui_elements_init(const float width, const float height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	ui_shader = ncx_shader_create("res/shaders/ui_vert.glsl", "res/shaders/ui_frag.glsl");
+	ui_shader = ncx_shader_create("res/shaders/ui_vert.glsl", "res/shaders/ui_frag.glsl", NULL);
 	glUseProgram(ui_shader);
 	glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, projection);
 	glUniformMatrix4fv(glGetUniformLocation(ui_shader, "projection"), 1, GL_FALSE, (const float *)projection);

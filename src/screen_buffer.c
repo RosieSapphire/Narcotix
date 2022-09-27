@@ -34,7 +34,7 @@ void ncx_screen_buffer_create_buffers() {
 }
 
 void ncx_screen_buffer_create_shader_internal(const char *file, const uint32_t line) {
-	screen_shader = ncx_shader_create_internal("res/shaders/screen_vert.glsl", "res/shaders/screen_frag.glsl", file, line);
+	screen_shader = ncx_shader_create_internal("res/shaders/screen_vert.glsl", "res/shaders/screen_frag.glsl", NULL, file, line);
 }
 
 void ncx_screen_buffer_create(NCXScreenBuffer *buffer, const int32_t width, const int32_t height) {
