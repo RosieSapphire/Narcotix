@@ -25,6 +25,9 @@ int main() {
 	NCXMaterial pistol_materials[4];
 	NCXModel pistol_model;
 
+	NCXMaterial plane_material;
+	NCXModel plane_model;
+
 	NCXMaterial bong_materials[3];
 	NCXModel bong_model;
 
@@ -44,14 +47,21 @@ int main() {
 
 	trippy_texture = ncx_texture_create("res/textures/trippy-overlay-texture.png", GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
-	lights[0] = ncx_light_point_create(GLM_VEC3_ONE, GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.5f, 0.5f, 0.5f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	lights[1] = ncx_light_point_create(GLM_VEC3(-1.0f, 1.0f, 1.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.5f, 0.5f, 0.5f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	ncx_model_shader_create(lights, 1);
+	lights[0] = ncx_light_point_create(GLM_VEC3( 2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	lights[1] = ncx_light_point_create(GLM_VEC3(-2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	ncx_model_shader_create(lights, 2);
 
 	{ /* load models */
-		const char *paths[2] = {
+		const char *paths[M_COUNT] = {
 			"res/models/weapons/pistol/pistol_diffuse.png",
+			"res/models/weapons/pistol/pistol_specular.png",
 			"res/models/weapons/pistol/pistol_specular.png"
+		};
+
+		const char *plane_material_texture_paths[M_COUNT] = {
+			"res/textures/wall_diffuse.png",
+			"res/textures/wall_specular.png",
+			"res/textures/wall_normal.png",
 		};
 
 		/* loading the two main textures */
@@ -68,15 +78,18 @@ int main() {
 			bong_materials[i] = pistol_materials[0];
 		}
 		bong_model = ncx_model_create("res/models/weapons/bong/bong.glb", bong_materials);
+
+		plane_material = ncx_material_create(plane_material_texture_paths, 32.0f);
+		plane_model = ncx_model_create("res/models/plane.glb", &plane_material);
 	}
 
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
 	glm_mat4_identity(view);
-	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
+	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
 	ncx_sound_play(test_sound, 0.2f, 1.0f, GLM_VEC3_ZERO, 1, 0);
 	while(ncx_renderer_running_get(renderer)) {
 		const float time_now = (float)glfwGetTime();
-		const float trip_intensity = (sinf(time_now) + 1.0f) / 2.0f;
+		const float trip_intensity = 0.0f;// (sinf(time_now) + 1.0f) / 2.0f;
 
 		/* checking for quit */
 		if(ncx_renderer_key_get_press(renderer, GLFW_KEY_ESCAPE)) {
@@ -86,11 +99,11 @@ int main() {
 
 		/* drawing gun */
 		glm_mat4_identity(model_matrix);
-		glm_translate(model_matrix, (vec3){-0.2f, 0.0f, 0.0f});
+		glm_translate(model_matrix, GLM_VEC3(-0.2f, 0.0f, 0.0f));
 		glm_rotate(model_matrix, time_now, GLM_YUP);
 
 		ncx_renderer_bind_sbo(renderer, 0);
-		ncx_renderer_clear_color(0.16f, 0.32f, 0.42f, 1.0f);
+		ncx_renderer_clear_color(0.0f, 0.055f, 0.122f, 1.0f);
 		ncx_renderer_clear_depth();
 
 		ncx_model_shader_set_render_layer(0);
@@ -100,11 +113,18 @@ int main() {
 
 		/* drawing bong */
 		glm_mat4_identity(model_matrix);
-		glm_scale(model_matrix, (vec3){1.32f, 1.32f, 1.32f});
-		glm_translate(model_matrix, (vec3){0.2f, -0.14f, 0.0f});
+		glm_scale(model_matrix, GLM_VEC3(1.32f, 1.32f, 1.32f));
+		glm_translate(model_matrix, GLM_VEC3(0.2f, -0.14f, 0.0f));
 		glm_rotate(model_matrix, time_now, GLM_YUP);
 		ncx_model_shader_set_matrix_model(model_matrix);
 		ncx_model_draw(bong_model, 0);
+
+		/* drawing plane */
+		glm_mat4_identity(model_matrix);
+		glm_translate(model_matrix, GLM_VEC3(sinf(time_now), 0.0f, -2.0f));
+		glm_rotate(model_matrix, sinf(time_now * 2) / 2, GLM_YUP);
+		ncx_model_shader_set_matrix_model(model_matrix);
+		ncx_model_draw(plane_model, 0);
 
 		ncx_renderer_bind_sbo(renderer, 1);
 		ncx_model_shader_set_render_layer(1);

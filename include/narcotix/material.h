@@ -6,6 +6,7 @@
 enum {
 	M_DIFFUSE = 0,
 	M_SPECULAR,
+	M_NORMAL,
 	M_COUNT
 };
 

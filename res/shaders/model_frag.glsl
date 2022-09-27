@@ -16,6 +16,7 @@ uniform vec3 view_pos;
 struct material_t {
 	sampler2D tex_diffuse;
 	sampler2D tex_specular;
+	sampler2D tex_normal;
 	float shininess;
 }; uniform material_t material;
 

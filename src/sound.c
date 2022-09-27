@@ -54,16 +54,12 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 			if(!snd_file) {
 				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sLoading sound from path: %s'%s'%s fucked up. %s(Caused at '%s' line %u).\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
-			} else {
-				printf("%sNARCOTIX::SOUND::CREATE: %sLoading sound from path: %s'%s'%s succeeded. %s(Caused at '%s' line %u).\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 
 			if(file_info.frames < 1 || file_info.frames > (sf_count_t)(INT_MAX / sizeof(int16_t)) / file_info.channels) {
 				sf_close(snd_file);
 				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sSound loaded from %s'%s'%s has a fucked up sample rate. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
-			} else {
-				printf("%sNARCOTIX::SOUND::CREATE: %sSound loaded from %s'%s'%s has a valid sample rate. %s(Caused at '%s' line %u).\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		}
 		#endif
@@ -74,8 +70,6 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sSound loaded from %s'%s'%s has an invalid format/channel count. %s(Caused at '%s' line '%u)\n",
 						D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
-			} else {
-				printf("%sNARCOTIX::SOUND::CREATE: %sSound loaded from %s'%s'%s has a valid format/channel count. %s(Caused at '%s' line '%u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 
@@ -88,8 +82,6 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 				fprintf(stderr, "%sNARCOTIX::SOUND::ERROR: %sLoaded sound from %s'%s'%s seems to have an invalid length. %s(Caused at '%s' line '%u'\n",
 						D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return sound;
-			} else {
-				printf("%sNARCOTIX::SOUND::CREATE: %sLoaded sound from %s'%s'%s has a valid length. %s(Caused at '%s' line '%u'\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 
@@ -104,13 +96,12 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 				if(sound.buffers[i] && alIsBuffer(sound.buffers[i])) {
 					alDeleteBuffers(1, &sound.buffers[i]);
 				}
-			} else {
-				printf("%sNARCOTIX::SOUND::CREATE: %sSound from %s'%s'%s has encountered no errors. %s(Caused at '%s' line '%u'\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		}
 		#endif
 		free(data);
 		sf_close(snd_file);
+		printf("%sNARCOTIX::SOUND::CREATE: %sSound from %s'%s'%s was imported successfully. %s(Caused at '%s' line '%u'\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 	}
 	
 	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[0]);

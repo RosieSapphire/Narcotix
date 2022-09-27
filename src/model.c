@@ -15,44 +15,9 @@
 static NCXShader model_shader;
 
 void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line) {
-	/*
-	const vec3 light_positions[] = {
-		{-4.0f,  2.5f,  -3.0f},
-		{-4.0f,  2.5f,   3.0f},
-		{ 4.0f,  2.5f,   3.0f},
-		{ 4.0f,  2.5f,   0.25f},
-	
-		{-13.0f, 8.0f,  6.0f},
-		{-13.0f, 8.0f, -6.0f},
-		{-21.0f, 8.0f,  6.0f},
-	};
-	*/
-
-	/* initializing with default light properties */
-	/*
-	vec3 light_diffuse_color;
-	vec3 light_ambient_color;
-	glm_vec3_scale(GLM_VEC3_ONE, 0.5f, light_diffuse_color);
-	glm_vec3_scale(GLM_VEC3_ONE, 0.1f, light_ambient_color);
-	*/
-
 	/* TODO: Make these parameters more customizable */
 	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", file, line);
 	glUseProgram(model_shader);
-
-	/* set material properties */
-	/*
-	glUniform3f(glGetUniformLocation(model_shader, "material.specular_color"), 0.5f, 0.5f, 0.5f);
-	glUniform1f(glGetUniformLocation(model_shader, "material.shininess"), 32.0f);
-	*/
-
-	/* set light properties */
-	/*
-	glUniform3f(glGetUniformLocation(model_shader, "light_dir.dir"), 0.0f, 0.0f, -1.0f);
-	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.ambient_color"), 1, (const float *)light_ambient_color);
-	glUniform3fv(glGetUniformLocation(model_shader, "light_dir.diffuse_color"), 1, (const float *)light_diffuse_color);
-	glUniform3f(glGetUniformLocation(model_shader, "light_dir.specular_color"), 1.0f, 1.0f, 1.0f);
-	*/
 
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), 0);
 	glUniform1i(glGetUniformLocation(model_shader, "light_points_count_current"), light_count);
@@ -131,6 +96,8 @@ NCXModel ncx_model_create_internal(const char *path, NCXMaterial *materials, con
 		if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			fprintf(stderr, "%sNARCOTIX::ASSIMP::ERROR: %sAssimp fucked up loading a model from %s'%s'%s: %s %s(Caused at '%s' line %u)\n",
 					D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, aiGetErrorString(), D_COLOR_DEFAULT, file, line);
+		} else {
+			printf("%sNARCOTIX::ASSIMP::MODEL: %sAssimp successfully loaded a model from %s'%s'%s. %s(Caused at '%s' line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 		}
 	#endif
 

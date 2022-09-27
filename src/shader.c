@@ -33,9 +33,6 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 				fprintf(stderr, "%sNARCOTIX::SHADER::ERROR: %sCouldn't find %s Shader code from file %s'%s'%s. %s(Caused at '%s' line %i)\n",
 						D_COLOR_RED, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 				return 0;
-			} else {
-				printf("%sNARCOTIX::SHADER::CREATE: %s%s Shader code from file %s'%s'%s was successfully loaded. %s(Caused at '%s' line %i)\n",
-						D_COLOR_GREEN, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 
@@ -50,9 +47,6 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 						D_COLOR_RED, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, info_log, D_COLOR_DEFAULT, file, line);
 				glfwTerminate();
 				return 0;
-			} else {
-				printf("%sNARCOTIX::SHADER::CREATE: %s%s Shader code from file %s'%s'%s has not encountered any errors. %s(Caused at '%s' line %i)\n",
-						D_COLOR_GREEN, D_COLOR_YELLOW, shader_type_names[i], D_COLOR_GREEN, paths[i], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 			}
 		#endif
 
@@ -62,5 +56,9 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 	}
 
 	glLinkProgram(shader_program);
+	#ifdef DEBUG
+		printf("%sNARCOTIX::SHADER::CREATE: %sShader from files %s'%s'%s and %s'%s'%s was successfully imported. %s(Caused at '%s' line %i)\n",
+				D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, paths[0], D_COLOR_YELLOW, D_COLOR_GREEN, paths[1], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+	#endif
 	return shader_program;
 }

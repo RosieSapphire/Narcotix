@@ -39,12 +39,13 @@ NCXMesh ncx_mesh_create(NCXVertex *vertices, uint32_t *indices, NCXMaterial mate
 }
 
 void ncx_mesh_draw(NCXMesh m, uint32_t s) {
-	const char *texture_slots[2] = {
+	const char *texture_slots[M_COUNT] = {
 		"material.tex_diffuse",
 		"material.tex_specular",
+		"material.tex_normal",
 	};
 
-	for(uint8_t i = 0; i < 2; i++) {
+	for(uint8_t i = 0; i < M_COUNT; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glUniform1i(glGetUniformLocation(s, texture_slots[i]), (int32_t)i);
 		glBindTexture(GL_TEXTURE_2D, m.material.textures[i]);

@@ -19,9 +19,7 @@ char *ncx_file_load_contents_internal(const char *path, const char *file, const 
     	if(!file_struct) {
     	    fprintf(stderr, "%sNARCOTIX::FILE::ERROR: %sLoading from file %s'%s'%s fucked up. %s(Caused at '%s' line %i)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
     	    return NULL;
-    	} else {
-    	    printf("%sNARCOTIX::FILE::LOAD: %sLoading from file %s'%s'%s succeeded. %s(Caused at '%s' line %i)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-		}
+    	}
 	#endif
 
     fseek(file_struct, 0L, SEEK_END);
