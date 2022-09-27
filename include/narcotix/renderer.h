@@ -7,20 +7,12 @@
 #include "narcotix/screen_buffer.h"
 
 typedef struct {
-	const GLFWvidmode* vidmode;
-	GLFWmonitor* monitor;
 	GLFWwindow *window;
-	vec2 monitor_size;
-	vec2 base_size;
+	vec2 window_size;
 	ivec2 window_position;
-	uint8_t is_fullscreen;
 
-	uint8_t pad0;
-	uint16_t pad1;
-	uint32_t pad2;
 	NCXScreenBuffer *sbos;
 	uint32_t sbo_count;
-	uint32_t pad3;
 } NCXRenderer;
 
 NCXRenderer ncx_renderer_create_internal(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const char *file, const uint32_t line);

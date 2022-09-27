@@ -7,23 +7,26 @@
 #include "narcotix/debug.h"
 
 NCXRenderer ncx_renderer_create_internal(const float width, const float height, const uint8_t sbo_count, const char *window_name, const uint8_t use_blending, const char *file, const uint32_t line) {
+	const GLFWvidmode *vidmode;
 	NCXRenderer ren;
 	#ifdef DEBUG
 		if(!glfwInit()) {
 			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-			ren.monitor = NULL;
 			return ren;
 		}
 	#else
 		glfwInit();
 	#endif
 
+	{
+		GLFWmonitor *monitor;
+		monitor = glfwGetPrimaryMonitor();
+		vidmode = glfwGetVideoMode(monitor);
+	}
+
 	glfwSetErrorCallback((void *)&glfw_error_callback);
-	ren.monitor = glfwGetPrimaryMonitor();
-	ren.vidmode = glfwGetVideoMode(ren.monitor);
 	ren.sbo_count = sbo_count;
-	glm_vec2_copy((vec2){(float)ren.vidmode->width, (float)ren.vidmode->height}, ren.monitor_size);
-	glm_vec2_copy((vec2){width, height}, ren.base_size);
+	glm_vec2_copy((vec2){width, height}, ren.window_size);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -38,8 +41,8 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	#endif
 	glfwMakeContextCurrent(ren.window);
 
-	ren.window_position[0] = (int32_t)((ren.monitor_size[0] / 2) - (width / 2));
-	ren.window_position[1] = (int32_t)((ren.monitor_size[1] / 2) - (height / 2));
+	ren.window_position[0] = (int32_t)((vidmode->width / 2) - (width / 2));
+	ren.window_position[1] = (int32_t)((vidmode->height / 2) - (height / 2));
 	glfwSetWindowPos(ren.window, ren.window_position[0], ren.window_position[1]);
 
 	#ifdef DEBUG
@@ -56,7 +59,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	ncx_screen_buffer_create_shader_internal(file, line);
 	ren.sbos = calloc(sbo_count, sizeof(NCXScreenBuffer));
 	for(uint8_t i = 0; i < ren.sbo_count; i++) {
-		ncx_screen_buffer_create(&ren.sbos[i], (int32_t)ren.base_size[0], (int32_t)ren.base_size[1]);
+		ncx_screen_buffer_create(&ren.sbos[i], (int32_t)ren.window_size[0], (int32_t)ren.window_size[1]);
 	}
 	glViewport(0, 0, (int32_t)width, (int32_t)height);
 
@@ -73,7 +76,7 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 
 void ncx_renderer_center_mouse(NCXRenderer *ren) {
 	glfwSetInputMode(ren->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(ren->window, (double)ren->base_size[0] / 2, (double)ren->base_size[1] / 2);
+	glfwSetCursorPos(ren->window, (double)ren->window_size[0] / 2, (double)ren->window_size[1] / 2);
 }
 
 uint8_t ncx_renderer_key_get_press(const NCXRenderer ren, int32_t key) {
