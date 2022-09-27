@@ -59,9 +59,9 @@ int main() {
 		};
 
 		const char *plane_material_texture_paths[M_COUNT] = {
-			"res/textures/wall_diffuse.png",
-			"res/textures/wall_specular.png",
-			"res/textures/wall_normal.png",
+			"res/textures/bricks_diffuse.png",
+			"res/textures/bricks_specular.png",
+			"res/textures/bricks_normal.png",
 		};
 
 		/* loading the two main textures */
