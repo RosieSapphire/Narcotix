@@ -5,20 +5,12 @@
 in vec3 normal;
 in vec2 uv;
 in vec3 frag_pos;
+in float time;
+in float trip_intensity;
 
-in float o_time;
-in float o_trip_intensity;
-
-out vec4 FragColor;
+out vec4 frag_color;
 
 uniform vec3 view_pos;
-
-struct material_t {
-	sampler2D tex_diffuse;
-	sampler2D tex_specular;
-	sampler2D tex_normal;
-	float shininess;
-}; uniform material_t material;
 
 struct light_point_t {
 	vec3 pos;
@@ -28,8 +20,17 @@ struct light_point_t {
 	float constant;
 	float linear;
 	float quadratic;
-}; uniform light_point_t light_points[POINT_LIGHT_MAX];
+};
+uniform light_point_t light_points[POINT_LIGHT_MAX];
 uniform int light_points_count_current;
+
+
+struct material_t {
+	sampler2D tex_diffuse;
+	sampler2D tex_specular;
+	sampler2D tex_normal;
+	float shininess;
+}; uniform material_t material;
 
 float rand(float n) {
 	return fract(sin(n) * 43758.5453123);
@@ -52,7 +53,7 @@ vec3 get_light_point(light_point_t l, vec3 normal, vec3 frag_pos, vec3 view_dir)
 	float distance = length(l.pos - frag_pos);
 	float attenuation = 1.0 / (l.constant + l.linear * distance + l.quadratic * (distance * distance));
 
-	vec2 trip_uv = vec2(uv.x + sin(o_time * 0.1f + o_trip_intensity) * o_trip_intensity * 0.12f, uv.y + cos(o_time * 0.2f + o_trip_intensity) * o_trip_intensity * 0.04f);
+	vec2 trip_uv = vec2(uv.x + sin(time * 0.1f + trip_intensity) * trip_intensity * 0.12f, uv.y + cos(time * 0.2f + trip_intensity) * trip_intensity * 0.04f);
 	vec3 ambient_color = l.ambient_color * vec3(texture(material.tex_diffuse, trip_uv));
 	vec3 diffuse_color = l.diffuse_color * diffuse_amount * vec3(texture(material.tex_diffuse, trip_uv));
 	vec3 specular_color = l.specular_color * specular_amount * vec3(texture(material.tex_specular, trip_uv).r);
@@ -79,7 +80,7 @@ vec3 get_light_dir(light_dir_t l, vec3 normal, vec3 view_dir) {
 	vec3 reflect_dir = reflect(-light_dir, normal);
 	float specular_amount = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
 
-	vec2 trip_uv_offset = vec2(uv.x + sin(o_time * 0.2f + o_trip_intensity) * o_trip_intensity * 0.43f, uv.y + cos(o_time * 0.4f + o_trip_intensity) * o_trip_intensity * 0.12f);
+	vec2 trip_uv_offset = vec2(uv.x + sin(time * 0.2f + trip_intensity) * trip_intensity * 0.43f, uv.y + cos(time * 0.4f + trip_intensity) * trip_intensity * 0.12f);
 	vec3 ambient_color = l.ambient_color * vec3(texture(material.tex_diffuse, trip_uv_offset));
 	vec3 diffuse_color = l.diffuse_color * diffuse_amount * vec3(texture(material.tex_diffuse, trip_uv_offset));
 	vec3 specular_color = l.specular_color * specular_amount * vec3(texture(material.tex_specular, trip_uv_offset).r);
@@ -97,11 +98,11 @@ void main() {
 		final_color += get_light_point(light_points[i], norm, frag_pos, view_dir);
 
 	vec3 trippy_color;
-	trippy_color.x = (cos(o_time * 2) + 1.0f) / 2;
-	trippy_color.y = 1.0 - ((sin(o_time * 4) + 1.0f) / 2);
-	trippy_color.z = ((sin(o_time * 4) * cos(o_time * 2)) + 1.0f) / 3;
-	trippy_color *= vec3(perlin_noise(view_pos.x), perlin_noise(view_pos.y), perlin_noise(view_pos.z / 2)) + frag_pos + sin(o_time);
-	trippy_color *= (o_trip_intensity / 4.0);
+	trippy_color.x = (cos(time * 2) + 1.0f) / 2;
+	trippy_color.y = 1.0 - ((sin(time * 4) + 1.0f) / 2);
+	trippy_color.z = ((sin(time * 4) * cos(time * 2)) + 1.0f) / 3;
+	trippy_color *= vec3(perlin_noise(view_pos.x), perlin_noise(view_pos.y), perlin_noise(view_pos.z / 2)) + frag_pos + sin(time);
+	trippy_color *= (trip_intensity / 4.0);
 
-	FragColor = vec4(final_color, 1.0) + vec4(trippy_color / 2, 1.0);
+	frag_color = vec4(final_color, 1.0) + vec4(trippy_color / 2, 1.0);
 }

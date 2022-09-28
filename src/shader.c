@@ -57,8 +57,11 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 
 	glLinkProgram(shader_program);
 	#ifdef DEBUG
-		printf("%sNARCOTIX::SHADER::CREATE: %sShader from files %s'%s'%s and %s'%s'%s was successfully imported. %s(Caused at '%s' line %i)\n",
-				D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, paths[0], D_COLOR_YELLOW, D_COLOR_GREEN, paths[1], D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+	{
+		printf("%sNARCOTIX::SHADER::CREATE: %sShader from files %s'%s'%s%s %s'%s'%s", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, paths[0], D_COLOR_YELLOW, (geom_path != NULL) ? "," : " and", D_COLOR_GREEN, paths[1], D_COLOR_YELLOW);
+		if(geom_path) printf(" and %s'%s'%s", D_COLOR_GREEN, paths[2], D_COLOR_YELLOW);
+		printf(" was successfully imported. %s(Caused at '%s' line %i)\n", D_COLOR_DEFAULT, file, line);
+	}
 	#endif
 	return shader_program;
 }

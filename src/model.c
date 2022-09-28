@@ -16,7 +16,7 @@ static NCXShader model_shader;
 
 void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line) {
 	/* TODO: Make these parameters more customizable */
-	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", "res/shaders/model_geom.glsl", file, line);
+	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", NULL, file, line);
 	glUseProgram(model_shader);
 
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), 0);

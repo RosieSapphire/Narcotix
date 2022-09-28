@@ -42,6 +42,12 @@ void main() {
 		frag_pos = data_in[i].frag_pos;
 		time = data_in[i].time;
 		trip_intensity = data_in[i].trip_intensity;
+		/*
+		for(int j = 0; j < POINT_LIGHT_MAX; j++) {
+			light_points[j] = data_in[i].light_points[j];
+		}
+		light_points_count_current = data_in[i].light_points_count_current;
+		*/
 		EmitVertex();
 	}
 	EndPrimitive();
