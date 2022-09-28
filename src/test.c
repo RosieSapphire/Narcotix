@@ -137,7 +137,6 @@ int main() {
 		ncx_renderer_poll(renderer);
 	}
 
-
 	ncx_sound_destroy(&test_sound);
 	ncx_sound_engine_destroy(sound_engine);
 	

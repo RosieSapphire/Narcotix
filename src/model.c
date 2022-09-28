@@ -32,14 +32,14 @@ void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t
 		const float *vectors[4] = { light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color, light_cur.specular_color };
 		const float values[3] = { light_cur.constant, light_cur.linear, light_cur.quadratic };
 
+		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(j = 0; j < 4; j++) {
-			sprintf(buffer, "light_points[%d].%s", i, properties[j]);
+			sprintf(buffer, "light_points_%s[%i]", properties[j], i);
 			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, vectors[j]);
 		}
 
-		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(; j < 7; j++) {
-			sprintf(buffer, "light_points[%d].%s", i, properties[j]);
+			sprintf(buffer, "light_points_%s[%i]", properties[j], i);
 			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
 		}
 	}

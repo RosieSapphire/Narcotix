@@ -19,18 +19,6 @@ uniform float time;
 uniform float trip_intensity;
 uniform int render_layer;
 
-struct light_point_t {
-	vec3 pos;
-	vec3 ambient_color;
-	vec3 diffuse_color;
-	vec3 specular_color;
-	float constant;
-	float linear;
-	float quadratic;
-};
-uniform light_point_t light_points[POINT_LIGHT_MAX];
-// uniform int light_points_count_current;
-
 out vec3 o_normal;
 out vec2 o_uv;
 out vec3 o_frag_pos;
@@ -38,10 +26,6 @@ out float o_time;
 out float o_trip_intensity;
 out mat4 o_projection;
 out mat4 o_model;
-// out int o_light_points_count_current;
-/*
-out light_point_t o_light_points[POINT_LIGHT_MAX];
-*/
 
 float rand(float n) {
 	return fract(sin(n) * 43758.5453123);
@@ -80,10 +64,6 @@ void main() {
 	o_frag_pos = vec3(model * vec4(a_pos, 1.0));
 	o_time = time;
 	o_trip_intensity = trip_intensity;
-	/*
-	o_light_points = light_points;
-	*/
-	// o_light_points_count_current = light_points_count_current;
 	o_projection = projection;
 	o_model = model;
 }
