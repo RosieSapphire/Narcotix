@@ -19,13 +19,33 @@ uniform float time;
 uniform float trip_intensity;
 uniform int render_layer;
 
-out vec3 o_normal;
-out vec2 o_uv;
-out vec3 o_frag_pos;
-out float o_time;
-out float o_trip_intensity;
-out mat4 o_projection;
-out mat4 o_model;
+uniform vec3  light_points_pos;
+uniform vec3  light_points_ambient_color;
+uniform vec3  light_points_diffuse_color;
+uniform vec3  light_points_specular_color;
+uniform float light_points_constant;
+uniform float light_points_linear;
+uniform float light_points_quadratic;
+uniform int   light_points_count_current;
+
+out DATA {
+	vec3 o_normal;
+	vec2 o_uv;
+	vec3 o_frag_pos;
+	float o_time;
+	float o_trip_intensity;
+	mat4 o_projection;
+	mat4 o_model;
+	
+	vec3  o_light_points_pos;
+	vec3  o_light_points_ambient_color;
+	vec3  o_light_points_diffuse_color;
+	vec3  o_light_points_specular_color;
+	float o_light_points_constant;
+	float o_light_points_linear;
+	float o_light_points_quadratic;
+	int   o_light_points_count_current;
+} data_out;
 
 float rand(float n) {
 	return fract(sin(n) * 43758.5453123);
@@ -59,11 +79,23 @@ void main() {
 	trip_offset.y = cos(time * 0.785 + gl_Position.z) * (trip_intensity / 5);
 	gl_Position += vec4(trip_offset, 0.0, 0.0) * float(render_layer == 0);
 
-	o_normal = total_normal.xyz;
-	o_uv = a_uv;
-	o_frag_pos = vec3(model * vec4(a_pos, 1.0));
-	o_time = time;
-	o_trip_intensity = trip_intensity;
-	o_projection = projection;
-	o_model = model;
+	data_out.o_normal = total_normal.xyz;
+	data_out.o_uv = a_uv;
+	data_out.o_frag_pos = vec3(model * vec4(a_pos, 1.0));
+	data_out.o_time = time;
+	data_out.o_trip_intensity = trip_intensity;
+	data_out.o_projection = projection;
+	data_out.o_model = model;
+
+	/* outputting light stuff */
+	for(int i = 0; i < POINT_LIGHT_MAX; i++) {
+		data_out.o_light_points_pos = light_points_pos;
+		data_out.o_light_points_ambient_color = light_points_ambient_color;
+		data_out.o_light_points_diffuse_color = light_points_diffuse_color;
+		data_out.o_light_points_specular_color = light_points_specular_color;
+		data_out.o_light_points_constant = light_points_constant;
+		data_out.o_light_points_linear = light_points_linear;
+		data_out.o_light_points_quadratic = light_points_quadratic;
+	}
+	data_out.o_light_points_count_current = light_points_count_current;
 }

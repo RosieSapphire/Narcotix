@@ -48,8 +48,8 @@ int main() {
 	trippy_texture = ncx_texture_create("res/textures/trippy-overlay-texture.png", GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
 	lights[0] = ncx_light_point_create(GLM_VEC3( 2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	lights[1] = ncx_light_point_create(GLM_VEC3(-2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	ncx_model_shader_create(lights, 2);
+	// lights[1] = ncx_light_point_create(GLM_VEC3(-2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
+	ncx_model_shader_create(lights, 1);
 
 	{ /* load models */
 		const char *paths[M_COUNT] = {

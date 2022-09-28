@@ -5,14 +5,14 @@
 #define FAR 1000.0
 
 /* light-related shit */
-uniform vec3 light_points_pos[POINT_LIGHT_MAX];
-uniform vec3 light_points_ambient_color[POINT_LIGHT_MAX];
-uniform vec3 light_points_diffuse_color[POINT_LIGHT_MAX];
-uniform vec3 light_points_specular_color[POINT_LIGHT_MAX];
-uniform float light_points_constant[POINT_LIGHT_MAX];
-uniform float light_points_linear[POINT_LIGHT_MAX];
-uniform float light_points_quadratic[POINT_LIGHT_MAX];
-uniform int light_points_count_current;
+in vec3  f_light_points_pos;
+in vec3  f_light_points_ambient_color;
+in vec3  f_light_points_diffuse_color;
+in vec3  f_light_points_specular_color;
+in float f_light_points_constant;
+in float f_light_points_linear;
+in float f_light_points_quadratic;
+in int   f_light_points_count_current;
 
 /* everything else effectively */
 in vec3 f_normal;
@@ -68,8 +68,8 @@ void main() {
 	vec3 final_color = vec3(0.0);
 	// vec3 final_color = vec3(float(f_light_points_count_current));
 
-	for(int i = 0; i < light_points_count_current; i++)
-		final_color += get_light_point(light_points_pos[i], light_points_ambient_color[i], light_points_specular_color[i], light_points_diffuse_color[i], light_points_constant[i], light_points_linear[i], light_points_quadratic[i],
+	for(int i = 0; i < 1; i++)
+		final_color += get_light_point(f_light_points_pos, f_light_points_ambient_color, f_light_points_specular_color, f_light_points_diffuse_color, f_light_points_constant, f_light_points_linear, f_light_points_quadratic,
 		norm, f_frag_pos, view_dir);
 
 	vec3 trippy_color;
