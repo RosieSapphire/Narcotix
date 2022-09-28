@@ -25,6 +25,7 @@ out DATA {
 	float time;
 	float trip_intensity;
 	mat4 projection;
+	mat4 model;
 } data_out;
 
 float rand(float n) {
@@ -65,4 +66,5 @@ void main() {
 	data_out.time = time;
 	data_out.trip_intensity = trip_intensity;
 	data_out.projection = projection;
+	data_out.model = model;
 }
