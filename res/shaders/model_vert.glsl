@@ -6,8 +6,10 @@
 layout(location = 0) in vec3 a_pos;
 layout(location = 1) in vec3 a_normal;
 layout(location = 2) in vec2 a_uv;
-layout(location = 3) in ivec3 a_bone_ids;
-layout(location = 4) in vec3 a_weights;
+layout(location = 3) in vec3 a_tangent;
+layout(location = 4) in vec3 a_bitangent;
+layout(location = 5) in ivec3 a_bone_ids;
+layout(location = 6) in vec3 a_weights;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -18,34 +20,17 @@ uniform mat4 bone_matrices[MAX_BONES];
 uniform float time;
 uniform float trip_intensity;
 uniform int render_layer;
+uniform vec3 view_pos;
 
-uniform vec3  light_points_pos;
-uniform vec3  light_points_ambient_color;
-uniform vec3  light_points_diffuse_color;
-uniform vec3  light_points_specular_color;
-uniform float light_points_constant;
-uniform float light_points_linear;
-uniform float light_points_quadratic;
-uniform int   light_points_count_current;
-
-out DATA {
-	vec3 o_normal;
-	vec2 o_uv;
-	vec3 o_frag_pos;
-	float o_time;
-	float o_trip_intensity;
-	mat4 o_projection;
-	mat4 o_model;
-	
-	vec3  o_light_points_pos;
-	vec3  o_light_points_ambient_color;
-	vec3  o_light_points_diffuse_color;
-	vec3  o_light_points_specular_color;
-	float o_light_points_constant;
-	float o_light_points_linear;
-	float o_light_points_quadratic;
-	int   o_light_points_count_current;
-} data_out;
+out vec3 o_normal;
+out vec2 o_uv;
+out vec3 o_frag_pos;
+out float o_time;
+out float o_trip_intensity;
+out mat4 o_projection;
+out mat4 o_model;
+out vec3  o_view_pos;
+out mat3 o_tbn;
 
 float rand(float n) {
 	return fract(sin(n) * 43758.5453123);
@@ -72,30 +57,26 @@ void main() {
 		total_normal = vec4(mat3(transpose(inverse(model))) * a_normal, 0.0);
 	}
 
-	gl_Position = view * model * total_position;
+	gl_Position = projection * view * model * total_position;
 
 	vec2 trip_offset;
 	trip_offset.x = perlin_noise((time * 1.57) + gl_Position.y) * (trip_intensity / 5);
 	trip_offset.y = cos(time * 0.785 + gl_Position.z) * (trip_intensity / 5);
 	gl_Position += vec4(trip_offset, 0.0, 0.0) * float(render_layer == 0);
 
-	data_out.o_normal = total_normal.xyz;
-	data_out.o_uv = a_uv;
-	data_out.o_frag_pos = vec3(model * vec4(a_pos, 1.0));
-	data_out.o_time = time;
-	data_out.o_trip_intensity = trip_intensity;
-	data_out.o_projection = projection;
-	data_out.o_model = model;
+	/* creating a tbn matrix */
+	vec3 t = normalize(vec3(model * vec4(a_tangent, 0.0)));
+	vec3 b = normalize(vec3(model * vec4(a_bitangent, 0.0)));
+	vec3 n = normalize(vec3(model * vec4(a_normal, 0.0)));
+	mat3 tbn = transpose(mat3(t, b, n));
 
-	/* outputting light stuff */
-	for(int i = 0; i < POINT_LIGHT_MAX; i++) {
-		data_out.o_light_points_pos = light_points_pos;
-		data_out.o_light_points_ambient_color = light_points_ambient_color;
-		data_out.o_light_points_diffuse_color = light_points_diffuse_color;
-		data_out.o_light_points_specular_color = light_points_specular_color;
-		data_out.o_light_points_constant = light_points_constant;
-		data_out.o_light_points_linear = light_points_linear;
-		data_out.o_light_points_quadratic = light_points_quadratic;
-	}
-	data_out.o_light_points_count_current = light_points_count_current;
+	o_normal = total_normal.xyz;
+	o_uv = a_uv;
+	o_frag_pos = vec3(model * vec4(a_pos, 1.0));
+	o_time = time;
+	o_trip_intensity = trip_intensity;
+	o_projection = projection;
+	o_model = model;
+	o_view_pos = view_pos;
+	o_tbn = tbn;
 }

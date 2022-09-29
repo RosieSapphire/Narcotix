@@ -8,6 +8,8 @@
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
+#define POINT_LIGHT_MAX 32
+
 #ifdef DEBUG
 #include "narcotix/debug.h"
 #endif
@@ -16,7 +18,7 @@ static NCXShader model_shader;
 
 void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line) {
 	/* TODO: Make these parameters more customizable */
-	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", "res/shaders/model_geom.glsl", file, line);
+	model_shader = ncx_shader_create_internal("res/shaders/model_vert.glsl", "res/shaders/model_frag.glsl", NULL, file, line);
 	glUseProgram(model_shader);
 
 	glUniform1i(glGetUniformLocation(model_shader, "is_animated"), 0);
@@ -43,6 +45,50 @@ void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t
 			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
 		}
 	}
+}
+
+void ncx_model_shader_lights_update(const NCXLightPoint *lights, const uint8_t light_count) {
+	glUseProgram(model_shader);
+	const char *properties[7] = { "pos", "ambient_color", "diffuse_color", "specular_color", "constant", "linear", "quadratic" };
+
+	/* reset all lights to ensure no bullshittery */
+	for(uint8_t i = 0; i < POINT_LIGHT_MAX; i++) {
+		uint8_t j;
+		char buffer[128] = { 0 };
+
+		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
+		for(j = 0; j < 4; j++) {
+			sprintf(buffer, "light_points_%s", properties[j]);
+			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, GLM_VEC3_ZERO);
+		}
+
+		for(; j < 7; j++) {
+			sprintf(buffer, "light_points_%s", properties[j]);
+			glUniform1f(glGetUniformLocation(model_shader, buffer), 0.0f);
+		}
+	}
+
+	/* now import the new lights */
+	for(uint8_t i = 0; i < light_count; i++) {
+		uint8_t j;
+		char buffer[128] = { 0 };
+		const NCXLightPoint light_cur = lights[i];
+		const float *vectors[4] = { light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color, light_cur.specular_color };
+		const float values[3] = { light_cur.constant, light_cur.linear, light_cur.quadratic };
+
+		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
+		for(j = 0; j < 4; j++) {
+			sprintf(buffer, "light_points_%s", properties[j]);
+			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, vectors[j]);
+		}
+
+		for(; j < 7; j++) {
+			sprintf(buffer, "light_points_%s", properties[j]);
+			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
+		}
+	}
+
+	glUniform1i(glGetUniformLocation(model_shader, "light_points_count_current"), light_count);
 }
 
 void ncx_model_shader_set_matrix_projection(const mat4 projection) {
@@ -88,7 +134,7 @@ void aimesh_process_bone(const struct aiMesh *m) {
 
 NCXModel ncx_model_create_internal(const char *path, NCXMaterial *materials, const char *file, const uint32_t line) {
 	NCXModel ncx_model;
-	const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_RemoveRedundantMaterials);
+	const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_RemoveRedundantMaterials | aiProcess_CalcTangentSpace);
 	ncx_model.meshes = NULL;
 	ncx_model.mesh_count = 0;
 
@@ -123,8 +169,10 @@ void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiSce
 		for(uint32_t j = 0; j < mesh->mNumVertices; j++) {
 			glm_vec3_copy((float *)&mesh->mVertices[j], vertices[j].pos);
 			glm_vec3_copy((float *)&mesh->mNormals[j], vertices[j].normal);
-			glm_ivec3_copy((ivec3){-1, -1, -1}, vertices[j].bone_ids);
-			glm_vec3_copy(GLM_VEC3_ZERO, vertices[j].weights);
+			glm_vec3_copy((float *)&mesh->mTangents[j], vertices[j].tangent);
+			glm_vec3_copy((float *)&mesh->mBitangents[j], vertices[j].bitangent);
+
+			// printf("Tangent: (%f, %f, %f),\tBitangent: (%f, %f, %f)\n", vertices[j].tangent[0], vertices[j].tangent[1], vertices[j].tangent[2], vertices[j].bitangent[0], vertices[j].bitangent[1], vertices[j].bitangent[2]);
 
 			if(mesh->mTextureCoords[0]) {
 				vertices[j].uv[0] = mesh->mTextureCoords[0][j].x;
@@ -132,6 +180,11 @@ void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiSce
 			} else {
 				glm_vec2_copy(GLM_VEC2_ZERO, vertices[j].uv);
 			}
+
+
+
+			glm_ivec3_copy((ivec3){-1, -1, -1}, vertices[j].bone_ids);
+			glm_vec3_copy(GLM_VEC3_ZERO, vertices[j].weights);
 		}
 
 		indices = malloc(mesh->mNumFaces * 3 * sizeof(uint32_t));
