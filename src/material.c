@@ -19,7 +19,7 @@ NCXMaterial ncx_material_create_internal(const char **texture_paths, const float
 }
 
 void ncx_material_destroy(NCXMaterial mat) {
-	ncx_textures_destroy(mat.textures, 2);
+	ncx_textures_destroy(mat.textures, M_COUNT);
 }
 
 void ncx_materials_destroy(NCXMaterial* mats, const uint8_t mat_count) {

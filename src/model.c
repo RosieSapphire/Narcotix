@@ -36,12 +36,12 @@ void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t
 
 		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(j = 0; j < 4; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, vectors[j]);
 		}
 
 		for(; j < 7; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
 		}
 	}
@@ -58,12 +58,12 @@ void ncx_model_shader_lights_update(const NCXLightPoint *lights, const uint8_t l
 
 		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(j = 0; j < 4; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, GLM_VEC3_ZERO);
 		}
 
 		for(; j < 7; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform1f(glGetUniformLocation(model_shader, buffer), 0.0f);
 		}
 	}
@@ -78,12 +78,12 @@ void ncx_model_shader_lights_update(const NCXLightPoint *lights, const uint8_t l
 
 		/* TODO: maybe make this one a new for loop instead of leaching off the previous one */
 		for(j = 0; j < 4; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1, vectors[j]);
 		}
 
 		for(; j < 7; j++) {
-			sprintf(buffer, "light_points_%s", properties[j]);
+			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
 			glUniform1f(glGetUniformLocation(model_shader, buffer), values[j - 4]);
 		}
 	}
@@ -172,7 +172,8 @@ void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiSce
 			glm_vec3_copy((float *)&mesh->mTangents[j], vertices[j].tangent);
 			glm_vec3_copy((float *)&mesh->mBitangents[j], vertices[j].bitangent);
 
-			// printf("Tangent: (%f, %f, %f),\tBitangent: (%f, %f, %f)\n", vertices[j].tangent[0], vertices[j].tangent[1], vertices[j].tangent[2], vertices[j].bitangent[0], vertices[j].bitangent[1], vertices[j].bitangent[2]);
+			// printf("%s:\n\tPosition: (%f, %f, %f),\n\tNormal: (%f, %f, %f)\n", mesh->mName.data, vertices[j].pos[0], vertices[j].pos[1], vertices[j].pos[2], vertices[j].normal[0], vertices[j].normal[1], vertices[j].normal[2]);
+			// printf("\tTangent: (%f, %f, %f),\n\tBitangent: (%f, %f, %f)\n", vertices[j].tangent[0], vertices[j].tangent[1], vertices[j].tangent[2], vertices[j].bitangent[0], vertices[j].bitangent[1], vertices[j].bitangent[2]);
 
 			if(mesh->mTextureCoords[0]) {
 				vertices[j].uv[0] = mesh->mTextureCoords[0][j].x;
@@ -180,8 +181,6 @@ void ncx_model_process_node(NCXModel *m, struct aiNode *node, const struct aiSce
 			} else {
 				glm_vec2_copy(GLM_VEC2_ZERO, vertices[j].uv);
 			}
-
-
 
 			glm_ivec3_copy((ivec3){-1, -1, -1}, vertices[j].bone_ids);
 			glm_vec3_copy(GLM_VEC3_ZERO, vertices[j].weights);

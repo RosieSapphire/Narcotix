@@ -47,9 +47,10 @@ int main() {
 
 	trippy_texture = ncx_texture_create("res/textures/trippy-overlay-texture.png", GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
-	lights[0] = ncx_light_point_create(GLM_VEC3(1.0f, 1.0f, 1.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	// lights[1] = ncx_light_point_create(GLM_VEC3(-2.0f, 1.0f, 2.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.945f, 0.878f), GLM_VEC3_ONE, 1.0f, 0.09f, 0.032f);
-	ncx_model_shader_create(lights, 1);
+	// GLM_VEC3(1.0f, 0.945f, 0.878f)
+	lights[0] = ncx_light_point_create(GLM_VEC3( 1.0f, 0.0f, 1.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.0f, 0.0f), GLM_VEC3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	lights[1] = ncx_light_point_create(GLM_VEC3(-1.0f, 0.0f, 1.0f), GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.0f, 1.0f, 1.0f), GLM_VEC3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	ncx_model_shader_create(lights, 2);
 
 	{ /* load models */
 		const char *paths[M_COUNT] = {
@@ -65,7 +66,7 @@ int main() {
 		};
 
 		/* loading the two main textures */
-		pistol_materials[0] = ncx_material_create(paths, (float)(1 << 6));
+		pistol_materials[0] = ncx_material_create(paths, (float)(1 << 3));
 
 		/* assinging pistol textures */
 		for(uint8_t i = 0; i < 4; i++) {
@@ -79,7 +80,7 @@ int main() {
 		}
 		bong_model = ncx_model_create("res/models/weapons/bong/bong.glb", bong_materials);
 
-		plane_material = ncx_material_create(plane_material_texture_paths, 8.0f);
+		plane_material = ncx_material_create(plane_material_texture_paths, (float)(1 << 4));
 		plane_model = ncx_model_create("res/models/plane.glb", &plane_material);
 	}
 
@@ -96,12 +97,6 @@ int main() {
 			ncx_renderer_running_set(renderer, 0);
 			break;
 		}
-
-		/* updating light position */
-		lights[0].pos[0] = sinf(time_now);
-		lights[0].pos[1] = cosf(time_now);
-		lights[0].pos[2] = 0.0f;
-		ncx_model_shader_lights_update(lights, 1);
 
 		/* drawing gun */
 		glm_mat4_identity(model_matrix);
@@ -127,9 +122,9 @@ int main() {
 
 		/* drawing plane */
 		glm_mat4_identity(model_matrix);
-		glm_translate(model_matrix, GLM_VEC3(sinf(time_now), 0.0f, -2.0f));
-		glm_translate(model_matrix, GLM_VEC3(0.0f, 0.0f, -1.0f));
-		glm_rotate(model_matrix, sinf(time_now * 2) / 2, GLM_YUP);
+		glm_translate(model_matrix, GLM_VEC3(sinf(time_now), 0.0f, -1.5f));
+		// glm_translate(model_matrix, GLM_VEC3(0.0f, 0.0f, -1.5f));
+		glm_rotate(model_matrix, sinf(time_now), GLM_YUP);
 		ncx_model_shader_set_matrix_model(model_matrix);
 		ncx_model_draw(plane_model, 0);
 

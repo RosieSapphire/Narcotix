@@ -12,6 +12,8 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 	#ifdef DEBUG
 		if(!glfwInit()) {
 			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
+			ren.window = NULL;
+			ren.sbos = NULL;
 			return ren;
 		}
 	#else
@@ -67,6 +69,10 @@ NCXRenderer ncx_renderer_create_internal(const float width, const float height, 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	#ifdef DEBUG
 		printf("%sNARCOTIX::RENDERER::CREATE: %sRenderer has successfully been created, as well as loading GLFW and GLAD. %s(Caused at %s line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
