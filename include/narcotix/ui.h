@@ -1,5 +1,5 @@
-#ifndef NCX_UI_H
-#define NCX_UI_H
+#ifndef __NCX_UI_H_
+#define __NCX_UI_H_
 
 #include "narcotix/texture.h"
 

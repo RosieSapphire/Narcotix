@@ -46,7 +46,7 @@ float perlin_noise(float p){
 }
 
 vec3 get_light_point(light_point_t l, vec3 normal) {
-	vec3 l_pos = o_tbn * l.pos;
+	vec3 l_pos =                o_tbn * l.pos;
 	vec3 light_dir =            normalize(l_pos - o_frag_pos);
 	vec3 view_dir =             normalize(o_view_pos - o_frag_pos);
 	float diffuse_amount =      max(dot(normal, light_dir), 0.0);
@@ -55,21 +55,20 @@ vec3 get_light_point(light_point_t l, vec3 normal) {
 	float distance =            length(l_pos - o_frag_pos);
 	float attenuation =         1.0 / (l.constant + l.linear * distance + l.quadratic * (distance * distance));
 
-	vec2 trip_uv =              vec2(o_uv.x + sin(o_time * 0.1f + o_trip_intensity) * o_trip_intensity * 0.12f, o_uv.y + cos(o_time * 0.2f + o_trip_intensity) * o_trip_intensity * 0.04f);
+	vec2 trip_uv =              vec2(o_uv.x + sin(o_time * 0.1f + o_trip_intensity) * o_trip_intensity * 0.24f, o_uv.y + cos(o_time * 0.2f + o_trip_intensity) * o_trip_intensity * 0.04f);
 	vec3 final_ambient_color =  l.ambient_color * vec3(texture(material.tex_diffuse, trip_uv));
 	vec3 final_diffuse_color =  l.diffuse_color * diffuse_amount * vec3(texture(material.tex_diffuse, trip_uv));
 	vec3 final_specular_color = l.specular_color * specular_amount * vec3(texture(material.tex_specular, trip_uv).r);
 	final_ambient_color *=      attenuation;
 	final_diffuse_color *=      attenuation;
 	final_specular_color *=     attenuation;
-	return (final_ambient_color + final_diffuse_color + final_specular_color);
+	return final_ambient_color + final_diffuse_color + final_specular_color;
 }
 
 /* TODO: Add directional lights at some point */
 
 void main() {
 	vec3 norm = normalize(vec3(texture(material.tex_normal, o_uv).xyz) * 2.0 - 1.0);
-	// vec3 norm = vec3(0.0, 0.0, 1.0);
 	vec3 final_color = vec3(0.0);
 
 	for(int i = 0; i < light_points_count_current; i++)

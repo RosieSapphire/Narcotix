@@ -1,15 +1,15 @@
-#ifndef NCX_MODEL_H
-#define NCX_MODEL_H
+#ifndef __NCX_MODEL_H_
+#define __NCX_MODEL_H_
 
 #include <assimp/scene.h>
 
 #include "narcotix/mesh.h"
 #include "narcotix/light_point.h"
+#include <cglm/cglm.h>
 
 typedef struct {
 	NCXMesh *meshes;
 	uint32_t mesh_count;
-	uint32_t padding;
 } NCXModel;
 
 void ncx_model_shader_create_internal(const NCXLightPoint *lights, const uint8_t light_count, const char *file, const uint32_t line);

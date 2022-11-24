@@ -1,5 +1,5 @@
-#ifndef NCX_SOUND_H
-#define NCX_SOUND_H
+#ifndef __NCX_SOUND_H_
+#define __NCX_SOUND_H_
 
 #include <stdint.h>
 

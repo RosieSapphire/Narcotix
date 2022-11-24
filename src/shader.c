@@ -52,7 +52,7 @@ NCXShader ncx_shader_create_internal(const char *vert_path, const char *frag_pat
 
 		glAttachShader(shader_program, shaders[i]);
 		glDeleteShader(shaders[i]);
-		free(shader_sources[i]);
+		ncx_file_unload_contents(shader_sources[i]);
 	}
 
 	glLinkProgram(shader_program);

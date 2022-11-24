@@ -1,12 +1,13 @@
 #include "narcotix/sound.h"
 
-#include "narcotix/cglm/cglm.h"
+#include <cglm/cglm.h>
 #include <AL/al.h>
 #include <sndfile.h>
 #include <limits.h>
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
+	#include "rose_petal.h"
 #endif
 
 NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count, const uint8_t use_delay, const char *file, const uint32_t line) {
@@ -18,7 +19,7 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 	};
 
 	sound.buffer_count = sample_count;
-	sound.buffers = calloc(sample_count, sizeof(uint32_t));
+	sound.buffers = malloc(sample_count * sizeof(uint32_t));
 	sound.delay_timer = 500.0f;
 
 	alGenSources(1, &sound.source);
@@ -27,7 +28,7 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 	sound.delay_sources = NULL;
 	sound.use_delay = use_delay;
 	if(use_delay) {
-		sound.delay_sources = calloc(8, sizeof(uint32_t));
+		sound.delay_sources = malloc(8 * sizeof(uint32_t));
 		alGenSources(8, sound.delay_sources);
 	}
 

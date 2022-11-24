@@ -1,5 +1,5 @@
-#ifndef NCX_SHADER_H
-#define NCX_SHADER_H
+#ifndef __NCX_SHADER_H_
+#define __NCX_SHADER_H_
 
 #include <stdint.h>
 

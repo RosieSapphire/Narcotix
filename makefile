@@ -5,24 +5,31 @@ CORES=-j8
 
 CFLAGS=-std=c99
 
-SRC=glad.c renderer.c texture.c font.c ui.c sound_engine.c sound.c model.c helpers.c screen_buffer.c shader.c file.c mesh.c light_point.c material.c
-OBJ=glad.o renderer.o texture.o font.o ui.o sound_engine.o sound.o model.o helpers.o screen_buffer.o shader.o file.o mesh.o light_point.o material.o
+SRC=glad.c context.c texture.c font.c ui.c sound_engine.c sound.c model.c helpers.c shader.c file.c mesh.c light_point.c material.c
+OBJ=glad.o context.o texture.o font.o ui.o sound_engine.o sound.o model.o helpers.o shader.o file.o mesh.o light_point.o material.o
 
 BIN=libnarcotix.a
 
-all:
-	make clean
-	make release
+all: release
 
 release: CFLAGS += -O2 -Wall -Wextra
 release: $(BIN)
+	clear
+	rm -rf *.o
 
 debug: CFLAGS += -ggdb3 -Wall -Wextra -Werror -D DEBUG
 debug: $(BIN)
+	clear
+	rm -rf *.o
 
 test: CFLAGS += -ggdb3 -Wall -Wextra -Werror -D DEBUG
+test:
+	rm -f $(BIN)
+
 test: $(BIN)
+	clear
 	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)
+	rm -rf *.o
 
 $(BIN): $(OBJ)
 	ar rcs $(BIN) $^

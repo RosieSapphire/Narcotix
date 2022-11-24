@@ -4,7 +4,12 @@
 #include <string.h>
 
 #include "narcotix/glad/glad.h"
-#include "narcotix/cglm/cglm.h"
+#include <cglm/cglm.h>
+
+#ifdef DEBUG
+	#include "narcotix/debug.h"
+	#include "rose_petal.h"
+#endif
 
 static mat4 projection;
 static uint32_t vao, vbo;
@@ -45,7 +50,7 @@ void ncx_ui_elements_set_flash(const float flash) {
 void ncx_ui_element_create(NCXUIElement *ncx_ui_element, float *pos, float *size, const NCXTexture *textures, const uint8_t texture_count) {
 	glm_vec2_copy(pos, ncx_ui_element->pos);
 	glm_vec2_copy(size, ncx_ui_element->size);
-	ncx_ui_element->textures = calloc(texture_count, sizeof(NCXTexture));
+	ncx_ui_element->textures = malloc(texture_count * sizeof(NCXTexture));
 	memcpy(ncx_ui_element->textures, textures, texture_count * sizeof(NCXTexture));
 }
 

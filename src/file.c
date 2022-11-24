@@ -7,6 +7,7 @@
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
+	#include "rose_petal.h"
 #endif
 
 char *ncx_file_load_contents_internal(const char *path, const char *file, const uint32_t line) {
@@ -33,4 +34,8 @@ char *ncx_file_load_contents_internal(const char *path, const char *file, const 
     fclose(file_struct);
 
 	return buffer;
+}
+
+void ncx_file_unload_contents(char *buffer) {
+	free(buffer);
 }

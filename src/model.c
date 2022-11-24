@@ -11,7 +11,8 @@
 #define POINT_LIGHT_MAX 32
 
 #ifdef DEBUG
-#include "narcotix/debug.h"
+	#include "narcotix/debug.h"
+	#include "rose_petal.h"
 #endif
 
 static NCXShader model_shader;

@@ -2,7 +2,8 @@
 
 #include <stdint.h>
 
-/* NOTICE: This code was made by OwenTheProgrammer, and can be found at https://github.com/OwenTheProgrammer/DemoScripts/blob/main/Branchless_FastClamp.c */
+/* NOTICE: This code was made by OwenTheProgrammer, and can be found at
+ * https://github.com/OwenTheProgrammer/DemoScripts/blob/main/Branchless_FastClamp.c */
 float ncx_clampf(const float val, const float min, const float max) {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -12,7 +13,8 @@ float ncx_clampf(const float val, const float min, const float max) {
 	uint8_t flag_b = (*(uint32_t *)&diff[1] >> 31);
     uint8_t flag_and = (flag_a & flag_b);
 	#pragma GCC diagnostic pop
-    return (float)((flag_and * val) + ((1 - flag_a) * min) + ((1 - flag_b) * max));
+    return (float)((flag_and * val) + ((1 - flag_a) * min)
+			+ ((1 - flag_b) * max));
 }
 
 float ncx_clampf01(const float val) {
