@@ -8,21 +8,16 @@ layout(location = 1) in vec3  a_normal;
 layout(location = 2) in vec2  a_uv;
 layout(location = 3) in vec3  a_tangent;
 layout(location = 4) in vec3  a_bitangent;
-layout(location = 5) in ivec3 a_bone_ids;
-layout(location = 6) in vec3  a_weights;
 
-uniform mat4 model;
-uniform mat4 view;
 uniform mat4 projection;
-uniform bool is_animated;
-uniform mat4 bone_matrices[MAX_BONES];
+uniform mat4 view;
+uniform mat4 model;
 
 uniform float time;
 uniform float trip_intensity;
 uniform int   render_layer;
 uniform vec3  view_pos;
 
-// out vec3 o_normal;
 out vec2  o_uv;
 out vec3  o_frag_pos;
 out vec3  o_view_pos;
@@ -43,21 +38,8 @@ float perlin_noise(float p) {
 }
 
 void main() {
-	vec4 total_position = vec4(0.0);
-	vec4 total_normal =   vec4(0.0);
-	if(is_animated) {
-		for(int i = 0; i < 3; i++) {
-			vec4 local_position = bone_matrices[a_bone_ids[i]] * vec4(a_pos, 1.0);
-			vec4 world_normal =   bone_matrices[a_bone_ids[i]] * vec4(a_normal, 0.0);
-			total_position +=     local_position               * a_weights[i];
-			total_normal +=       world_normal                 * a_weights[i];
-		}
-	} else {
-		total_position = vec4(a_pos, 1.0);
-		total_normal =   vec4(mat3(transpose(inverse(model))) * a_normal, 0.0);
-	}
-
-	gl_Position = projection * view * model * total_position;
+	// total_normal =   vec4(mat3(transpose(inverse(model))) * a_normal, 0.0);
+	gl_Position = projection * view * model * vec4(a_pos, 1.0);
 
 	vec2 trip_offset;
 	trip_offset.x = perlin_noise((time * 1.57) + gl_Position.y) * (trip_intensity / 5);
@@ -69,7 +51,6 @@ void main() {
 	vec3 n = normalize(vec3(model * vec4(a_normal,    0.0)));
 	o_tbn =            transpose(mat3(t, b, n));
 
-	// o_normal =         total_normal.xyz;
 	o_uv =             a_uv;
 	o_frag_pos =       o_tbn * vec3(model * vec4(a_pos, 1.0));
 	o_view_pos =       o_tbn * view_pos;

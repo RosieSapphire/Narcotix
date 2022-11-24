@@ -3,6 +3,10 @@
 
 #include "narcotix/vertex.h"
 #include "narcotix/material.h"
+#include "narcotix/shader.h"
+#include "narcotix/animation.h"
+
+#include <assimp/scene.h>
 
 enum MeshBufferIndex {
 	VAO = 0,
@@ -20,12 +24,11 @@ typedef struct {
 	uint32_t buffers[MESH_BUFFER_COUNT];
 } NCXMesh;
 
-NCXMesh ncx_mesh_create(NCXVertex *vertices, uint32_t *indices,
-		NCXMaterial material, const uint32_t vertex_count,
-		const uint32_t index_count);
-NCXMesh ncx_mesh_read(const char *path, NCXMaterial mat);
-void ncx_mesh_write(NCXMesh *m, const char *path);
-void ncx_mesh_draw(NCXMesh m, uint32_t s);
-void ncx_mesh_destroy(NCXMesh *m);
+NCXMesh *ncx_meshes_create(const struct aiScene *scene,
+		const NCXMaterial *materials,uint32_t *mesh_count);
+void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
+		const NCXShader shader);
+void ncx_meshes_draw_anim(const NCXMesh *meshes, const uint32_t mesh_count,
+		const NCXShader shader, NCXAnimation anim, mat4 mat_base);
 
 #endif
