@@ -157,5 +157,28 @@ void ncx_model_animation_update(NCXModel *model, const float dt,
 			anim->timer = anim->channels->tick_count - 1;
 		}
 	}
+}
 
+void ncx_model_destroy_internal(NCXModel *model, const char *file,
+		const uint32_t line) {
+	for(uint32_t i = 0; i < model->anim_count; i++) {
+		for(uint32_t j = 0; j < model->anims[i].channel_count; j++) {
+			free(model->anims[i].channels[j].pos_keys);
+			free(model->anims[i].channels[j].quat_keys);
+		}
+
+		free(model->anims[i].channels);
+	}
+	free(model->anims);
+
+	for(uint32_t i = 0; i < model->mesh_count; i++) {
+		free(model->meshes[i].vertices);
+		free(model->meshes[i].indices);
+	}
+
+	printf("%sNARCOTIX::MODEL::DESTROY: %sSuccessfully destroyed model with"
+			" %s%d Meshes %sand%s %d Animations. %s(Caused at '%s' line %d)\n",
+			D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, model->mesh_count,
+			D_COLOR_YELLOW, D_COLOR_GREEN, model->anim_count, D_COLOR_DEFAULT,
+			file, line);
 }

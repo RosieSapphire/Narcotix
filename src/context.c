@@ -21,6 +21,8 @@ static NCXShader render_quad_shader;
 static uint32_t render_buffer_count;
 static NCXRenderBuffer *render_buffers;
 
+static float time_last = 0.0f;
+
 void ncx_init_internal(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending, const char *file, const uint32_t line) {
@@ -168,6 +170,13 @@ void ncx_init_internal(const float width, const float height,
 
 float ncx_time_get(void) {
 	return (float)glfwGetTime();
+}
+
+float ncx_time_delta_get(void) {
+	float time_now = ncx_time_get();
+	float time_delta = time_now - time_last;
+	time_last = time_now;
+	return time_delta;
 }
 
 void ncx_mouse_center(void) {

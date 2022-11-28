@@ -71,7 +71,7 @@ int main() {
 	NCXModel pistol_model =
 		ncx_model_create("res/models/weapons/pistol/pistol.glb",
 				pistol_materials, 1);
-	NCXAnimation *pistol_anim_cur = pistol_model.anims + 1;
+		ncx_model_animation_set(&pistol_model, 1);
 
 	NCXMaterial bong_materials[3] = {
 		pistol_materials[0],
@@ -98,13 +98,7 @@ int main() {
 	glm_mat4_identity(view);
 	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
 	
-	float time_last = ncx_time_get();
 	while(ncx_window_is_running()) {
-		const float time_now = ncx_time_get();
-		const float time_delta = time_now - time_last;
-		time_last = time_now;
-
-		const float trip_intensity = 0.0f;
 
 		/* checking for quit */
 		if(ncx_key_get(GLFW_KEY_ESCAPE)) {
@@ -122,19 +116,23 @@ int main() {
 		ncx_shader_uniform_mat4(model_shader, "projection", projection);
 		ncx_shader_uniform_mat4(model_shader, "view", view);
 		ncx_shader_uniform_vec3(model_shader, "view_pos", GLM_VEC3_ZERO);
-		ncx_shader_uniform_float(model_shader, "time", time_now);
+
+		const float trip_intensity = 0.0f;
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
 				trip_intensity);
 
+		const float time_now = ncx_time_get();
+		ncx_shader_uniform_float(model_shader, "time", time_now);
+
+
+		const float time_delta = ncx_time_delta_get();
+
+		/* drawing pistol */
 		mat4 model_mat;
 		glm_mat4_identity(model_mat);
 		glm_translate(model_mat, GLM_VEC3(-0.2f, 0.0f, 0.0f));
-		// glm_rotate(model_mat, time_now, GLM_YUP);
-
-		// ncx_model_shader_lights_update(model_shader, lights, 2);
-		ncx_model_animation_update(&pistol_model, time_delta);
-		ncx_meshes_draw_anim(pistol_model.meshes, pistol_model.mesh_count,
-				model_shader, *pistol_anim_cur, model_mat);
+		ncx_model_animation_update(&pistol_model, time_delta, 1);
+		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
 		glm_mat4_identity(model_mat);
@@ -162,19 +160,15 @@ int main() {
 				font_shader);
 		ncx_render_buffer_unbind();
 
-		ncx_buffer_display(trippy_texture, time_now, trip_intensity);
+		ncx_buffer_display(0, time_now, trip_intensity);
 		ncx_buffer_swap();
-
-		vec2 mouse_pos;
-		ncx_mouse_pos_get(mouse_pos);
 	}
 
 	ncx_sound_destroy(&test_sound);
 	ncx_sound_engine_destroy(sound_engine);
 	
-	free(bong_model.meshes);
-	free(pistol_model.meshes);
-	free(pistol_model.anims);
+	ncx_model_destroy(&bong_model);
+	ncx_model_destroy(&pistol_model);
 
 	ncx_textures_destroy(&trippy_texture, 1);
 

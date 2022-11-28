@@ -28,4 +28,9 @@ void ncx_model_animation_set(NCXModel *model, const uint32_t anim_index);
 void ncx_model_animation_update(NCXModel *model, const float dt,
 		const uint8_t loop);
 
+void ncx_model_destroy_internal(NCXModel *model, const char *file,
+		const uint32_t line);
+#define ncx_model_destroy(MODEL) \
+	ncx_model_destroy_internal(MODEL, __FILE__, __LINE__)
+
 #endif
