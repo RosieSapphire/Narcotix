@@ -10,20 +10,19 @@
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
-	#include "rose_petal.h"
+	// #include "rose_petal.h"
 #endif
 
-static NCXShader font_shader;
-
-void ncx_font_shader_create_internal(const char *font_path_vert,
+NCXShader ncx_font_shader_create_internal(const char *font_path_vert,
 		const char *font_path_frag, const char *file, const uint32_t line) {
 	mat4 matrix_projection;
 	glm_ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f, matrix_projection);
-	font_shader = ncx_shader_create_internal(font_path_vert, font_path_frag,
-			NULL, file, line);
+	NCXShader font_shader = ncx_shader_create_internal(font_path_vert, NULL,
+			font_path_frag, file, line);
 	glUseProgram(font_shader);
 	glUniformMatrix4fv(glGetUniformLocation(font_shader, "projection"),
 			1, GL_FALSE, (const float *)matrix_projection);
+	return font_shader;
 }
 
 NCXFont ncx_font_create_internal(const char *path, const char *file,
@@ -97,7 +96,8 @@ NCXFont ncx_font_create_internal(const char *path, const char *file,
 }
 
 void ncx_font_draw(const NCXFont font, const char *string, float *pos,
-		const float *color, const float scale, float *window_size) {
+		const float *color, const float scale, float *window_size,
+		const NCXShader shader) {
 	const char *string_pointer;
 	vec2 pos_scaled;
 	pos_scaled[0] = pos[0] * (window_size[0] * (1920.0f / window_size[0]));
@@ -105,9 +105,9 @@ void ncx_font_draw(const NCXFont font, const char *string, float *pos,
 
 	glDisable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glUseProgram(font_shader);
-	glUniform1i(glGetUniformLocation(font_shader, "text"), 0);
-	glUniform3fv(glGetUniformLocation(font_shader, "text_color"), 1, color);
+	ncx_shader_use(shader);
+	ncx_shader_uniform_int(shader, "text", 0);
+	ncx_shader_uniform_vec3(shader, "text_color", color);
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(font.vao);
 	for(string_pointer = string; *string_pointer; string_pointer++) {
@@ -149,8 +149,3 @@ void ncx_font_destroy(NCXFont *ncx_font) {
 	}
 	free(ncx_font->characters);
 }
-
-void ncx_font_shader_destroy() {
-	glDeleteProgram(font_shader);
-}
-

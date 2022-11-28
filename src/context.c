@@ -108,8 +108,8 @@ void ncx_init_internal(const float width, const float height,
 
 	/* load in the render buffer's shader */
 	render_quad_shader = ncx_shader_create_internal(
-			"res/shaders/screen_vert.glsl",
-			"res/shaders/screen_frag.glsl", NULL, file, line);
+			"res/shaders/builtin/screen_vert.glsl", NULL,
+			"res/shaders/builtin/screen_frag.glsl", file, line);
 	render_buffers = malloc(render_buffer_count * sizeof(NCXRenderBuffer));
 	for(uint8_t i = 0; i < render_buffer_count; i++) {
 		NCXRenderBuffer *rb_cur = render_buffers + i;
@@ -158,8 +158,6 @@ void ncx_init_internal(const float width, const float height,
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	// glEnable(GL_MULTISAMPLE);
-
 	#ifdef DEBUG
 		printf("%sNARCOTIX::RENDERER::CREATE: %sRenderer has successfully been"
 				" created, as well as loading GLFW and GLAD. %s"
@@ -182,6 +180,14 @@ uint8_t ncx_key_get(int32_t key) {
 	return (uint8_t)glfwGetKey(window, key);
 }
 
+uint8_t ncx_key_get_press(int32_t key) {
+	return ncx_key_get(key) == GLFW_PRESS;
+}
+
+uint8_t ncx_key_get_release(int32_t key) {
+	return ncx_key_get(key) == GLFW_RELEASE;
+}
+
 uint8_t ncx_mouse_button_get(int32_t button) {
 	return (uint8_t)glfwGetMouseButton(window, button);
 }
@@ -195,6 +201,11 @@ void ncx_mouse_pos_get(vec2 mouse_pos) {
 
 void ncx_mouse_pos_set(vec2 mouse_pos) {
 	glfwSetCursorPos(window, (double)mouse_pos[0], (double)mouse_pos[1]);
+}
+
+void ncx_mouse_input_raw(const uint8_t toggle) {
+	assert(glfwRawMouseMotionSupported());
+	glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, toggle);
 }
 
 void ncx_clear_color(const float r, const float g,

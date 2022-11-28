@@ -11,19 +11,18 @@
 #define POINT_LIGHT_MAX 32
 
 #ifdef DEBUG
-	#include "narcotix/debug.h"
-	#include "rose_petal.h"
+#include "narcotix/debug.h"
+// #include "rose_petal.h"
 #endif
 
 NCXShader ncx_model_shader_create_internal(const NCXLightPoint *lights,
 		const uint8_t light_count, const char *file, const uint32_t line) {
-	/* TODO: Make these parameters more customizable */
 	NCXShader model_shader =
-		ncx_shader_create_internal("res/shaders/model_vert.glsl",
-				"res/shaders/model_frag.glsl", NULL, file, line);
-	glUseProgram(model_shader);
-	glUniform1i(glGetUniformLocation(model_shader,
-				"light_points_count_current"), light_count);
+		ncx_shader_create_internal("res/shaders/builtin/model_vert.glsl", NULL,
+				"res/shaders/builtin/model_frag.glsl", file, line);
+	ncx_shader_use(model_shader);
+	ncx_shader_uniform_int(model_shader, "light_points_count_current",
+			light_count);
 
 	/* uploading light properties to shader */
 	for(uint8_t i = 0; i < light_count; i++) {
@@ -46,14 +45,12 @@ NCXShader ncx_model_shader_create_internal(const NCXLightPoint *lights,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform3fv(glGetUniformLocation(model_shader, buffer), 1,
-					vectors[j]);
+			ncx_shader_uniform_vec3(model_shader, buffer, vectors[j]);
 		}
 
 		for(; j < 7; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform1f(glGetUniformLocation(model_shader, buffer),
-					values[j - 4]);
+			ncx_shader_uniform_float(model_shader, buffer, values[j - 4]);
 		}
 	}
 
@@ -62,8 +59,11 @@ NCXShader ncx_model_shader_create_internal(const NCXLightPoint *lights,
 
 void ncx_model_shader_lights_update(const NCXShader shader,
 		const NCXLightPoint *lights, const uint8_t light_count) {
-	glUseProgram(shader);
-	const char *properties[7] = { "pos", "ambient_color", "diffuse_color", "specular_color", "constant", "linear", "quadratic" };
+	ncx_shader_use(shader);
+	const char *properties[7] = {
+		"pos", "ambient_color", "diffuse_color", "specular_color",
+		"constant", "linear", "quadratic",
+	};
 
 	/* reset all lights to ensure no bullshittery */
 	for(uint8_t i = 0; i < POINT_LIGHT_MAX; i++) {
@@ -72,13 +72,12 @@ void ncx_model_shader_lights_update(const NCXShader shader,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform3fv(glGetUniformLocation(shader, buffer), 1,
-					GLM_VEC3_ZERO);
+			ncx_shader_uniform_vec3(shader, buffer, GLM_VEC3_ZERO);
 		}
 
 		for(; j < 7; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform1f(glGetUniformLocation(shader, buffer), 0.0f);
+			ncx_shader_uniform_float(shader, buffer, 0.0f);
 		}
 	}
 
@@ -98,15 +97,65 @@ void ncx_model_shader_lights_update(const NCXShader shader,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform3fv(glGetUniformLocation(shader, buffer), 1, vectors[j]);
+			ncx_shader_uniform_vec3(shader, buffer, vectors[j]);
 		}
 
 		for(; j < 7; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			glUniform1f(glGetUniformLocation(shader, buffer), values[j - 4]);
+			ncx_shader_uniform_float(shader, buffer, values[j - 4]);
 		}
 	}
 
-	glUniform1i(glGetUniformLocation(shader, "light_points_count_current"),
-			light_count);
+	ncx_shader_uniform_int(shader, "light_points_count_current", light_count);
+}
+
+NCXModel ncx_model_create(const char *path, const NCXMaterial *materials,
+		const uint8_t is_animated) {
+	NCXModel model;
+	model.scene = aiImportFile(path, aiProcess_Triangulate |
+			aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices |
+			aiProcess_CalcTangentSpace);
+
+	model.meshes =
+		ncx_meshes_create(model.scene, materials, &model.mesh_count);
+
+	model.anim_count = 0;
+	model.anim_selected = 0;
+	model.anims = NULL;
+	if(is_animated) {
+		model.anims = ncx_animations_create(model.scene, &model.anim_count);
+	}
+
+	return model;
+}
+
+void ncx_model_draw(NCXModel model, const NCXShader shader, mat4 root) {
+	if(model.anims) {
+		ncx_meshes_draw_anim(model.meshes, model.mesh_count, shader,
+				model.anims[model.anim_selected], root);
+	} else {
+		ncx_meshes_draw(model.meshes, model.mesh_count, shader, root);
+	}
+}
+
+void ncx_model_animation_set(NCXModel *model, const uint32_t anim_index) {
+	model->anim_selected = anim_index;
+	model->anims[model->anim_selected].timer = 0.0f;
+}
+
+void ncx_model_animation_update(NCXModel *model, const float dt,
+		const uint8_t loop) {
+	NCXAnimation *anim = model->anims + model->anim_selected;
+	anim->timer += dt * ANIM_FPS;
+
+	if(loop) {
+		anim->timer /= anim->channels->tick_count;
+		anim->timer -= (int)anim->timer;
+		anim->timer *= anim->channels->tick_count;
+	} else {
+		if(anim->timer >= anim->channels->tick_count - 1) {
+			anim->timer = anim->channels->tick_count - 1;
+		}
+	}
+
 }

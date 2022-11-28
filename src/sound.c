@@ -7,7 +7,7 @@
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
-	#include "rose_petal.h"
+	// #include "rose_petal.h"
 #endif
 
 NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count, const uint8_t use_delay, const char *file, const uint32_t line) {

@@ -27,7 +27,7 @@ typedef struct {
 NCXMesh *ncx_meshes_create(const struct aiScene *scene,
 		const NCXMaterial *materials,uint32_t *mesh_count);
 void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
-		const NCXShader shader);
+		const NCXShader shader, mat4 mat_base);
 void ncx_meshes_draw_anim(const NCXMesh *meshes, const uint32_t mesh_count,
 		const NCXShader shader, NCXAnimation anim, mat4 mat_base);
 

@@ -7,7 +7,7 @@
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
-	#include "rose_petal.h"
+	// #include "rose_petal.h"
 #endif
 
 char *ncx_file_load_contents_internal(const char *path, const char *file, const uint32_t line) {

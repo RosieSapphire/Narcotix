@@ -48,3 +48,8 @@ NCXTexture ncx_texture_create_internal(const char *path, const int32_t wrap_mode
 void ncx_textures_destroy(NCXTexture *start, const uint8_t texture_count) {
 	glDeleteTextures(texture_count, start);
 }
+
+void ncx_texture_use(NCXTexture tex, const uint32_t slot) {
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, tex);
+}

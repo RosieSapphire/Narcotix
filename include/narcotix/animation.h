@@ -4,6 +4,8 @@
 #include <cglm/cglm.h>
 #include <assimp/scene.h>
 
+#define ANIM_FPS 60.0f
+
 typedef struct {
 	uint32_t mesh_index, tick_count;
 	vec3 *pos_keys;
@@ -18,7 +20,6 @@ typedef struct {
 
 NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 		uint32_t *anim_count);
-void ncx_animation_update(NCXAnimation *anim, const float dt);
 void ncx_animation_get_matrix(const NCXAnimation anim, uint32_t mesh_index,
 		mat4 out);
 

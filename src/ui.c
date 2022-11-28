@@ -8,7 +8,7 @@
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
-	#include "rose_petal.h"
+	// #include "rose_petal.h"
 #endif
 
 static mat4 projection;
@@ -36,36 +36,44 @@ void ncx_ui_elements_init(const float width, const float height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	ui_shader = ncx_shader_create("res/shaders/ui_vert.glsl", "res/shaders/ui_frag.glsl", NULL);
-	glUseProgram(ui_shader);
 	glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, projection);
-	glUniformMatrix4fv(glGetUniformLocation(ui_shader, "projection"), 1, GL_FALSE, (const float *)projection);
+
+	ui_shader = ncx_shader_create("res/shaders/builtin/ui_vert.glsl", NULL,
+			"res/shaders/builtin/ui_frag.glsl");
+	ncx_shader_use(ui_shader);
+	ncx_shader_uniform_mat4(ui_shader, "projection", projection);
 }
 
 void ncx_ui_elements_set_flash(const float flash) {
-	glUseProgram(ui_shader);
-	glUniform1f(glGetUniformLocation(ui_shader, "flash_amount"), flash);
+	ncx_shader_use(ui_shader);
+	ncx_shader_uniform_float(ui_shader, "flash_amount", flash);
 }
 
-void ncx_ui_element_create(NCXUIElement *ncx_ui_element, float *pos, float *size, const NCXTexture *textures, const uint8_t texture_count) {
-	glm_vec2_copy(pos, ncx_ui_element->pos);
-	glm_vec2_copy(size, ncx_ui_element->size);
-	ncx_ui_element->textures = malloc(texture_count * sizeof(NCXTexture));
-	memcpy(ncx_ui_element->textures, textures, texture_count * sizeof(NCXTexture));
+NCXUIElement ncx_ui_element_create(float *pos, float *size,
+		const NCXTexture *textures, const uint8_t texture_count) {
+
+	NCXUIElement element;
+	element.textures = malloc(texture_count * sizeof(NCXTexture));
+	memcpy(element.textures, textures, texture_count * sizeof(NCXTexture));
+	memcpy(element.pos, pos, sizeof(vec2));
+	memcpy(element.size, size, sizeof(vec2));
+
+	return element;
 }
 
-void ncx_ui_element_draw(const NCXUIElement ncx_ui_element, const uint8_t texture_index) {
+void ncx_ui_element_draw(const NCXUIElement element,
+		const uint8_t index) {
 	mat4 model;
 	glDisable(GL_DEPTH_TEST);
 	glm_mat4_identity(model);
-	glm_translate(model, (vec3){ncx_ui_element.pos[0], ncx_ui_element.pos[1], 0.0f});
-	glm_scale(model, (vec3){ncx_ui_element.size[0], ncx_ui_element.size[1], 1.0f});
+	glm_translate(model, (vec3){element.pos[0], element.pos[1], 0.0f});
+	glm_scale(model, (vec3){element.size[0], element.size[1], 1.0f});
 	
 	glBindVertexArray(vao);
-	glUseProgram(ui_shader);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ncx_ui_element.textures[texture_index]);
-	glUniformMatrix4fv(glGetUniformLocation(ui_shader, "model"), 1, GL_FALSE, (const float *)model);
+	ncx_texture_use(element.textures[index], 0);
+
+	ncx_shader_use(ui_shader);
+	ncx_shader_uniform_mat4(ui_shader, "model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);

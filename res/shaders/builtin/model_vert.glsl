@@ -1,7 +1,6 @@
 #version 330 core
 
 #define POINT_LIGHT_MAX 32
-#define MAX_BONES 50
 
 layout(location = 0) in vec3  a_pos;
 layout(location = 1) in vec3  a_normal;

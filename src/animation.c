@@ -1,7 +1,5 @@
 #include "narcotix/animation.h"
 
-#define ANIM_FPS 60.0f
-
 NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 		uint32_t *anim_count) {
 	*anim_count = scene->mNumAnimations - scene->mNumMeshes;
@@ -36,13 +34,6 @@ NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 	}
 
 	return anims;
-}
-
-void ncx_animation_update(NCXAnimation *anim, const float dt) {
-	anim->timer += (dt * ANIM_FPS);
-	anim->timer /= anim->channels->tick_count;
-	anim->timer -= (int)anim->timer;
-	anim->timer *= anim->channels->tick_count;
 }
 
 void ncx_animation_get_matrix(const NCXAnimation anim, uint32_t mesh_index, mat4 out) {

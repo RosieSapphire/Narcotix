@@ -13,9 +13,12 @@ void ncx_init_internal(const float width, const float height,
 float ncx_time_get(void);
 void ncx_mouse_center(void);
 uint8_t ncx_key_get(int32_t key);
+uint8_t ncx_key_get_press(int32_t key);
+uint8_t ncx_key_get_release(int32_t key);
 uint8_t ncx_mouse_button_get(int32_t button);
 void ncx_mouse_pos_get(vec2 mouse_pos);
 void ncx_mouse_pos_set(vec2 mouse_pos);
+void ncx_mouse_input_raw(const uint8_t toggle);
 void ncx_clear_color(const float r, const float g,
 		const float b, const float a);
 void ncx_clear_depth(void);
