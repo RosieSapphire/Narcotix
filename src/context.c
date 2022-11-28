@@ -3,6 +3,8 @@
 #include "narcotix/render_buffer.h"
 #include "narcotix/helpers.h"
 
+#include <assert.h>
+
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
@@ -170,6 +172,10 @@ void ncx_init_internal(const float width, const float height,
 
 float ncx_time_get(void) {
 	return (float)glfwGetTime();
+}
+
+void ncx_time_delta_init(void) {
+	time_last = (float)glfwGetTime();
 }
 
 float ncx_time_delta_get(void) {

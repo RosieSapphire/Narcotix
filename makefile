@@ -10,6 +10,7 @@ OBJ=glad.o context.o texture.o font.o ui.o sound_engine.o sound.o helpers.o shad
 
 BIN=libnarcotix.a
 
+all: CFLAGS += -O2 -Wall -Wextra
 all: release
 
 release: CFLAGS += -O2 -Wall -Wextra

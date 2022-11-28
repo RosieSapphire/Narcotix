@@ -98,11 +98,12 @@ NCXSound ncx_sound_create_internal(const char *paths, const uint8_t sample_count
 					alDeleteBuffers(1, &sound.buffers[i]);
 				}
 			}
+
+			printf("%sNARCOTIX::SOUND::CREATE: %sSound from %s'%s'%s was imported successfully. %s(Caused at '%s' line '%u'\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 		}
 		#endif
 		free(data);
 		sf_close(snd_file);
-		printf("%sNARCOTIX::SOUND::CREATE: %sSound from %s'%s'%s was imported successfully. %s(Caused at '%s' line '%u'\n", D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, current_path, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
 	}
 	
 	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[0]);

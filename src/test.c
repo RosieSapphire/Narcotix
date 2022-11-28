@@ -98,6 +98,7 @@ int main() {
 	glm_mat4_identity(view);
 	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
 	
+	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
 
 		/* checking for quit */
@@ -123,7 +124,6 @@ int main() {
 
 		const float time_now = ncx_time_get();
 		ncx_shader_uniform_float(model_shader, "time", time_now);
-
 
 		const float time_delta = ncx_time_delta_get();
 

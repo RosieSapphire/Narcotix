@@ -176,9 +176,11 @@ void ncx_model_destroy_internal(NCXModel *model, const char *file,
 		free(model->meshes[i].indices);
 	}
 
+	#ifdef DEBUG
 	printf("%sNARCOTIX::MODEL::DESTROY: %sSuccessfully destroyed model with"
 			" %s%d Meshes %sand%s %d Animations. %s(Caused at '%s' line %d)\n",
 			D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, model->mesh_count,
 			D_COLOR_YELLOW, D_COLOR_GREEN, model->anim_count, D_COLOR_DEFAULT,
 			file, line);
+	#endif
 }

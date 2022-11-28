@@ -11,6 +11,7 @@ void ncx_init_internal(const float width, const float height,
 		UB, __FILE__, __LINE__)
 
 float ncx_time_get(void);
+void ncx_time_delta_init(void);
 float ncx_time_delta_get(void);
 void ncx_mouse_center(void);
 uint8_t ncx_key_get(int32_t key);
