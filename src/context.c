@@ -297,5 +297,5 @@ uint8_t ncx_window_is_running(void) {
 }
 
 void ncx_window_close(void) {
-	glfwSetWindowShouldClose(window, 0);
+	glfwSetWindowShouldClose(window, 1);
 }
