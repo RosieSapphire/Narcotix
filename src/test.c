@@ -8,27 +8,33 @@
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
+#define WINDOW_NAME "NARCOTIX ENGINE TEST"
 #define WINDOW_SIZE ((vec2){WINDOW_WIDTH, WINDOW_HEIGHT})
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
 	NCXContext context =
-		ncx_context_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, "Narcotix Test", 1);
+		ncx_context_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
 	NCXSoundEngine sound_engine = ncx_sound_engine_create();
 	NCXSound test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
+	const char *font_shader_vert_path = "res/shaders/builtin/font_vert.glsl";
+	const char *font_shader_frag_path = "res/shaders/builtin/font_frag.glsl";
 	NCXShader font_shader =
-		ncx_font_shader_create("res/shaders/builtin/font_vert.glsl",
-			"res/shaders/builtin/font_frag.glsl");
-	NCXFont trippy_font = ncx_font_create("res/fonts/shagadelic.ttf");
-	NCXFont normal_font = ncx_font_create("res/fonts/jetbrainsmono-bold.ttf");
+		ncx_font_shader_create(font_shader_vert_path, font_shader_frag_path);
 
-	NCXTexture trippy_texture =
-		ncx_texture_create("res/textures/trippy-overlay-texture.png",
-				GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+	const char *trippy_font_path = "res/fonts/shagadelic.ttf";
+	NCXFont trippy_font = ncx_font_create(trippy_font_path);
+
+	const char *normal_font_path = "res/fonts/jetbrainsmono-bold.ttf";
+	NCXFont normal_font = ncx_font_create(normal_font_path);
+
+	const char *trippy_tex_path = "res/textures/trippy-overlay-texture.png";
+	NCXTexture trippy_texture = ncx_texture_create(trippy_tex_path,
+			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
 	NCXLightPoint lights[2] = {
-		ncx_light_point_create(GLM_VEC3( 1.0f, 0.0f, 1.0f),
+		ncx_light_point_create(GLM_VEC3(1.0f, 0.0f, 1.0f),
 				GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.0f, 0.0f),
 				GLM_VEC3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f),
 
@@ -50,20 +56,22 @@ int main() {
 		ncx_material_create(pistol_tex_paths, 8),
 	};
 
-	for(uint8_t i = 0; i < 4; i++) {
+	for(uint8_t i = 1; i < 4; i++) {
 		pistol_materials[i] = pistol_materials[0];
 	}
 
-	NCXModel pistol_model =
-		ncx_model_create("res/models/weapons/pistol/pistol.glb",
-				pistol_materials, 1);
-		ncx_model_animation_set(&pistol_model, 1);
+	const char *pistol_model_path = "res/models/weapons/pistol/pistol.glb";
+	NCXModel pistol_model = ncx_model_create(pistol_model_path,
+			pistol_materials, 1);
+
+	ncx_model_animation_set(&pistol_model, 1);
 
 	NCXMaterial bong_materials[3] = {
 		pistol_materials[0],
 		pistol_materials[0],
 		pistol_materials[0],
 	};
+
 	NCXModel bong_model = ncx_model_create("res/models/weapons/bong/bong.glb",
 			bong_materials, 0);
 
@@ -74,8 +82,10 @@ int main() {
 	};
 
 	NCXMaterial brick_material = ncx_material_create(brick_tex_paths, 16);
-	NCXModel brick_model = ncx_model_create("res/models/plane.glb",
-			&brick_material, 0);
+
+	const char *brick_model_path = "res/models/plane.glb";
+	NCXModel brick_model =
+		ncx_model_create(brick_model_path, &brick_material, 0);
 
 	mat4 projection;
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
