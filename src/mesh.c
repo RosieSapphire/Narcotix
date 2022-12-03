@@ -94,11 +94,11 @@ void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
 	for(uint32_t i = 0; i < mesh_count; i++) {
 		const NCXMesh *const mesh_cur = meshes + i;
 		glBindVertexArray(mesh_cur->buffers[VAO]);
-		ncx_texture_use(mesh_cur->material.textures[0], 0);
-		ncx_texture_use(mesh_cur->material.textures[1], 1);
-		ncx_texture_use(mesh_cur->material.textures[2], 2);
+		ncx_texture_use(mesh_cur->material.diffuse, 0);
+		ncx_texture_use(mesh_cur->material.specular, 1);
+		ncx_texture_use(mesh_cur->material.normal, 2);
 		ncx_shader_uniform_float(shader, "material.shininess",
-				mesh_cur->material.shininess);
+				mesh_cur->material.data.shininess);
 
 		glDrawElements(GL_TRIANGLES, mesh_cur->index_count,
 				GL_UNSIGNED_INT, mesh_cur->indices);
@@ -126,15 +126,15 @@ void ncx_meshes_draw_anim(const NCXMesh *meshes, const uint32_t mesh_count,
 
 		ncx_shader_uniform_mat4(shader, "model", mat_model);
 
-		ncx_texture_use(mesh_cur->material.textures[0], 0);
-		ncx_texture_use(mesh_cur->material.textures[1], 1);
-		ncx_texture_use(mesh_cur->material.textures[2], 2);
+		ncx_texture_use(mesh_cur->material.diffuse, 0);
+		ncx_texture_use(mesh_cur->material.specular, 1);
+		ncx_texture_use(mesh_cur->material.normal, 2);
 		ncx_shader_uniform_int(shader, "material.tex_diffuse", 0);
 		ncx_shader_uniform_int(shader, "material.tex_specular", 1);
 		ncx_shader_uniform_int(shader, "material.tex_normal", 2);
 
 		ncx_shader_uniform_float(shader, "material.shininess",
-				mesh_cur->material.shininess);
+				mesh_cur->material.data.shininess);
 
 		glDrawElements(GL_TRIANGLES, mesh_cur->index_count,
 				GL_UNSIGNED_INT, mesh_cur->indices);

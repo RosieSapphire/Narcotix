@@ -5,6 +5,8 @@
 #include "narcotix/light_point.h"
 #include "narcotix/helpers.h"
 #include "narcotix/model.h"
+#include "narcotix/ui.h"
+#include "narcotix/material.h"
 #include "paths.h"
 
 #define WINDOW_WIDTH  1920
@@ -41,9 +43,15 @@ int main() {
 	/* load models */
 	NCXShader model_shader = ncx_model_shader_create(lights, 2);
 
+	const NCXMaterialData pistol_tex_data = {
+		.diffuse_path = "res/models/weapons/pistol/pistol_diffuse.png",
+		.specular_path = "res/models/weapons/pistol/pistol_specular.png",
+		.normal_path = "res/models/weapons/pistol/pistol_normal.png",
+		.shininess = 8,
+	};
 
 	NCXMaterial pistol_materials[4] = {
-		ncx_material_create(pistol_tex_paths, 8),
+		ncx_material_create(pistol_tex_data),
 	};
 
 	for(uint8_t i = 1; i < 4; i++) {
@@ -65,9 +73,21 @@ int main() {
 			bong_materials, 0);
 
 
-	NCXMaterial brick_material = ncx_material_create(brick_tex_paths, 16);
+	const NCXMaterialData brick_tex_data = {
+		.diffuse_path = "res/textures/bricks_diffuse.png",
+		.specular_path = "res/textures/bricks_specular.png",
+		.normal_path = "res/textures/bricks_normal.png",
+		.shininess = 16,
+	};
+
+	NCXMaterial brick_material = ncx_material_create(brick_tex_data);
 	NCXModel brick_model =
 		ncx_model_create(brick_model_path, &brick_material, 0);
+
+	NCXTexture ui_test_tex = ncx_texture_create(ui_test_tex_path,
+			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
+	NCXUIElement ui_test =
+		ncx_ui_element_create(GLM_VEC3_ZERO, (vec2){256, 256}, &ui_test_tex, 1);
 
 	mat4 projection;
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
@@ -78,12 +98,6 @@ int main() {
 	
 	ncx_context_time_delta_init();
 	while(ncx_context_window_is_running(context)) {
-
-		/* checking for quit */
-		if(ncx_context_key_get(context, GLFW_KEY_ESCAPE)) {
-			ncx_context_window_close(context);
-			break;
-		}
 
 		/* drawing gun */
 		ncx_context_render_buffer_bind(context, 0);
@@ -139,6 +153,8 @@ int main() {
 				GLM_VEC3_ONE, 0.5f, WINDOW_SIZE,
 				font_shader);
 
+		ncx_ui_element_draw(ui_test, 0);
+
 		ncx_context_render_buffer_unbind();
 		ncx_context_buffer_display(context, 0, time_now, trip_intensity);
 		ncx_context_buffer_swap(context);
@@ -151,6 +167,7 @@ int main() {
 	ncx_model_destroy(&pistol_model);
 
 	ncx_textures_destroy(&trippy_texture, 1);
+	ncx_textures_destroy(&ui_test_tex, 1);
 
 	ncx_materials_destroy(bong_materials, 3);
 	ncx_materials_destroy(pistol_materials, 4);

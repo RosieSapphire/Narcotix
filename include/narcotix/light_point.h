@@ -13,13 +13,8 @@ typedef struct {
 	float quadratic;
 } NCXLightPoint;
 
-NCXLightPoint ncx_light_point_create_internal(float *pos,
+NCXLightPoint ncx_light_point_create(float *pos,
 		float *ambient_color, float *diffuse_color, float *specular_color,
-		const float constant, const float linear, const float quadratic,
-		const char *file, const uint32_t line);
-#define ncx_light_point_create(POS, AMBIENT_COLOR, DIFFUSE_COLOR, \
-		SPECULAR_COLOR, CONSTANT, LINEAR, QUADRATIC) \
-		ncx_light_point_create_internal(POS, AMBIENT_COLOR, DIFFUSE_COLOR, \
-				SPECULAR_COLOR, CONSTANT, LINEAR, QUADRATIC, __FILE__, __LINE__)
+		const float constant, const float linear, const float quadratic);
 
 #endif

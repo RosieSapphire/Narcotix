@@ -1,25 +1,16 @@
 #include "narcotix/model.h"
-#include "narcotix/helpers.h"
-#include "narcotix/glad/glad.h"
-#include "narcotix/light_point.h"
-#include "narcotix/shader.h"
-
+#include <assimp/scene.h>
 #include <assimp/cimport.h>
-#include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
 #define POINT_LIGHT_MAX 32
 
-#ifdef DEBUG
-#include "narcotix/debug.h"
-// #include "rose_petal.h"
-#endif
+NCXShader ncx_model_shader_create(const NCXLightPoint *lights,
+		const uint8_t light_count) {
 
-NCXShader ncx_model_shader_create_internal(const NCXLightPoint *lights,
-		const uint8_t light_count, const char *file, const uint32_t line) {
 	NCXShader model_shader =
-		ncx_shader_create_internal("res/shaders/builtin/model_vert.glsl", NULL,
-				"res/shaders/builtin/model_frag.glsl", file, line);
+		ncx_shader_create("res/shaders/builtin/model_vert.glsl", NULL,
+				"res/shaders/builtin/model_frag.glsl");
 	ncx_shader_use(model_shader);
 	ncx_shader_uniform_int(model_shader, "light_points_count_current",
 			light_count);
@@ -159,8 +150,7 @@ void ncx_model_animation_update(NCXModel *model, const float dt,
 	}
 }
 
-void ncx_model_destroy_internal(NCXModel *model, const char *file,
-		const uint32_t line) {
+void ncx_model_destroy(NCXModel *model) {
 	for(uint32_t i = 0; i < model->anim_count; i++) {
 		for(uint32_t j = 0; j < model->anims[i].channel_count; j++) {
 			free(model->anims[i].channels[j].pos_keys);
@@ -175,12 +165,4 @@ void ncx_model_destroy_internal(NCXModel *model, const char *file,
 		free(model->meshes[i].vertices);
 		free(model->meshes[i].indices);
 	}
-
-	#ifdef DEBUG
-	printf("%sNARCOTIX::MODEL::DESTROY: %sSuccessfully destroyed model with"
-			" %s%d Meshes %sand%s %d Animations. %s(Caused at '%s' line %d)\n",
-			D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, model->mesh_count,
-			D_COLOR_YELLOW, D_COLOR_GREEN, model->anim_count, D_COLOR_DEFAULT,
-			file, line);
-	#endif
 }

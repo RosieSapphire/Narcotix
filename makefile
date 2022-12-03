@@ -5,8 +5,8 @@ CORES=-j8
 
 CFLAGS=-std=c99
 
-SRC=glad.c context.c context_internal.c texture.c font.c font_internal.c ui.c sound_engine.c sound.c helpers.c shader.c file.c model.c mesh.c light_point.c material.c animation.c
-OBJ=glad.o context.o context_internal.o texture.o font.o font_internal.o ui.o sound_engine.o sound.o helpers.o shader.o file.o model.o mesh.o light_point.o material.o animation.o
+SRC=glad.c context.c texture.c font.c ui.c sound_engine.c sound.c helpers.c shader.c file.c model.c mesh.c light_point.c material.c animation.c
+OBJ=glad.o context.o texture.o font.o ui.o sound_engine.o sound.o helpers.o shader.o file.o model.o mesh.o light_point.o material.o animation.o
 
 BIN=libnarcotix.a
 

@@ -1,34 +1,37 @@
 #include "narcotix/material.h"
 #include "narcotix/glad/glad.h"
+#include <malloc.h>
 
-#ifdef DEBUG
-	#include <stdio.h>
-	#include "narcotix/debug.h"
-#endif
-
-NCXMaterial ncx_material_create_internal(const char **texture_paths,
-		const float shininess, const char *file, const uint32_t line) {
-	NCXMaterial mat;
-	for(uint8_t i = 0; i < M_TEX_COUNT; i++)
-		mat.textures[i] = ncx_texture_create_internal(texture_paths[i],
-				GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, file, line);
-
-	mat.shininess = shininess;
-	#ifdef DEBUG
-		printf("%sNARCOTIX::MATERIAL::CREATE: %sSuccessfully created material"
-			"with shininess level %.0f. %s(Caused at '%s' line %u)\n",
-			D_COLOR_GREEN, D_COLOR_YELLOW, shininess, D_COLOR_DEFAULT,
-			file, line);
-	#endif
-	return mat;
+NCXMaterial ncx_material_create(const NCXMaterialData data) {
+	return (NCXMaterial) {
+		data,
+		ncx_texture_create(data.diffuse_path, GL_REPEAT,
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
+		ncx_texture_create(data.specular_path, GL_REPEAT,
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
+		ncx_texture_create(data.normal_path, GL_REPEAT,
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
+	};
 }
 
-void ncx_material_destroy(NCXMaterial mat) {
-	ncx_textures_destroy(mat.textures, M_TEX_COUNT);
+NCXMaterial *ncx_materials_create(const NCXMaterialData *data,
+		const uint32_t mat_count) {
+
+	NCXMaterial *materials = malloc(mat_count * sizeof(NCXMaterial));
+	for(uint32_t i = 0; i < mat_count; i++) {
+		materials[i] = ncx_material_create(data[i]);
+	}
+
+	return materials;
 }
 
-void ncx_materials_destroy(NCXMaterial* mats, const uint8_t mat_count) {
-	for(uint8_t i = 0; i < mat_count; i++) {
-		ncx_material_destroy(mats[i]);
+void ncx_material_destroy(NCXMaterial *mat) {
+	ncx_textures_destroy(&mat->diffuse, M_TEX_COUNT);
+}
+
+void ncx_materials_destroy(NCXMaterial *mat_start, const uint32_t mat_count) {
+	const NCXMaterial *const mat_end = mat_start + mat_count;
+	for(NCXMaterial *i = mat_start; i != mat_end; i++) {
+		ncx_material_destroy(i);
 	}
 }

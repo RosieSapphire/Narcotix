@@ -4,22 +4,26 @@
 #include "texture.h"
 
 enum {
-	M_DIFFUSE = 0,
-	M_SPECULAR,
-	M_NORMAL,
+	M_TEX_DIFFUSE = 0,
+	M_TEX_SPECULAR,
+	M_TEX_NORMAL,
 	M_TEX_COUNT
 };
 
 typedef struct {
-	NCXTexture textures[M_TEX_COUNT];
+	const char *diffuse_path, *specular_path, *normal_path;
 	float shininess;
+} NCXMaterialData;
+
+typedef struct {
+	NCXMaterialData data;
+	NCXTexture diffuse, specular, normal;
 } NCXMaterial;
 
-NCXMaterial ncx_material_create_internal(const char **texture_paths,
-		const float shininess, const char *file, const uint32_t line);
-#define ncx_material_create(TEXTURE_PATHS, SHININESS) \
-	ncx_material_create_internal(TEXTURE_PATHS, SHININESS, __FILE__, __LINE__)
-void ncx_material_destroy(NCXMaterial mat);
-void ncx_materials_destroy(NCXMaterial* mats, const uint8_t mat_count);
+NCXMaterial ncx_material_create(const NCXMaterialData data);
+NCXMaterial *ncx_materials_create(const NCXMaterialData *data,
+		const uint32_t mat_count);
+void ncx_material_destroy(NCXMaterial *mat);
+void ncx_materials_destroy(NCXMaterial *mat_start, const uint32_t mat_count);
 
 #endif

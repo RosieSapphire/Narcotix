@@ -1,57 +1,20 @@
 #include "narcotix/sound_engine.h"
 
-#include <stdio.h>
-#include <AL/al.h>
 #include <AL/alc.h>
+#include <assert.h>
 
-#ifdef DEBUG
-#include "narcotix/debug.h"
-#endif
+#define NULL ((void *)0)
 
-NCXSoundEngine ncx_sound_engine_create_internal(const char *file, const uint32_t line) {
+NCXSoundEngine ncx_sound_engine_create(void) {
 	NCXSoundEngine engine;
-	#ifdef DEBUG
-	    const char *sound_device_name;
-	#endif
+
 	engine.sound_device = alcOpenDevice(NULL);
-	#ifdef DEBUG
-	    if(!engine.sound_device) {
-	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL failed to load the current audio device. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-	        return engine;
-	    }
-	#endif
+	assert(engine.sound_device);
 	
 	engine.sound_context = alcCreateContext(engine.sound_device, NULL);
-	#ifdef DEBUG
-	    if(!engine.sound_context) {
-	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL fucked up creating an audio context. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-	        return engine;
-	    }
-	
-		if(!alcMakeContextCurrent(engine.sound_context)) {
-	        fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sOpenAL failed to make context current. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-		    return engine;
-		}
+	assert(engine.sound_context);
+	alcMakeContextCurrent(engine.sound_context);
 
-	    sound_device_name = NULL;
-	    if(alcIsExtensionPresent(engine.sound_device, "ALC_ENUMERATE_ALL_EXT")) {
-	        sound_device_name = alcGetString(engine.sound_device, ALC_ALL_DEVICES_SPECIFIER);
-	    } else {
-	    	fprintf(stderr, "%sNARCOTIX::SOUND::ENGINE::ERROR: %sFucked up finding name of current audio device. %s(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-			return engine;
-		}
-	    
-	    if(!sound_device_name || alcGetError(engine.sound_device) != AL_NO_ERROR) {
-	        sound_device_name = alcGetString(engine.sound_device, ALC_DEVICE_SPECIFIER);
-	    }
-	#else
-		alcMakeContextCurrent(engine.sound_context);
-	#endif
-
-	#ifdef DEBUG
-		printf("%sNARCOTIX::SOUND::ENGINE::CREATE: %sOpenAL has successfully created a context and is running on device: %s'%s'%s. %s(Caused at '%s' line %u)\n",
-				D_COLOR_GREEN, D_COLOR_YELLOW, D_COLOR_GREEN, sound_device_name, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-	#endif
 	return engine;
 }
 

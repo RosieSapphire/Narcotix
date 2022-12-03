@@ -16,7 +16,6 @@ void ncx_ui_elements_set_flash(const float flash);
 NCXUIElement ncx_ui_element_create(float *pos, float *size,
 		const NCXTexture *textures, const uint8_t texture_count);
 void ncx_ui_element_draw(const NCXUIElement ui, const uint8_t texture_index);
-void ncx_ui_element_destroy(NCXUIElement *ui);
 
 void ncx_ui_elements_terminate(void);
 

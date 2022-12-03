@@ -1,15 +1,8 @@
 #include "narcotix/ui.h"
 #include "narcotix/shader.h"
-
-#include <string.h>
-
 #include "narcotix/glad/glad.h"
 #include <cglm/cglm.h>
-
-#ifdef DEBUG
-	#include "narcotix/debug.h"
-	// #include "rose_petal.h"
-#endif
+#include <string.h>
 
 static mat4 projection;
 static uint32_t vao, vbo;
@@ -77,10 +70,6 @@ void ncx_ui_element_draw(const NCXUIElement element,
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
-}
-
-void ncx_ui_element_destroy(NCXUIElement *ncx_ui_element) {
-	free(ncx_ui_element->textures);
 }
 
 void ncx_ui_elements_terminate(void) {
