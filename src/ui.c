@@ -6,7 +6,7 @@
 
 static mat4 projection;
 static uint32_t vao, vbo;
-static NCXShader ui_shader;
+static ncx_shader_t ui_shader;
 
 void ncx_ui_elements_init(const float width, const float height) {
 	const float vertices[] = {
@@ -42,19 +42,19 @@ void ncx_ui_elements_set_flash(const float flash) {
 	ncx_shader_uniform_float(ui_shader, "flash_amount", flash);
 }
 
-NCXUIElement ncx_ui_element_create(float *pos, float *size,
-		const NCXTexture *textures, const uint8_t texture_count) {
+ncx_ui_element_t ncx_ui_element_create(float *pos, float *size,
+		const ncx_texture_t *textures, const uint8_t texture_count) {
 
-	NCXUIElement element;
-	element.textures = malloc(texture_count * sizeof(NCXTexture));
-	memcpy(element.textures, textures, texture_count * sizeof(NCXTexture));
+	ncx_ui_element_t element;
+	element.textures = malloc(texture_count * sizeof(ncx_texture_t));
+	memcpy(element.textures, textures, texture_count * sizeof(ncx_texture_t));
 	memcpy(element.pos, pos, sizeof(vec2));
 	memcpy(element.size, size, sizeof(vec2));
 
 	return element;
 }
 
-void ncx_ui_element_draw(const NCXUIElement element,
+void ncx_ui_element_draw(const ncx_ui_element_t element,
 		const uint8_t index) {
 	mat4 model;
 	glDisable(GL_DEPTH_TEST);

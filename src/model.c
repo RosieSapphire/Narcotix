@@ -5,10 +5,10 @@
 
 #define POINT_LIGHT_MAX 32
 
-NCXShader ncx_model_shader_create(const NCXLightPoint *lights,
+ncx_shader_t ncx_model_shader_create(const NCXLightPoint *lights,
 		const uint8_t light_count) {
 
-	NCXShader model_shader =
+	ncx_shader_t model_shader =
 		ncx_shader_create("res/shaders/builtin/model_vert.glsl", NULL,
 				"res/shaders/builtin/model_frag.glsl");
 	ncx_shader_use(model_shader);
@@ -48,7 +48,7 @@ NCXShader ncx_model_shader_create(const NCXLightPoint *lights,
 	return model_shader;
 }
 
-void ncx_model_shader_lights_update(const NCXShader shader,
+void ncx_model_shader_lights_update(const ncx_shader_t shader,
 		const NCXLightPoint *lights, const uint8_t light_count) {
 	ncx_shader_use(shader);
 	const char *properties[7] = {
@@ -100,9 +100,9 @@ void ncx_model_shader_lights_update(const NCXShader shader,
 	ncx_shader_uniform_int(shader, "light_points_count_current", light_count);
 }
 
-NCXModel ncx_model_create(const char *path, const NCXMaterial *materials,
+ncx_model_t ncx_model_create(const char *path, const ncx_material_t *materials,
 		const uint8_t is_animated) {
-	NCXModel model;
+	ncx_model_t model;
 	model.scene = aiImportFile(path, aiProcess_Triangulate |
 			aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices |
 			aiProcess_CalcTangentSpace);
@@ -120,7 +120,7 @@ NCXModel ncx_model_create(const char *path, const NCXMaterial *materials,
 	return model;
 }
 
-void ncx_model_draw(NCXModel model, const NCXShader shader, mat4 root) {
+void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader, mat4 root) {
 	if(model.anims) {
 		ncx_meshes_draw_anim(model.meshes, model.mesh_count, shader,
 				model.anims[model.anim_selected], root);
@@ -129,12 +129,12 @@ void ncx_model_draw(NCXModel model, const NCXShader shader, mat4 root) {
 	}
 }
 
-void ncx_model_animation_set(NCXModel *model, const uint32_t anim_index) {
+void ncx_model_animation_set(ncx_model_t *model, const uint32_t anim_index) {
 	model->anim_selected = anim_index;
 	model->anims[model->anim_selected].timer = 0.0f;
 }
 
-void ncx_model_animation_update(NCXModel *model, const float dt,
+void ncx_model_animation_update(ncx_model_t *model, const float dt,
 		const uint8_t loop) {
 	NCXAnimation *anim = model->anims + model->anim_selected;
 	anim->timer += dt * ANIM_FPS;
@@ -150,7 +150,7 @@ void ncx_model_animation_update(NCXModel *model, const float dt,
 	}
 }
 
-void ncx_model_destroy(NCXModel *model) {
+void ncx_model_destroy(ncx_model_t *model) {
 	for(uint32_t i = 0; i < model->anim_count; i++) {
 		for(uint32_t j = 0; j < model->anims[i].channel_count; j++) {
 			free(model->anims[i].channels[j].pos_keys);

@@ -7,7 +7,7 @@
 #include "narcotix/model.h"
 #include "narcotix/ui.h"
 #include "narcotix/material.h"
-#include "paths.h"
+#include "test_paths.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -16,18 +16,19 @@
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
-	NCXContext context =
+	ncx_context_t context =
 		ncx_context_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
-	NCXSoundEngine sound_engine = ncx_sound_engine_create();
-	NCXSound test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
-	NCXShader font_shader =
+	ncx_sound_engine_init();
+	ncx_sound_t test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
+
+	ncx_shader_t font_shader =
 		ncx_font_shader_create(font_shader_vert_path, font_shader_frag_path);
 
-	NCXFont trippy_font = ncx_font_create(trippy_font_path);
-	NCXFont normal_font = ncx_font_create(normal_font_path);
+	ncx_font_t trippy_font = ncx_font_create(trippy_font_path);
+	ncx_font_t normal_font = ncx_font_create(normal_font_path);
 
-	NCXTexture trippy_texture = ncx_texture_create(trippy_tex_path,
+	ncx_texture_t trippy_texture = ncx_texture_create(trippy_tex_path,
 			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
 	NCXLightPoint lights[2] = {
@@ -41,16 +42,16 @@ int main() {
 	};
 
 	/* load models */
-	NCXShader model_shader = ncx_model_shader_create(lights, 2);
+	ncx_shader_t model_shader = ncx_model_shader_create(lights, 2);
 
-	const NCXMaterialData pistol_tex_data = {
+	const ncx_material_data_t pistol_tex_data = {
 		.diffuse_path = "res/models/weapons/pistol/pistol_diffuse.png",
 		.specular_path = "res/models/weapons/pistol/pistol_specular.png",
 		.normal_path = "res/models/weapons/pistol/pistol_normal.png",
 		.shininess = 8,
 	};
 
-	NCXMaterial pistol_materials[4] = {
+	ncx_material_t pistol_materials[4] = {
 		ncx_material_create(pistol_tex_data),
 	};
 
@@ -58,35 +59,35 @@ int main() {
 		pistol_materials[i] = pistol_materials[0];
 	}
 
-	NCXModel pistol_model = ncx_model_create(pistol_model_path,
+	ncx_model_t pistol_model = ncx_model_create(pistol_model_path,
 			pistol_materials, 1);
 
 	ncx_model_animation_set(&pistol_model, 1);
 
-	NCXMaterial bong_materials[3] = {
+	ncx_material_t bong_materials[3] = {
 		pistol_materials[0],
 		pistol_materials[0],
 		pistol_materials[0],
 	};
 
-	NCXModel bong_model = ncx_model_create("res/models/weapons/bong/bong.glb",
+	ncx_model_t bong_model = ncx_model_create("res/models/weapons/bong/bong.glb",
 			bong_materials, 0);
 
 
-	const NCXMaterialData brick_tex_data = {
+	const ncx_material_data_t brick_tex_data = {
 		.diffuse_path = "res/textures/bricks_diffuse.png",
 		.specular_path = "res/textures/bricks_specular.png",
 		.normal_path = "res/textures/bricks_normal.png",
 		.shininess = 16,
 	};
 
-	NCXMaterial brick_material = ncx_material_create(brick_tex_data);
-	NCXModel brick_model =
+	ncx_material_t brick_material = ncx_material_create(brick_tex_data);
+	ncx_model_t brick_model =
 		ncx_model_create(brick_model_path, &brick_material, 0);
 
-	NCXTexture ui_test_tex = ncx_texture_create(ui_test_tex_path,
+	ncx_texture_t ui_test_tex = ncx_texture_create(ui_test_tex_path,
 			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
-	NCXUIElement ui_test =
+	ncx_ui_element_t ui_test =
 		ncx_ui_element_create(GLM_VEC3_ZERO, (vec2){256, 256}, &ui_test_tex, 1);
 
 	mat4 projection;
@@ -161,7 +162,7 @@ int main() {
 	}
 
 	ncx_sound_destroy(&test_sound);
-	ncx_sound_engine_destroy(sound_engine);
+	ncx_sound_engine_terminate();
 	
 	ncx_model_destroy(&bong_model);
 	ncx_model_destroy(&pistol_model);

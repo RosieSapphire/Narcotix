@@ -6,7 +6,7 @@ static float time_last = 0.0f;
 static uint8_t key_states[512];
 static uint8_t mouse_states[2];
 
-NCXContext ncx_context_create(const float width, const float height,
+ncx_context_t ncx_context_create(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending) {
 
@@ -19,7 +19,7 @@ NCXContext ncx_context_create(const float width, const float height,
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	NCXContext context;
+	ncx_context_t context;
 	context.window = glfwCreateWindow((int32_t)width, (int32_t)height,
 			window_name, NULL, NULL);
 	assert(context.window);
@@ -73,10 +73,10 @@ NCXContext ncx_context_create(const float width, const float height,
 
 	context.render_buffer_count = rb_count;
 	context.render_buffers =
-		malloc(context.render_buffer_count * sizeof(NCXRenderBuffer));
+		malloc(context.render_buffer_count * sizeof(ncx_render_buffer_t));
 
 	for(uint8_t i = 0; i < context.render_buffer_count; i++) {
-		NCXRenderBuffer *rb_cur = context.render_buffers + i;
+		ncx_render_buffer_t *rb_cur = context.render_buffers + i;
 		glGenFramebuffers(1, &rb_cur->fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, rb_cur->fbo);
 
@@ -125,10 +125,10 @@ NCXContext ncx_context_create(const float width, const float height,
 	return context;
 }
 
-void ncx_context_destroy(NCXContext *context) {
-	NCXRenderBuffer *rb_end = context->render_buffers +
+void ncx_context_destroy(ncx_context_t *context) {
+	ncx_render_buffer_t *rb_end = context->render_buffers +
 		context->render_buffer_count;
-	for(NCXRenderBuffer *rb_cur = context->render_buffers;
+	for(ncx_render_buffer_t *rb_cur = context->render_buffers;
 			rb_cur < rb_end; rb_cur++) {
 		glDeleteFramebuffers(1, &rb_cur->fbo);
 		glDeleteRenderbuffers(1, &rb_cur->rbo);
@@ -155,33 +155,34 @@ float ncx_context_time_delta_get(void) {
 	return time_delta;
 }
 
-void ncx_context_mouse_center(const NCXContext context) {
+void ncx_context_mouse_center(const ncx_context_t context) {
 	glfwSetInputMode(context.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPos(context.window,
 			(double)context.window_size[0] / 2,
 			(double)context.window_size[1] / 2);
 }
 
-uint8_t ncx_context_key_get_down(const NCXContext context, const int32_t key) {
+uint8_t ncx_context_key_get_down(const ncx_context_t context,
+		const int32_t key) {
 	key_states[key] = glfwGetKey(context.window, key);
 	return key_states[key];
 }
 
-uint8_t ncx_context_key_get_pressed(const NCXContext context, int32_t key) {
+uint8_t ncx_context_key_get_pressed(const ncx_context_t context, int32_t key) {
 	uint8_t key_state_new = glfwGetKey(context.window, key);
 	uint8_t key_pressed_now = key_state_new && !key_states[key];
 	key_states[key] = key_state_new;
 	return key_pressed_now;
 }
 
-uint8_t ncx_context_mouse_button_get_down(const NCXContext context,
+uint8_t ncx_context_mouse_button_get_down(const ncx_context_t context,
 		int32_t button) {
 
 	mouse_states[button] = glfwGetMouseButton(context.window, button);
 	return mouse_states[button];
 }
 
-uint8_t ncx_context_mouse_button_get_pressed(const NCXContext context,
+uint8_t ncx_context_mouse_button_get_pressed(const ncx_context_t context,
 		int32_t button) {
 	uint8_t mouse_state_new = glfwGetMouseButton(context.window, button);
 	uint8_t mouse_pressed_now = mouse_state_new && !mouse_states[button];
@@ -189,19 +190,19 @@ uint8_t ncx_context_mouse_button_get_pressed(const NCXContext context,
 	return mouse_pressed_now;
 }
 
-void ncx_context_mouse_pos_get(const NCXContext context, vec2 mouse_pos) {
+void ncx_context_mouse_pos_get(const ncx_context_t context, vec2 mouse_pos) {
 	double mouse_x, mouse_y;
 	glfwGetCursorPos(context.window, &mouse_x, &mouse_y);
 	mouse_pos[0] = (float)mouse_x;
 	mouse_pos[1] = (float)mouse_y;
 }
 
-void ncx_context_mouse_pos_set(const NCXContext context, vec2 mouse_pos) {
+void ncx_context_mouse_pos_set(const ncx_context_t context, vec2 mouse_pos) {
 	glfwSetCursorPos(context.window,
 			(double)mouse_pos[0], (double)mouse_pos[1]);
 }
 
-void ncx_context_mouse_input_raw(const NCXContext context,
+void ncx_context_mouse_input_raw(const ncx_context_t context,
 		const uint8_t toggle) {
 	assert(glfwRawMouseMotionSupported());
 	glfwSetInputMode(context.window, GLFW_RAW_MOUSE_MOTION, toggle);
@@ -217,7 +218,7 @@ void ncx_context_clear_depth(void) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void ncx_context_render_buffer_bind(const NCXContext context,
+void ncx_context_render_buffer_bind(const ncx_context_t context,
 		const uint8_t index) {
 	assert(index < context.render_buffer_count);
 	glBindFramebuffer(GL_FRAMEBUFFER, context.render_buffers[index].fbo);
@@ -227,8 +228,8 @@ void ncx_context_render_buffer_unbind(void) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_context_buffer_display(const NCXContext context,
-		const NCXTexture overlay, const float time,
+void ncx_context_buffer_display(const ncx_context_t context,
+		const ncx_texture_t overlay, const float time,
 		const float trip_intensity) {
 	for(uint8_t i = 0; i < context.render_buffer_count; i++) {
 		glDisable(GL_DEPTH_TEST);
@@ -253,12 +254,12 @@ void ncx_context_buffer_display(const NCXContext context,
 	}
 }
 
-void ncx_context_buffer_swap(const NCXContext context) {
+void ncx_context_buffer_swap(const ncx_context_t context) {
 	glfwSwapBuffers(context.window);
 	glfwPollEvents();
 }
 
-uint8_t ncx_context_window_is_running(const NCXContext context) {
+uint8_t ncx_context_window_is_running(const ncx_context_t context) {
 	if(ncx_context_key_get_pressed(context, GLFW_KEY_ESCAPE)) {
 		ncx_context_window_close(context);
 		return 0;
@@ -267,6 +268,6 @@ uint8_t ncx_context_window_is_running(const NCXContext context) {
 	return !glfwWindowShouldClose(context.window);
 }
 
-void ncx_context_window_close(const NCXContext context) {
+void ncx_context_window_close(const ncx_context_t context) {
 	glfwSetWindowShouldClose(context.window, 1);
 }

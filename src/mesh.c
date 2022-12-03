@@ -6,19 +6,19 @@
 #include <malloc.h>
 #include <cglm/cglm.h>
 
-NCXMesh *ncx_meshes_create(const struct aiScene *scene,
-		const NCXMaterial *materials,uint32_t *mesh_count) {
+ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
+		const ncx_material_t *materials,uint32_t *mesh_count) {
 	*mesh_count = scene->mNumMeshes;
-	NCXMesh *meshes = malloc(sizeof(NCXMesh) * scene->mNumMeshes);
+	ncx_mesh_t *meshes = malloc(sizeof(ncx_mesh_t) * scene->mNumMeshes);
 	for(size_t i = 0; i < scene->mNumMeshes; i++) {
-		NCXMesh *mesh_cur = meshes + i;
+		ncx_mesh_t *mesh_cur = meshes + i;
 		mesh_cur->material = materials[i];
 		mesh_cur->vertices = malloc(0);
 		mesh_cur->indices = malloc(0);
 		const struct aiMesh *ai_mesh_cur = scene->mMeshes[i];
 		mesh_cur->vertex_count = ai_mesh_cur->mNumVertices;
 		mesh_cur->vertices = realloc(mesh_cur->vertices,
-				mesh_cur->vertex_count * sizeof(NCXVertex));
+				mesh_cur->vertex_count * sizeof(ncx_vertex_t));
 		for(size_t j = 0; j < mesh_cur->vertex_count; j++) {
 			memcpy(mesh_cur->vertices[j].pos,
 					&ai_mesh_cur->mVertices[j].x, sizeof(vec3));
@@ -54,22 +54,22 @@ NCXMesh *ncx_meshes_create(const struct aiScene *scene,
 		glGenBuffers(1, &mesh_cur->buffers[VBO]);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh_cur->buffers[VBO]);
 		glBufferData(GL_ARRAY_BUFFER, mesh_cur->vertex_count *
-				sizeof(NCXVertex), mesh_cur->vertices, GL_STATIC_DRAW);
+				sizeof(ncx_vertex_t), mesh_cur->vertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-				sizeof(NCXVertex), (void *)offsetof(NCXVertex, pos));
+				sizeof(ncx_vertex_t), (void *)offsetof(ncx_vertex_t, pos));
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-				sizeof(NCXVertex), (void *)offsetof(NCXVertex, norm));
+				sizeof(ncx_vertex_t), (void *)offsetof(ncx_vertex_t, norm));
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-				sizeof(NCXVertex), (void *)offsetof(NCXVertex, uv));
+				sizeof(ncx_vertex_t), (void *)offsetof(ncx_vertex_t, uv));
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-				sizeof(NCXVertex), (void *)offsetof(NCXVertex, tan));
+				sizeof(ncx_vertex_t), (void *)offsetof(ncx_vertex_t, tan));
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-				sizeof(NCXVertex), (void *)offsetof(NCXVertex, bitan));
+				sizeof(ncx_vertex_t), (void *)offsetof(ncx_vertex_t, bitan));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &mesh_cur->buffers[EBO]);
@@ -83,8 +83,8 @@ NCXMesh *ncx_meshes_create(const struct aiScene *scene,
 	return meshes;
 }
 
-void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
-		const NCXShader shader, mat4 mat_base) {
+void ncx_meshes_draw(const ncx_mesh_t *meshes, const uint32_t mesh_count,
+		const ncx_shader_t shader, mat4 mat_base) {
 	ncx_shader_use(shader);
 	ncx_shader_uniform_mat4(shader, "model", mat_base);
 	ncx_shader_uniform_int(shader, "material.tex_diffuse", 0);
@@ -92,7 +92,7 @@ void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
 	ncx_shader_uniform_int(shader, "material.tex_normal", 2);
 
 	for(uint32_t i = 0; i < mesh_count; i++) {
-		const NCXMesh *const mesh_cur = meshes + i;
+		const ncx_mesh_t *const mesh_cur = meshes + i;
 		glBindVertexArray(mesh_cur->buffers[VAO]);
 		ncx_texture_use(mesh_cur->material.diffuse, 0);
 		ncx_texture_use(mesh_cur->material.specular, 1);
@@ -105,15 +105,15 @@ void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
 	}
 }
 
-void ncx_meshes_draw_anim(const NCXMesh *meshes, const uint32_t mesh_count,
-		const NCXShader shader, NCXAnimation anim, mat4 mat_base) {
+void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
+		const ncx_shader_t shader, NCXAnimation anim, mat4 mat_base) {
 	mat4 mat_root;
 	ncx_animation_get_matrix(anim, 0, mat_root);
 
 	ncx_shader_use(shader);
 	ncx_shader_uniform_mat4(shader, "model", mat_root);
 	for(uint32_t i = 0; i < mesh_count; i++) {
-		const NCXMesh *const mesh_cur = meshes + i;
+		const ncx_mesh_t *const mesh_cur = meshes + i;
 		glBindVertexArray(mesh_cur->buffers[VAO]);
 
 		mat4 mat_model;

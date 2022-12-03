@@ -9,6 +9,6 @@ typedef struct {
 	float uv[2];
 	float tan[3];
 	float bitan[3];
-} NCXVertex;
+} ncx_vertex_t;
 
 #endif

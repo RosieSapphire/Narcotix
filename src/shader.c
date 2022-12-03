@@ -3,12 +3,12 @@
 #include "narcotix/file.h"
 #include <assert.h>
 
-NCXShader ncx_shader_create(const char *vert_path,
+ncx_shader_t ncx_shader_create(const char *vert_path,
 		const char *geom_path, const char *frag_path) {
 	uint32_t shaders[3];
 	char *shader_sources[3];
 	const char *paths[3] = {vert_path, geom_path, frag_path};
-	NCXShader shader_program = glCreateProgram();
+	ncx_shader_t shader_program = glCreateProgram();
 
 	const char *shader_type_names[3] = {
 		"Vertex", "Fragment", "Geometry"
@@ -53,30 +53,30 @@ NCXShader ncx_shader_create(const char *vert_path,
 	return shader_program;
 }
 
-void ncx_shader_destroy(const NCXShader shader) {
+void ncx_shader_destroy(const ncx_shader_t shader) {
 	glDeleteProgram(shader);
 }
 
-void ncx_shader_use(const NCXShader shader) {
+void ncx_shader_use(const ncx_shader_t shader) {
 	glUseProgram(shader);
 }
 
-void ncx_shader_uniform_int(const NCXShader shader, const char *uniform,
+void ncx_shader_uniform_int(const ncx_shader_t shader, const char *uniform,
 		const int value) {
 	glUniform1i(glGetUniformLocation(shader, uniform), value);
 }
 
-void ncx_shader_uniform_float(const NCXShader shader, const char *uniform,
+void ncx_shader_uniform_float(const ncx_shader_t shader, const char *uniform,
 		const float value) {
 	glUniform1f(glGetUniformLocation(shader, uniform), value);
 }
 
-void ncx_shader_uniform_vec3(const NCXShader shader, const char *uniform,
+void ncx_shader_uniform_vec3(const ncx_shader_t shader, const char *uniform,
 		const vec3 value) {
 	glUniform3fv(glGetUniformLocation(shader, uniform), 1, value);
 }
 
-void ncx_shader_uniform_mat4(const NCXShader shader, const char *uniform,
+void ncx_shader_uniform_mat4(const ncx_shader_t shader, const char *uniform,
 		const mat4 value) {
 	glUniformMatrix4fv(glGetUniformLocation(shader, uniform),
 			1, GL_FALSE, (const float *)value);

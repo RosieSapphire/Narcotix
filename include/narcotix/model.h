@@ -6,23 +6,23 @@
 
 typedef struct {
 	uint32_t mesh_count;
-	NCXMesh *meshes;
+	ncx_mesh_t *meshes;
 	const struct aiScene *scene;
 	uint32_t anim_count, anim_selected;
 	NCXAnimation *anims;
-} NCXModel;
+} ncx_model_t;
 
-NCXShader ncx_model_shader_create(const NCXLightPoint *lights,
+ncx_shader_t ncx_model_shader_create(const NCXLightPoint *lights,
 		const uint8_t light_count);
-NCXModel ncx_model_create(const char *path, const NCXMaterial *materials,
+ncx_model_t ncx_model_create(const char *path, const ncx_material_t *materials,
 		const uint8_t is_animated);
-void ncx_model_destroy(NCXModel *model);
+void ncx_model_destroy(ncx_model_t *model);
 
-void ncx_model_shader_lights_update(const NCXShader shader,
+void ncx_model_shader_lights_update(const ncx_shader_t shader,
 		const NCXLightPoint *lights, const uint8_t light_count);
-void ncx_model_draw(NCXModel model, const NCXShader shader, mat4 root);
-void ncx_model_animation_set(NCXModel *model, const uint32_t anim_index);
-void ncx_model_animation_update(NCXModel *model, const float dt,
+void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader, mat4 root);
+void ncx_model_animation_set(ncx_model_t *model, const uint32_t anim_index);
+void ncx_model_animation_update(ncx_model_t *model, const float dt,
 		const uint8_t loop);
 
 

@@ -8,21 +8,21 @@ typedef struct {
 	int32_t size[2];
 	int32_t bearing[2];
 	uint32_t advance;
-} NCXCharacter;
+} ncx_character_t;
 
 typedef struct {
 	uint32_t vao;
 	uint32_t vbo;
-	NCXCharacter *characters;
-} NCXFont;
+	ncx_character_t *characters;
+} ncx_font_t;
 
-NCXShader ncx_font_shader_create(const char *font_path_vert,
+ncx_shader_t ncx_font_shader_create(const char *font_path_vert,
 		const char *font_path_frag);
-NCXFont ncx_font_create(const char *path);
-void ncx_font_destroy(NCXFont *font);
+ncx_font_t ncx_font_create(const char *path);
+void ncx_font_destroy(ncx_font_t *font);
 
-void ncx_font_draw(const NCXFont font, const char *string, float *pos,
+void ncx_font_draw(const ncx_font_t font, const char *string, float *pos,
 		const float *color, const float scale, float *window_size,
-		const NCXShader shader);
+		const ncx_shader_t shader);
 
 #endif

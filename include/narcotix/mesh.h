@@ -17,18 +17,18 @@ enum MeshBufferIndex {
 
 typedef struct {
 	uint32_t vertex_count, index_count;
-	NCXVertex *vertices;
+	ncx_vertex_t *vertices;
 	uint32_t *indices;
-	NCXMaterial material;
+	ncx_material_t material;
 
 	uint32_t buffers[MESH_BUFFER_COUNT];
-} NCXMesh;
+} ncx_mesh_t;
 
-NCXMesh *ncx_meshes_create(const struct aiScene *scene,
-		const NCXMaterial *materials,uint32_t *mesh_count);
-void ncx_meshes_draw(const NCXMesh *meshes, const uint32_t mesh_count,
-		const NCXShader shader, mat4 mat_base);
-void ncx_meshes_draw_anim(const NCXMesh *meshes, const uint32_t mesh_count,
-		const NCXShader shader, NCXAnimation anim, mat4 mat_base);
+ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
+		const ncx_material_t *materials,uint32_t *mesh_count);
+void ncx_meshes_draw(const ncx_mesh_t *meshes, const uint32_t mesh_count,
+		const ncx_shader_t shader, mat4 mat_base);
+void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
+		const ncx_shader_t shader, NCXAnimation anim, mat4 mat_base);
 
 #endif

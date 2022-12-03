@@ -6,7 +6,7 @@
 
 typedef struct {
 	uint32_t fbo, rbo;
-	NCXTexture texture;
-} NCXRenderBuffer;
+	ncx_texture_t texture;
+} ncx_render_buffer_t;
 
 #endif

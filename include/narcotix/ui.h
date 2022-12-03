@@ -6,16 +6,17 @@
 typedef struct {
 	float pos[2];
 	float size[2];
-	NCXTexture *textures;
+	ncx_texture_t *textures;
 	uint8_t texture_count;
-} NCXUIElement;
+} ncx_ui_element_t;
 
 void ncx_ui_elements_init(const float width, const float height);
 void ncx_ui_elements_set_flash(const float flash);
 
-NCXUIElement ncx_ui_element_create(float *pos, float *size,
-		const NCXTexture *textures, const uint8_t texture_count);
-void ncx_ui_element_draw(const NCXUIElement ui, const uint8_t texture_index);
+ncx_ui_element_t ncx_ui_element_create(float *pos, float *size,
+		const ncx_texture_t *textures, const uint8_t texture_count);
+void ncx_ui_element_draw(const ncx_ui_element_t ui,
+		const uint8_t texture_index);
 
 void ncx_ui_elements_terminate(void);
 

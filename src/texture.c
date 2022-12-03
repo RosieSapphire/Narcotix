@@ -4,13 +4,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "narcotix/stb_image.h"
 
-NCXTexture ncx_texture_create(const char *path, const int32_t wrap_mode,
+ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode,
 		const int32_t min_filter, const int32_t mag_filter,
 		const uint8_t mipmap) {
 
 	const int32_t color_formats[5] = { 0, GL_RED, GL_RG, GL_RGB, GL_RGBA };
 	int32_t width, height, channels;
-	NCXTexture t;
+	ncx_texture_t t;
 
 	glGenTextures(1, &t);
 	glBindTexture(GL_TEXTURE_2D, t);
@@ -35,11 +35,11 @@ NCXTexture ncx_texture_create(const char *path, const int32_t wrap_mode,
 	return t;
 }
 
-void ncx_textures_destroy(NCXTexture *start, const uint8_t texture_count) {
+void ncx_textures_destroy(ncx_texture_t *start, const uint8_t texture_count) {
 	glDeleteTextures(texture_count, start);
 }
 
-void ncx_texture_use(NCXTexture tex, const uint32_t slot) {
+void ncx_texture_use(ncx_texture_t tex, const uint32_t slot) {
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, tex);
 }

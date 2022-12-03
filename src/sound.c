@@ -5,7 +5,7 @@
 #include <sndfile.h>
 #include <assert.h>
 
-NCXSound ncx_sound_create(const char *paths,
+ncx_sound_t ncx_sound_create(const char *paths,
 		const uint8_t sample_count, const uint8_t use_delay) {
 	uint32_t path_length;
 	const int32_t formats[2] = {
@@ -13,7 +13,7 @@ NCXSound ncx_sound_create(const char *paths,
 		AL_FORMAT_STEREO16,
 	};
 
-	NCXSound sound;
+	ncx_sound_t sound;
 	sound.buffer_count = sample_count;
 	sound.buffers = malloc(sample_count * sizeof(uint32_t));
 	sound.delay_timer = 500.0f;
@@ -73,7 +73,7 @@ NCXSound ncx_sound_create(const char *paths,
 	return sound;
 }
 
-void ncx_sound_play(const NCXSound sound, const float gain,
+void ncx_sound_play(const ncx_sound_t sound, const float gain,
 		const float pitch, const float *pos,
 		const uint8_t looping, const uint8_t index) {
 	alSourceStop(sound.source);
@@ -85,7 +85,7 @@ void ncx_sound_play(const NCXSound sound, const float gain,
 	alSourcePlay(sound.source);
 }
 
-void ncx_sound_play_delay(NCXSound *sound, const float gain,
+void ncx_sound_play_delay(ncx_sound_t *sound, const float gain,
 		const float pitch, const float *pos,
 		const uint8_t index, const float time_delta) {
 	const float delay_timer_last = sound->delay_timer;
@@ -108,7 +108,7 @@ void ncx_sound_play_delay(NCXSound *sound, const float gain,
 	}
 }
 
-void ncx_sound_destroy(NCXSound *sound) {
+void ncx_sound_destroy(ncx_sound_t *sound) {
 	alDeleteBuffers(sound->buffer_count, sound->buffers);
 	free(sound->buffers);
 
