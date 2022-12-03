@@ -5,6 +5,7 @@
 #include "narcotix/light_point.h"
 #include "narcotix/helpers.h"
 #include "narcotix/model.h"
+#include "paths.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -18,18 +19,12 @@ int main() {
 	NCXSoundEngine sound_engine = ncx_sound_engine_create();
 	NCXSound test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
-	const char *font_shader_vert_path = "res/shaders/builtin/font_vert.glsl";
-	const char *font_shader_frag_path = "res/shaders/builtin/font_frag.glsl";
 	NCXShader font_shader =
 		ncx_font_shader_create(font_shader_vert_path, font_shader_frag_path);
 
-	const char *trippy_font_path = "res/fonts/shagadelic.ttf";
 	NCXFont trippy_font = ncx_font_create(trippy_font_path);
-
-	const char *normal_font_path = "res/fonts/jetbrainsmono-bold.ttf";
 	NCXFont normal_font = ncx_font_create(normal_font_path);
 
-	const char *trippy_tex_path = "res/textures/trippy-overlay-texture.png";
 	NCXTexture trippy_texture = ncx_texture_create(trippy_tex_path,
 			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
@@ -46,11 +41,6 @@ int main() {
 	/* load models */
 	NCXShader model_shader = ncx_model_shader_create(lights, 2);
 
-	const char *pistol_tex_paths[M_COUNT] = {
-		"res/models/weapons/pistol/pistol_diffuse.png",
-		"res/models/weapons/pistol/pistol_specular.png",
-		"res/models/weapons/pistol/pistol_normal.png"
-	};
 
 	NCXMaterial pistol_materials[4] = {
 		ncx_material_create(pistol_tex_paths, 8),
@@ -60,7 +50,6 @@ int main() {
 		pistol_materials[i] = pistol_materials[0];
 	}
 
-	const char *pistol_model_path = "res/models/weapons/pistol/pistol.glb";
 	NCXModel pistol_model = ncx_model_create(pistol_model_path,
 			pistol_materials, 1);
 
@@ -75,15 +64,8 @@ int main() {
 	NCXModel bong_model = ncx_model_create("res/models/weapons/bong/bong.glb",
 			bong_materials, 0);
 
-	const char *brick_tex_paths[M_COUNT] = {
-		"res/textures/bricks_diffuse.png",
-		"res/textures/bricks_specular.png",
-		"res/textures/bricks_normal.png",
-	};
 
 	NCXMaterial brick_material = ncx_material_create(brick_tex_paths, 16);
-
-	const char *brick_model_path = "res/models/plane.glb";
 	NCXModel brick_model =
 		ncx_model_create(brick_model_path, &brick_material, 0);
 

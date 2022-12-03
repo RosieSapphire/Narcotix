@@ -7,11 +7,11 @@ enum {
 	M_DIFFUSE = 0,
 	M_SPECULAR,
 	M_NORMAL,
-	M_COUNT
+	M_TEX_COUNT
 };
 
 typedef struct {
-	NCXTexture textures[M_COUNT];
+	NCXTexture textures[M_TEX_COUNT];
 	float shininess;
 } NCXMaterial;
 
