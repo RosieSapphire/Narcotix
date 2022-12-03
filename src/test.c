@@ -31,7 +31,7 @@ int main() {
 	ncx_texture_t trippy_texture = ncx_texture_create(trippy_tex_path,
 			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
-	NCXLightPoint lights[2] = {
+	ncx_light_point_t lights[2] = {
 		ncx_light_point_create(GLM_VEC3(1.0f, 0.0f, 1.0f),
 				GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.0f, 0.0f),
 				GLM_VEC3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f),

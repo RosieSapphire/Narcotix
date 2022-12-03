@@ -2,11 +2,11 @@
 #include <string.h>
 #include <cglm/cglm.h>
 
-NCXLightPoint ncx_light_point_create(float *pos, float *ambient_color,
+ncx_light_point_t ncx_light_point_create(float *pos, float *ambient_color,
 		float *diffuse_color, float *specular_color, const float constant,
 		const float linear, const float quadratic) {
 
-	NCXLightPoint light;
+	ncx_light_point_t light;
 	memcpy(light.pos, pos, sizeof(vec3));
 	memcpy(light.ambient_color, ambient_color, sizeof(vec3));
 	memcpy(light.diffuse_color, diffuse_color, sizeof(vec3));

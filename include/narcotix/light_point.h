@@ -11,9 +11,9 @@ typedef struct {
 	float constant;
 	float linear;
 	float quadratic;
-} NCXLightPoint;
+} ncx_light_point_t;
 
-NCXLightPoint ncx_light_point_create(float *pos,
+ncx_light_point_t ncx_light_point_create(float *pos,
 		float *ambient_color, float *diffuse_color, float *specular_color,
 		const float constant, const float linear, const float quadratic);
 

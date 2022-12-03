@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+typedef enum {
+	SP_GAIN = 0x100A,
+	SP_PITCH = 0x1003,
+} ncx_sound_props_t;
+
 typedef struct {
 	uint32_t source;
 	uint32_t *delay_sources;
@@ -12,14 +17,14 @@ typedef struct {
 	float delay_timer;
 } ncx_sound_t;
 
-ncx_sound_t ncx_sound_create(const char *paths,
-		const uint8_t sample_count, const uint8_t use_delay);
-void ncx_sound_play(const ncx_sound_t ncx_sound,
-		const float gain, const float pitch, const float *pos,
-		const uint8_t looping, const uint8_t index);
-void ncx_sound_play_delay(ncx_sound_t *ncx_sound, const float gain,
-		const float pitch, const float *pos, const uint8_t index,
-		const float time_delta);
+ncx_sound_t ncx_sound_create(const char *paths, uint8_t sample_count,
+		uint8_t use_delay);
 void ncx_sound_destroy(ncx_sound_t *ncx_sound);
+void ncx_sound_play(ncx_sound_t ncx_sound, float gain, float pitch,
+		float *pos, uint8_t looping, uint8_t index);
+void ncx_sound_play_delay(ncx_sound_t *ncx_sound, float gain, float pitch,
+		float *pos, uint8_t index, float time_delta);
+void ncx_sound_stop(ncx_sound_t sound);
+void ncx_sound_set_float(ncx_sound_t sound, uint32_t prop, float f);
 
 #endif

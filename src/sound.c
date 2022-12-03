@@ -6,9 +6,9 @@
 #include <assert.h>
 
 ncx_sound_t ncx_sound_create(const char *paths,
-		const uint8_t sample_count, const uint8_t use_delay) {
+		uint8_t sample_count, uint8_t use_delay) {
 	uint32_t path_length;
-	const int32_t formats[2] = {
+	int32_t formats[2] = {
 		AL_FORMAT_MONO16,
 		AL_FORMAT_STEREO16,
 	};
@@ -61,7 +61,7 @@ ncx_sound_t ncx_sound_create(const char *paths,
 		size = frame_count * (uint64_t)file_info.channels * sizeof(int16_t);
 
 		alGenBuffers(1, &sound.buffers[i]);
-		alBufferData(sound.buffers[i], format, (const void *)data,
+		alBufferData(sound.buffers[i], format, (void *)data,
 				(int32_t)size, file_info.samplerate);
 
 		assert(!alGetError());
@@ -73,9 +73,9 @@ ncx_sound_t ncx_sound_create(const char *paths,
 	return sound;
 }
 
-void ncx_sound_play(const ncx_sound_t sound, const float gain,
-		const float pitch, const float *pos,
-		const uint8_t looping, const uint8_t index) {
+void ncx_sound_play(ncx_sound_t sound, float gain,
+		float pitch, float *pos,
+		uint8_t looping, uint8_t index) {
 	alSourceStop(sound.source);
 	alSourcef(sound.source, AL_GAIN, gain);
 	alSourcef(sound.source, AL_PITCH, pitch);
@@ -85,10 +85,10 @@ void ncx_sound_play(const ncx_sound_t sound, const float gain,
 	alSourcePlay(sound.source);
 }
 
-void ncx_sound_play_delay(ncx_sound_t *sound, const float gain,
-		const float pitch, const float *pos,
-		const uint8_t index, const float time_delta) {
-	const float delay_timer_last = sound->delay_timer;
+void ncx_sound_play_delay(ncx_sound_t *sound, float gain,
+		float pitch, float *pos,
+		uint8_t index, float time_delta) {
+	float delay_timer_last = sound->delay_timer;
 	float times[8];
 	float gains[8];
 	sound->delay_timer += time_delta;
@@ -108,6 +108,10 @@ void ncx_sound_play_delay(ncx_sound_t *sound, const float gain,
 	}
 }
 
+void ncx_sound_stop(ncx_sound_t sound) {
+	alSourceStop(sound.source);
+}
+
 void ncx_sound_destroy(ncx_sound_t *sound) {
 	alDeleteBuffers(sound->buffer_count, sound->buffers);
 	free(sound->buffers);
@@ -116,4 +120,8 @@ void ncx_sound_destroy(ncx_sound_t *sound) {
 		alDeleteSources(8, sound->delay_sources);
 		free(sound->delay_sources);
 	}
+}
+
+void ncx_sound_set_float(ncx_sound_t sound, uint32_t prop, float f) {
+	alSourcef(sound.source, prop, f);
 }

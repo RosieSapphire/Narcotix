@@ -5,7 +5,7 @@
 
 #define POINT_LIGHT_MAX 32
 
-ncx_shader_t ncx_model_shader_create(const NCXLightPoint *lights,
+ncx_shader_t ncx_model_shader_create(const ncx_light_point_t *lights,
 		const uint8_t light_count) {
 
 	ncx_shader_t model_shader =
@@ -19,7 +19,7 @@ ncx_shader_t ncx_model_shader_create(const NCXLightPoint *lights,
 	for(uint8_t i = 0; i < light_count; i++) {
 		uint8_t j;
 		char buffer[128] = { 0 };
-		const NCXLightPoint light_cur = lights[i];
+		const ncx_light_point_t light_cur = lights[i];
 		const char *properties[7] = {
 			"pos", "ambient_color", "diffuse_color", "specular_color",
 			"constant", "linear", "quadratic"
@@ -49,7 +49,7 @@ ncx_shader_t ncx_model_shader_create(const NCXLightPoint *lights,
 }
 
 void ncx_model_shader_lights_update(const ncx_shader_t shader,
-		const NCXLightPoint *lights, const uint8_t light_count) {
+		const ncx_light_point_t *lights, const uint8_t light_count) {
 	ncx_shader_use(shader);
 	const char *properties[7] = {
 		"pos", "ambient_color", "diffuse_color", "specular_color",
@@ -76,7 +76,7 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 	for(uint8_t i = 0; i < light_count; i++) {
 		uint8_t j;
 		char buffer[128] = { 0 };
-		const NCXLightPoint light_cur = lights[i];
+		const ncx_light_point_t light_cur = lights[i];
 		const float *vectors[4] = {
 			light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color,
 			light_cur.specular_color
