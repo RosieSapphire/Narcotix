@@ -1,301 +1,123 @@
-#include "narcotix/glad/glad.h"
-#include "narcotix/shader.h"
-#include "narcotix/render_buffer.h"
-#include "narcotix/helpers.h"
-
+#include "narcotix/context.h"
 #include <assert.h>
-
-#include <GLFW/glfw3.h>
-#include <cglm/cglm.h>
 
 #ifdef DEBUG
 	#include "narcotix/debug.h"
 #endif
 
-static GLFWwindow *window;
-static vec2 window_size;
-static ivec2 window_position;
-
-static uint32_t render_quad_vao;
-static uint32_t render_quad_vbo;
-static NCXShader render_quad_shader;
-
-static uint32_t render_buffer_count;
-static NCXRenderBuffer *render_buffers;
-
 static float time_last = 0.0f;
 
-void ncx_init_internal(const float width, const float height,
-		const uint8_t rb_count, const char *window_name,
-		const uint8_t use_blending, const char *file, const uint32_t line) {
-	/* load up GLFW and GLAD, then set up a window */
-	#ifdef DEBUG
-		if(!glfwInit()) {
-			printf("%sNARCOTIX::GLFW::ERROR: %sGLFW initialization fucked up."
-					" %s(Caused at '%s' line %u)\n", D_COLOR_RED,
-					D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-			assert(0);
-		}
-	#else
-		glfwInit();
-	#endif
-
-	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
-
-	glfwSetErrorCallback((void *)&glfw_error_callback);
-
-	render_buffer_count = rb_count;
-	window_size[0] = width;
-	window_size[1] = height;
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow((int32_t)width, (int32_t)height,
-			window_name, NULL, NULL);
-
-	#ifdef DEBUG
-		if(!window) {
-			fprintf(stderr, "%sNARCOTIX::WINDOW::ERROR:"
-					" %sWindow creation fucked up. %s"
-					"(Caused at '%s' line %u)\n", D_COLOR_RED, D_COLOR_YELLOW,
-					D_COLOR_DEFAULT, file, line);
-			glfwTerminate();
-			assert(0);
-		}
-	#endif
-
-	glfwMakeContextCurrent(window);
-
-	window_position[0] = (int32_t)((vidmode->width / 2) - (width / 2));
-	window_position[1] = (int32_t)((vidmode->height / 2) - (height / 2));
-	glfwSetWindowPos(window, window_position[0],
-			window_position[1]);
-
-	#ifdef DEBUG
-		if(!gladLoadGL()) {
-			fprintf(stderr, "%sNARCOTIX::GLAD::ERROR: %sGLAD failed to load"
-					" OpenGL functions. %s(Caused at '%s' line %u)\n",
-					D_COLOR_RED, D_COLOR_YELLOW, D_COLOR_DEFAULT, file, line);
-			glfwTerminate();
-			assert(0);
-		}
-	#else 
-		gladLoadGL();
-	#endif
-
-	/* set up the render buffer vertex data */
-	const float render_quad_vertices[] = {
-		 1.0f, -1.0f,	1.0f, 0.0f,
-		-1.0f,  1.0f,	0.0f, 1.0f,
-		-1.0f, -1.0f,	0.0f, 0.0f,
-	
-		 1.0f, -1.0f,	1.0f, 0.0f,
-		 1.0f,  1.0f,	1.0f, 1.0f,
-		-1.0f,  1.0f,	0.0f, 1.0f,
-	};
-
-	glGenVertexArrays(1, &render_quad_vao);
-	glBindVertexArray(render_quad_vao);
-
-	glGenBuffers(1, &render_quad_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, render_quad_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(render_quad_vertices),
-			render_quad_vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	/* load in the render buffer's shader */
-	render_quad_shader = ncx_shader_create_internal(
-			"res/shaders/builtin/screen_vert.glsl", NULL,
-			"res/shaders/builtin/screen_frag.glsl", file, line);
-	render_buffers = malloc(render_buffer_count * sizeof(NCXRenderBuffer));
-	for(uint8_t i = 0; i < render_buffer_count; i++) {
-		NCXRenderBuffer *rb_cur = render_buffers + i;
-		glGenFramebuffers(1, &rb_cur->fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, rb_cur->fbo);
-
-		glGenTextures(1, &rb_cur->texture);
-		glBindTexture(GL_TEXTURE_2D, rb_cur->texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-				0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-				GL_TEXTURE_2D, rb_cur->texture, 0);
-
-		glGenRenderbuffers(1, &rb_cur->rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rb_cur->rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER,
-				GL_DEPTH24_STENCIL8, width, height);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER,
-				GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb_cur->rbo);
-
-		#ifdef DEBUG
-			if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
-					GL_FRAMEBUFFER_COMPLETE) {
-				printf("ERROR: Framebuffer fucked up\n");
-				assert(0);
-			}
-		#endif
-
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	glViewport(0, 0, (int32_t)width, (int32_t)height);
-
-	if(use_blending) {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
-	#ifdef DEBUG
-		printf("%sNARCOTIX::RENDERER::CREATE: %sRenderer has successfully been"
-				" created, as well as loading GLFW and GLAD. %s"
-				"(Caused at %s line %u)\n", D_COLOR_GREEN, D_COLOR_YELLOW,
-				D_COLOR_DEFAULT, file, line);
-	#endif
-}
-
-float ncx_time_get(void) {
+float ncx_context_time_get(void) {
 	return (float)glfwGetTime();
 }
 
-void ncx_time_delta_init(void) {
-	time_last = (float)glfwGetTime();
+void ncx_context_time_delta_init(void) {
+	time_last = ncx_context_time_get();
 }
 
-float ncx_time_delta_get(void) {
-	float time_now = ncx_time_get();
+float ncx_context_time_delta_get(void) {
+	float time_now = ncx_context_time_get();
 	float time_delta = time_now - time_last;
 	time_last = time_now;
 	return time_delta;
 }
 
-void ncx_mouse_center(void) {
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(window,
-			(double)window_size[0] / 2, (double)window_size[1] / 2);
+void ncx_context_mouse_center(const NCXContext context) {
+	glfwSetInputMode(context.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(context.window,
+			(double)context.window_size[0] / 2,
+			(double)context.window_size[1] / 2);
 }
 
-uint8_t ncx_key_get(int32_t key) {
-	return (uint8_t)glfwGetKey(window, key);
+uint8_t ncx_context_key_get(const NCXContext context, const int32_t key) {
+	return (uint8_t)glfwGetKey(context.window, key);
 }
 
-uint8_t ncx_key_get_press(int32_t key) {
-	return ncx_key_get(key) == GLFW_PRESS;
+uint8_t ncx_context_key_get_press(const NCXContext context, int32_t key) {
+	return ncx_context_key_get(context, key) == GLFW_PRESS;
 }
 
-uint8_t ncx_key_get_release(int32_t key) {
-	return ncx_key_get(key) == GLFW_RELEASE;
+uint8_t ncx_context_key_get_release(const NCXContext context, int32_t key) {
+	return ncx_context_key_get(context, key) == GLFW_RELEASE;
 }
 
-uint8_t ncx_mouse_button_get(int32_t button) {
-	return (uint8_t)glfwGetMouseButton(window, button);
+uint8_t ncx_context_mouse_button_get(const NCXContext context, int32_t button) {
+	return (uint8_t)glfwGetMouseButton(context.window, button);
 }
 
-void ncx_mouse_pos_get(vec2 mouse_pos) {
+void ncx_context_mouse_pos_get(const NCXContext context, vec2 mouse_pos) {
 	double mouse_x, mouse_y;
-	glfwGetCursorPos(window, &mouse_x, &mouse_y);
+	glfwGetCursorPos(context.window, &mouse_x, &mouse_y);
 	mouse_pos[0] = (float)mouse_x;
 	mouse_pos[1] = (float)mouse_y;
 }
 
-void ncx_mouse_pos_set(vec2 mouse_pos) {
-	glfwSetCursorPos(window, (double)mouse_pos[0], (double)mouse_pos[1]);
+void ncx_context_mouse_pos_set(const NCXContext context, vec2 mouse_pos) {
+	glfwSetCursorPos(context.window,
+			(double)mouse_pos[0], (double)mouse_pos[1]);
 }
 
-void ncx_mouse_input_raw(const uint8_t toggle) {
+void ncx_context_mouse_input_raw(const NCXContext context,
+		const uint8_t toggle) {
 	assert(glfwRawMouseMotionSupported());
-	glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, toggle);
+	glfwSetInputMode(context.window, GLFW_RAW_MOUSE_MOTION, toggle);
 }
 
-void ncx_clear_color(const float r, const float g,
+void ncx_context_clear_color(const float r, const float g,
 		const float b, const float a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void ncx_clear_depth(void) {
+void ncx_context_clear_depth(void) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void ncx_render_buffer_bind(const uint8_t index) {
-	assert(index < render_buffer_count);
-	glBindFramebuffer(GL_FRAMEBUFFER, render_buffers[index].fbo);
+void ncx_context_render_buffer_bind(const NCXContext context,
+		const uint8_t index) {
+	assert(index < context.render_buffer_count);
+	glBindFramebuffer(GL_FRAMEBUFFER, context.render_buffers[index].fbo);
 }
 
-void ncx_render_buffer_unbind(void) {
+void ncx_context_render_buffer_unbind(void) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_buffer_display(const NCXTexture overlay, const float time,
+void ncx_context_buffer_display(const NCXContext context,
+		const NCXTexture overlay, const float time,
 		const float trip_intensity) {
-	for(uint8_t i = 0; i < render_buffer_count; i++) {
+	for(uint8_t i = 0; i < context.render_buffer_count; i++) {
 		glDisable(GL_DEPTH_TEST);
-		glUseProgram(render_quad_shader);
-		glUniform1i(
-				glGetUniformLocation(render_quad_shader, "screen_texture"), 0);
-		glUniform1i(
-				glGetUniformLocation(render_quad_shader, "trippy_texture"), 1);
-		glUniform1i(
-				glGetUniformLocation(render_quad_shader, "use_trippy_effect"),
-				(overlay > 0));
-		glUniform1f(glGetUniformLocation(render_quad_shader, "time"), time);
-		glUniform1f(
-				glGetUniformLocation(render_quad_shader, "trip_intensity"),
-				trip_intensity);
+		ncx_shader_use(context.render_quad_shader);
+		ncx_shader_uniform_int(context.render_quad_shader, "screen_texture", 0);
+		ncx_shader_uniform_int(context.render_quad_shader, "trippy_texture", 1);
+		ncx_shader_uniform_int(context.render_quad_shader,
+				"use_trippy_effect", overlay);
+		ncx_shader_uniform_float(context.render_quad_shader, "time", time);
+		ncx_shader_uniform_float(context.render_quad_shader,
+				"trip_intensity", trip_intensity);
 
-		glBindVertexArray(render_quad_vao);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, render_buffers[i].texture);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, overlay);
+		glBindVertexArray(context.render_quad_vao);
+		ncx_texture_use(context.render_buffers[i].texture, 0);
+		ncx_texture_use(overlay, 1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		ncx_texture_use(0, 0);
+		ncx_texture_use(0, 1);
 		glBindVertexArray(0);
 		glEnable(GL_DEPTH_TEST);
 	}
 }
 
-void ncx_buffer_swap(void) {
-	glfwSwapBuffers(window);
+void ncx_context_buffer_swap(const NCXContext context) {
+	glfwSwapBuffers(context.window);
 	glfwPollEvents();
 }
 
-void ncx_terminate(void) {
-	NCXRenderBuffer *rb_end = render_buffers + render_buffer_count;
-	for(NCXRenderBuffer *rb_cur = render_buffers; rb_cur < rb_end; rb_cur++) {
-		glDeleteFramebuffers(1, &rb_cur->fbo);
-		glDeleteRenderbuffers(1, &rb_cur->rbo);
-		glDeleteTextures(1, &rb_cur->texture);
-	}
-	free(render_buffers);
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
+uint8_t ncx_context_window_is_running(const NCXContext context) {
+	return !glfwWindowShouldClose(context.window);
 }
 
-uint8_t ncx_window_is_running(void) {
-	return !glfwWindowShouldClose(window);
-}
-
-void ncx_window_close(void) {
-	glfwSetWindowShouldClose(window, 1);
+void ncx_context_window_close(const NCXContext context) {
+	glfwSetWindowShouldClose(context.window, 1);
 }

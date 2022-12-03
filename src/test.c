@@ -1,23 +1,10 @@
 #include "narcotix/context.h"
 #include "narcotix/sound_engine.h"
 #include "narcotix/sound.h"
-#include "narcotix/shader.h"
 #include "narcotix/font.h"
 #include "narcotix/light_point.h"
 #include "narcotix/helpers.h"
-#include "narcotix/mesh.h"
 #include "narcotix/model.h"
-#include "narcotix/animation.h"
-
-#include <assimp/scene.h>
-#include <assimp/cimport.h>
-#include <assimp/postprocess.h>
-
-// #define ROSE_PETAL_IMPL
-// #include "rose_petal.h"
-
-#include "narcotix/glad/glad.h"
-#include <GLFW/glfw3.h>
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -25,9 +12,8 @@
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
-	// rp_memory_init();
-
-	ncx_init(WINDOW_WIDTH, WINDOW_HEIGHT, 2, "Narcotix Test", 1);
+	NCXContext context =
+		ncx_context_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, "Narcotix Test", 1);
 	NCXSoundEngine sound_engine = ncx_sound_engine_create();
 	NCXSound test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
@@ -98,19 +84,19 @@ int main() {
 	glm_mat4_identity(view);
 	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
 	
-	ncx_time_delta_init();
-	while(ncx_window_is_running()) {
+	ncx_context_time_delta_init();
+	while(ncx_context_window_is_running(context)) {
 
 		/* checking for quit */
-		if(ncx_key_get(GLFW_KEY_ESCAPE)) {
-			ncx_window_close();
+		if(ncx_context_key_get(context, GLFW_KEY_ESCAPE)) {
+			ncx_context_window_close(context);
 			break;
 		}
 
 		/* drawing gun */
-		ncx_render_buffer_bind(0);
-		ncx_clear_color(0.0f, 0.055f, 0.122f, 1.0f);
-		ncx_clear_depth();
+		ncx_context_render_buffer_bind(context, 0);
+		ncx_context_clear_color(0.0f, 0.055f, 0.122f, 1.0f);
+		ncx_context_clear_depth();
 
 		ncx_shader_use(model_shader);
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
@@ -122,10 +108,10 @@ int main() {
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
 				trip_intensity);
 
-		const float time_now = ncx_time_get();
+		const float time_now = ncx_context_time_get();
 		ncx_shader_uniform_float(model_shader, "time", time_now);
 
-		const float time_delta = ncx_time_delta_get();
+		const float time_delta = ncx_context_time_delta_get();
 
 		/* drawing pistol */
 		mat4 model_mat;
@@ -148,8 +134,10 @@ int main() {
 		glm_rotate(model_mat, sinf(time_now), GLM_YUP);
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
-		ncx_render_buffer_bind(1);
-		ncx_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
+		ncx_context_render_buffer_bind(context, 1);
+		ncx_context_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
+
+		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
 				GLM_VEC2(0.02f, 0.92f), GLM_VEC3_ONE, 0.8f, WINDOW_SIZE,
 				font_shader);
@@ -158,10 +146,10 @@ int main() {
 				" from Mushroom Jazz 2", GLM_VEC2(0.02f, 0.04f),
 				GLM_VEC3_ONE, 0.5f, WINDOW_SIZE,
 				font_shader);
-		ncx_render_buffer_unbind();
 
-		ncx_buffer_display(0, time_now, trip_intensity);
-		ncx_buffer_swap();
+		ncx_context_render_buffer_unbind();
+		ncx_context_buffer_display(context, 0, time_now, trip_intensity);
+		ncx_context_buffer_swap(context);
 	}
 
 	ncx_sound_destroy(&test_sound);
@@ -181,9 +169,7 @@ int main() {
 
 	ncx_shader_destroy(model_shader);
 
-	ncx_terminate();
+	ncx_context_destroy(&context);
 
-	// rp_memory_print();
-	// rp_memory_terminate();
 	return 0;
 }
