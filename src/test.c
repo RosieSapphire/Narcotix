@@ -1,12 +1,11 @@
 #include "narcotix/context.h"
-#include "narcotix/sound_engine.h"
 #include "narcotix/sound.h"
 #include "narcotix/font.h"
 #include "narcotix/light_point.h"
 #include "narcotix/helpers.h"
 #include "narcotix/model.h"
 #include "narcotix/ui.h"
-#include "narcotix/material.h"
+
 #include "test_paths.h"
 
 #define WINDOW_WIDTH  1920
@@ -17,11 +16,8 @@
 
 int main() {
 	ncx_init(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
+	ncx_sound_init();
 
-	/* TODO: Maybe have sound initialization in the NCX_INIT function.
-	 * Or at least move it into sound.h and remove sound_engine.h, cuz
-	 * it's retarded as fuck */
-	ncx_sound_engine_init();
 	ncx_sound_t test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
 	ncx_shader_t font_shader =
@@ -164,7 +160,7 @@ int main() {
 	}
 
 	ncx_sound_destroy(&test_sound);
-	ncx_sound_engine_terminate();
+	ncx_sound_terminate();
 	
 	ncx_model_destroy(&bong_model);
 	ncx_model_destroy(&pistol_model);

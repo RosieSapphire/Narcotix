@@ -1,9 +1,27 @@
 #include "narcotix/sound.h"
 #include <AL/al.h>
+#include <AL/alc.h>
 #include <malloc.h>
 #include <cglm/cglm.h>
 #include <sndfile.h>
 #include <assert.h>
+
+static ALCdevice *sound_device;
+static ALCcontext *sound_context;
+
+void ncx_sound_init(void) {
+	sound_device = alcOpenDevice(NULL);
+	assert(sound_device);
+	
+	sound_context = alcCreateContext(sound_device, NULL);
+	assert(sound_context);
+	alcMakeContextCurrent(sound_context);
+}
+
+void ncx_sound_terminate(void) {
+	alcDestroyContext(sound_context);
+	alcCloseDevice(sound_device);
+}
 
 ncx_sound_t ncx_sound_create(const char *paths,
 		uint8_t sample_count, uint8_t use_delay) {

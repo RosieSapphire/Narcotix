@@ -17,6 +17,9 @@ typedef struct {
 	float delay_timer;
 } ncx_sound_t;
 
+void ncx_sound_init(void);
+void ncx_sound_terminate(void);
+
 ncx_sound_t ncx_sound_create(const char *paths, uint8_t sample_count,
 		uint8_t use_delay);
 void ncx_sound_destroy(ncx_sound_t *ncx_sound);
