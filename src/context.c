@@ -2,11 +2,22 @@
 #include "narcotix/helpers.h"
 #include <assert.h>
 
+static GLFWwindow *window;
+static vec2 window_size;
+static ivec2 window_position;
+
+static uint32_t render_quad_vao;
+static uint32_t render_quad_vbo;
+static ncx_shader_t render_quad_shader;
+
+static uint32_t render_buffer_count;
+static ncx_render_buffer_t *render_buffers;
+
 static float time_last = 0.0f;
 static uint8_t key_states[512];
 static uint8_t mouse_states[2];
 
-ncx_context_t ncx_context_create(const float width, const float height,
+void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending) {
 
@@ -19,33 +30,32 @@ ncx_context_t ncx_context_create(const float width, const float height,
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	ncx_context_t context;
-	context.window = glfwCreateWindow((int32_t)width, (int32_t)height,
+	window = glfwCreateWindow((int32_t)width, (int32_t)height,
 			window_name, NULL, NULL);
-	assert(context.window);
-	glfwMakeContextCurrent(context.window);
+	assert(window);
+	glfwMakeContextCurrent(window);
 
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
-	context.window_position[0] =
+	window_position[0] =
 		(int32_t)((vidmode->width / 2) - (width / 2));
-	context.window_position[1] =
+	window_position[1] =
 		(int32_t)((vidmode->height / 2) - (height / 2));
-	glfwSetWindowPos(context.window, context.window_position[0],
-			context.window_position[1]);
+	glfwSetWindowPos(window, window_position[0],
+			window_position[1]);
 
-	context.window_size[0] = width;
-	context.window_size[1] = height;
+	window_size[0] = width;
+	window_size[1] = height;
 
 	uint32_t glad_status = gladLoadGL();
 	assert(glad_status);
 
 	/* set up the render buffer vertex data */
-	glGenVertexArrays(1, &context.render_quad_vao);
-	glBindVertexArray(context.render_quad_vao);
+	glGenVertexArrays(1, &render_quad_vao);
+	glBindVertexArray(render_quad_vao);
 
-	glGenBuffers(1, &context.render_quad_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, context.render_quad_vbo);
+	glGenBuffers(1, &render_quad_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, render_quad_vbo);
 
 	const float render_quad_vertices[] = {
 		 1.0f, -1.0f,	1.0f, 0.0f,
@@ -67,16 +77,16 @@ ncx_context_t ncx_context_create(const float width, const float height,
 	glBindVertexArray(0);
 
 	/* load in the render buffer's shader */
-	context.render_quad_shader = ncx_shader_create(
+	render_quad_shader = ncx_shader_create(
 			"res/shaders/builtin/screen_vert.glsl", NULL,
 			"res/shaders/builtin/screen_frag.glsl");
 
-	context.render_buffer_count = rb_count;
-	context.render_buffers =
-		malloc(context.render_buffer_count * sizeof(ncx_render_buffer_t));
+	render_buffer_count = rb_count;
+	render_buffers =
+		malloc(render_buffer_count * sizeof(ncx_render_buffer_t));
 
-	for(uint8_t i = 0; i < context.render_buffer_count; i++) {
-		ncx_render_buffer_t *rb_cur = context.render_buffers + i;
+	for(uint8_t i = 0; i < render_buffer_count; i++) {
+		ncx_render_buffer_t *rb_cur = render_buffers + i;
 		glGenFramebuffers(1, &rb_cur->fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, rb_cur->fbo);
 
@@ -121,129 +131,129 @@ ncx_context_t ncx_context_create(const float width, const float height,
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-
-	return context;
 }
 
-void ncx_context_destroy(ncx_context_t *context) {
-	ncx_render_buffer_t *rb_end = context->render_buffers +
-		context->render_buffer_count;
-	for(ncx_render_buffer_t *rb_cur = context->render_buffers;
+void ncx_terminate() {
+	ncx_render_buffer_t *rb_end = render_buffers +
+		render_buffer_count;
+	for(ncx_render_buffer_t *rb_cur = render_buffers;
 			rb_cur < rb_end; rb_cur++) {
 		glDeleteFramebuffers(1, &rb_cur->fbo);
 		glDeleteRenderbuffers(1, &rb_cur->rbo);
 		glDeleteTextures(1, &rb_cur->texture);
 	}
-	free(context->render_buffers);
+	free(render_buffers);
 
-	glfwDestroyWindow(context->window);
+	glfwDestroyWindow(window);
 	glfwTerminate();
 }
 
-float ncx_context_time_get(void) {
+float ncx_time(void) {
 	return (float)glfwGetTime();
 }
 
-void ncx_context_time_delta_init(void) {
-	time_last = ncx_context_time_get();
+void ncx_time_delta_init(void) {
+	time_last = ncx_time();
 }
 
-float ncx_context_time_delta_get(void) {
-	float time_now = ncx_context_time_get();
+float ncx_time_delta(void) {
+	float time_now = ncx_time();
 	float time_delta = time_now - time_last;
 	time_last = time_now;
 	return time_delta;
 }
 
-void ncx_context_mouse_center(const ncx_context_t context) {
-	glfwSetInputMode(context.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(context.window,
-			(double)context.window_size[0] / 2,
-			(double)context.window_size[1] / 2);
+void ncx_mouse_center() {
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(window,
+			(double)window_size[0] / 2,
+			(double)window_size[1] / 2);
 }
 
-uint8_t ncx_context_key_get_down(const ncx_context_t context,
-		const int32_t key) {
-	key_states[key] = glfwGetKey(context.window, key);
+uint8_t ncx_key_down(const int32_t key) {
+	key_states[key] = glfwGetKey(window, key);
 	return key_states[key];
 }
 
-uint8_t ncx_context_key_get_pressed(const ncx_context_t context, int32_t key) {
-	uint8_t key_state_new = glfwGetKey(context.window, key);
+uint8_t ncx_key_pressed(int32_t key) {
+	uint8_t key_state_new = glfwGetKey(window, key);
 	uint8_t key_pressed_now = key_state_new && !key_states[key];
 	key_states[key] = key_state_new;
 	return key_pressed_now;
 }
 
-uint8_t ncx_context_mouse_button_get_down(const ncx_context_t context,
-		int32_t button) {
+uint8_t ncx_key_released(int32_t key) {
+	uint8_t key_state_new = glfwGetKey(window, key);
+	uint8_t key_released_now = !key_state_new && key_states[key];
+	key_states[key] = key_state_new;
+	return key_released_now;
+}
 
-	mouse_states[button] = glfwGetMouseButton(context.window, button);
+uint8_t ncx_mouse_button_down(int32_t button) {
+
+	mouse_states[button] = glfwGetMouseButton(window, button);
 	return mouse_states[button];
 }
 
-uint8_t ncx_context_mouse_button_get_pressed(const ncx_context_t context,
-		int32_t button) {
-	uint8_t mouse_state_new = glfwGetMouseButton(context.window, button);
+uint8_t ncx_mouse_button_pressed(int32_t button) {
+	uint8_t mouse_state_new = glfwGetMouseButton(window, button);
 	uint8_t mouse_pressed_now = mouse_state_new && !mouse_states[button];
 	mouse_states[button] = mouse_state_new;
 	return mouse_pressed_now;
 }
 
-void ncx_context_mouse_pos_get(const ncx_context_t context, vec2 mouse_pos) {
+void ncx_mouse_pos(vec2 mouse_pos) {
 	double mouse_x, mouse_y;
-	glfwGetCursorPos(context.window, &mouse_x, &mouse_y);
+	glfwGetCursorPos(window, &mouse_x, &mouse_y);
 	mouse_pos[0] = (float)mouse_x;
 	mouse_pos[1] = (float)mouse_y;
 }
 
-void ncx_context_mouse_pos_set(const ncx_context_t context, vec2 mouse_pos) {
-	glfwSetCursorPos(context.window,
+void ncx_mouse_pos_set(vec2 mouse_pos) {
+	glfwSetCursorPos(window,
 			(double)mouse_pos[0], (double)mouse_pos[1]);
 }
 
-void ncx_context_mouse_input_raw(const ncx_context_t context,
-		const uint8_t toggle) {
+void ncx_mouse_input_raw(const uint8_t toggle) {
 	assert(glfwRawMouseMotionSupported());
-	glfwSetInputMode(context.window, GLFW_RAW_MOUSE_MOTION, toggle);
+	glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, toggle);
 }
 
-void ncx_context_clear_color(const float r, const float g,
+void ncx_clear_color(const float r, const float g,
 		const float b, const float a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void ncx_context_clear_depth(void) {
+void ncx_clear_depth(void) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void ncx_context_render_buffer_bind(const ncx_context_t context,
-		const uint8_t index) {
-	assert(index < context.render_buffer_count);
-	glBindFramebuffer(GL_FRAMEBUFFER, context.render_buffers[index].fbo);
+void ncx_render_buffer_bind(const uint8_t index) {
+	assert(index < render_buffer_count);
+	glBindFramebuffer(GL_FRAMEBUFFER, render_buffers[index].fbo);
 }
 
-void ncx_context_render_buffer_unbind(void) {
+void ncx_render_buffer_unbind(void) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_context_buffer_display(const ncx_context_t context,
-		const ncx_texture_t overlay, const float time,
+void ncx_buffer_display(const ncx_texture_t overlay, const float time,
 		const float trip_intensity) {
-	for(uint8_t i = 0; i < context.render_buffer_count; i++) {
+
+	for(uint8_t i = 0; i < render_buffer_count; i++) {
 		glDisable(GL_DEPTH_TEST);
-		ncx_shader_use(context.render_quad_shader);
-		ncx_shader_uniform_int(context.render_quad_shader, "screen_texture", 0);
-		ncx_shader_uniform_int(context.render_quad_shader, "trippy_texture", 1);
-		ncx_shader_uniform_int(context.render_quad_shader,
+		ncx_shader_use(render_quad_shader);
+		ncx_shader_uniform_int(render_quad_shader, "screen_texture", 0);
+		ncx_shader_uniform_int(render_quad_shader, "trippy_texture", 1);
+		ncx_shader_uniform_int(render_quad_shader,
 				"use_trippy_effect", overlay);
-		ncx_shader_uniform_float(context.render_quad_shader, "time", time);
-		ncx_shader_uniform_float(context.render_quad_shader,
+		ncx_shader_uniform_float(render_quad_shader, "time", time);
+		ncx_shader_uniform_float(render_quad_shader,
 				"trip_intensity", trip_intensity);
 
-		glBindVertexArray(context.render_quad_vao);
-		ncx_texture_use(context.render_buffers[i].texture, 0);
+		glBindVertexArray(render_quad_vao);
+		ncx_texture_use(render_buffers[i].texture, 0);
 		ncx_texture_use(overlay, 1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -254,20 +264,20 @@ void ncx_context_buffer_display(const ncx_context_t context,
 	}
 }
 
-void ncx_context_buffer_swap(const ncx_context_t context) {
-	glfwSwapBuffers(context.window);
+void ncx_buffer_swap() {
+	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
 
-uint8_t ncx_context_window_is_running(const ncx_context_t context) {
-	if(ncx_context_key_get_pressed(context, GLFW_KEY_ESCAPE)) {
-		ncx_context_window_close(context);
+uint8_t ncx_window_is_running() {
+	if(ncx_key_pressed(GLFW_KEY_ESCAPE)) {
+		ncx_window_close();
 		return 0;
 	}
 
-	return !glfwWindowShouldClose(context.window);
+	return !glfwWindowShouldClose(window);
 }
 
-void ncx_context_window_close(const ncx_context_t context) {
-	glfwSetWindowShouldClose(context.window, 1);
+void ncx_window_close() {
+	glfwSetWindowShouldClose(window, 1);
 }

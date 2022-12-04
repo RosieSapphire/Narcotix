@@ -16,9 +16,11 @@
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
-	ncx_context_t context =
-		ncx_context_create(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
+	ncx_init(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
 
+	/* TODO: Maybe have sound initialization in the NCX_INIT function.
+	 * Or at least move it into sound.h and remove sound_engine.h, cuz
+	 * it's retarded as fuck */
 	ncx_sound_engine_init();
 	ncx_sound_t test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
 
@@ -97,13 +99,13 @@ int main() {
 	glm_mat4_identity(view);
 	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
 	
-	ncx_context_time_delta_init();
-	while(ncx_context_window_is_running(context)) {
+	ncx_time_delta_init();
+	while(ncx_window_is_running()) {
 
 		/* drawing gun */
-		ncx_context_render_buffer_bind(context, 0);
-		ncx_context_clear_color(0.0f, 0.055f, 0.122f, 1.0f);
-		ncx_context_clear_depth();
+		ncx_render_buffer_bind(0);
+		ncx_clear_color(0.0f, 0.055f, 0.122f, 1.0f);
+		ncx_clear_depth();
 
 		ncx_shader_use(model_shader);
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
@@ -115,10 +117,10 @@ int main() {
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
 				trip_intensity);
 
-		const float time_now = ncx_context_time_get();
+		const float time_now = ncx_time();
 		ncx_shader_uniform_float(model_shader, "time", time_now);
 
-		const float time_delta = ncx_context_time_delta_get();
+		const float time_delta = ncx_time_delta();
 
 		/* drawing pistol */
 		mat4 model_mat;
@@ -141,8 +143,8 @@ int main() {
 		glm_rotate(model_mat, sinf(time_now), GLM_YUP);
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
-		ncx_context_render_buffer_bind(context, 1);
-		ncx_context_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
+		ncx_render_buffer_bind(1);
+		ncx_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
 
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
@@ -156,9 +158,9 @@ int main() {
 
 		ncx_ui_element_draw(ui_test, 0);
 
-		ncx_context_render_buffer_unbind();
-		ncx_context_buffer_display(context, 0, time_now, trip_intensity);
-		ncx_context_buffer_swap(context);
+		ncx_render_buffer_unbind();
+		ncx_buffer_display(0, time_now, trip_intensity);
+		ncx_buffer_swap();
 	}
 
 	ncx_sound_destroy(&test_sound);
@@ -179,7 +181,7 @@ int main() {
 
 	ncx_shader_destroy(model_shader);
 
-	ncx_context_destroy(&context);
+	ncx_terminate();
 
 	return 0;
 }

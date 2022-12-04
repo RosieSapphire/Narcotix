@@ -6,50 +6,32 @@
 #include "narcotix/glad/glad.h"
 #include <GLFW/glfw3.h>
 
-typedef struct {
-	GLFWwindow *window;
-	vec2 window_size;
-	ivec2 window_position;
-	
-	uint32_t render_quad_vao;
-	uint32_t render_quad_vbo;
-	ncx_shader_t render_quad_shader;
-	
-	uint32_t render_buffer_count;
-	ncx_render_buffer_t *render_buffers;
-} ncx_context_t;
-
-ncx_context_t ncx_context_create(const float width, const float height,
+void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending);
-void ncx_context_destroy(ncx_context_t *context);
+void ncx_terminate(void);
 
-float ncx_context_time_get(void);
-void ncx_context_time_delta_init(void);
-float ncx_context_time_delta_get(void);
-uint8_t ncx_context_key_get_down(const ncx_context_t context,
-		const int32_t key);
-uint8_t ncx_context_key_get_pressed(const ncx_context_t context, int32_t key);
-uint8_t ncx_context_mouse_button_get_down(const ncx_context_t context,
-		int32_t button);
-uint8_t ncx_context_mouse_button_get_pressed(const ncx_context_t context,
-		int32_t button);
-void ncx_context_mouse_center(const ncx_context_t context);
-void ncx_context_mouse_pos_get(const ncx_context_t context, vec2 mouse_pos);
-void ncx_context_mouse_pos_set(const ncx_context_t context, vec2 mouse_pos);
-void ncx_context_mouse_input_raw(const ncx_context_t context,
-		const uint8_t toggle);
-void ncx_context_clear_color(const float r, const float g,
+float ncx_time(void);
+void ncx_time_delta_init(void);
+float ncx_time_delta(void);
+uint8_t ncx_key_down(const int32_t key);
+uint8_t ncx_key_pressed(int32_t key);
+uint8_t ncx_key_released(int32_t key);
+uint8_t ncx_mouse_button_down(int32_t button);
+uint8_t ncx_mouse_button_pressed(int32_t button);
+void ncx_mouse_center(void);
+void ncx_mouse_pos(vec2 mouse_pos);
+void ncx_mouse_pos_set(vec2 mouse_pos);
+void ncx_mouse_input_raw(const uint8_t toggle);
+void ncx_clear_color(const float r, const float g,
 		const float b, const float a);
-void ncx_context_clear_depth(void);
-void ncx_context_render_buffer_bind(const ncx_context_t context,
-		const uint8_t index);
-void ncx_context_render_buffer_unbind(void);
-void ncx_context_buffer_display(const ncx_context_t context,
-		const ncx_texture_t overlay, const float time,
+void ncx_clear_depth(void);
+void ncx_render_buffer_bind(const uint8_t index);
+void ncx_render_buffer_unbind(void);
+void ncx_buffer_display(const ncx_texture_t overlay, const float time,
 		const float trip_intensity);
-void ncx_context_buffer_swap(const ncx_context_t context);
-uint8_t ncx_context_window_is_running(const ncx_context_t context);
-void ncx_context_window_close(const ncx_context_t context);
+void ncx_buffer_swap(void);
+uint8_t ncx_window_is_running(void);
+void ncx_window_close(void);
 
 #endif
