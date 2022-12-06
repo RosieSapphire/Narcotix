@@ -47,3 +47,11 @@ ncx_vec3_t ncx_vec3_scale(ncx_vec3_t x, float s) {
 		x.z * s,
 	};
 }
+
+ncx_vec3_t ncx_vec3_cross(ncx_vec3_t a, ncx_vec3_t b) {
+	return (ncx_vec3_t) {
+		a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x,
+	};
+}

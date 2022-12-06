@@ -14,5 +14,6 @@ ncx_vec3_t ncx_vec3_z_up(void);
 ncx_vec3_t ncx_vec3_add(ncx_vec3_t a, ncx_vec3_t b);
 ncx_vec3_t ncx_vec3_sub(ncx_vec3_t a, ncx_vec3_t b);
 ncx_vec3_t ncx_vec3_scale(ncx_vec3_t x, float s);
+ncx_vec3_t ncx_vec3_cross(ncx_vec3_t a, ncx_vec3_t b);
 
 #endif

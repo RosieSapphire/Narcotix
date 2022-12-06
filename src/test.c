@@ -68,9 +68,8 @@ int main() {
 		pistol_materials[0],
 	};
 
-	ncx_model_t bong_model = ncx_model_create("res/models/weapons/bong/bong.glb",
-			bong_materials, 0);
-
+	ncx_model_t bong_model =
+		ncx_model_create("res/models/weapons/bong/bong.glb", bong_materials, 0);
 
 	const ncx_material_data_t brick_tex_data = {
 		.diffuse_path = "res/textures/bricks_diffuse.png",
@@ -95,6 +94,13 @@ int main() {
 	mat4 view;
 	glm_mat4_identity(view);
 	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
+
+	{
+		ncx_vec3_t a = {1, 0, 0};
+		ncx_vec3_t b = {0, 1, 0};
+		ncx_vec3_t c = ncx_vec3_cross(a, b);
+		printf("%f, %f, %f\n", c.x, c.y, c.z);
+	}
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
