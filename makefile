@@ -6,9 +6,9 @@ CORES=-j8
 CFLAGS=-std=c99
 
 SRC=glad.c context.c texture.c font.c ui.c sound.c helpers.c shader.c file.c \
-	model.c mesh.c light_point.c material.c animation.c
+	model.c mesh.c light_point.c material.c animation.c vec3.c vec2.c ivec2.c
 OBJ=glad.o context.o texture.o font.o ui.o sound.o helpers.o shader.o file.o \
-	model.o mesh.o light_point.o material.o animation.o
+	model.o mesh.o light_point.o material.o animation.o vec3.o vec2.o ivec2.o
 
 BIN=libnarcotix.a
 

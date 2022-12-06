@@ -2,11 +2,13 @@
 #define __NCX_FONT_H_
 
 #include "narcotix/shader.h"
+#include "narcotix/ivec2.h"
+#include "narcotix/vec2.h"
 
 typedef struct {
 	uint32_t texture;
-	int32_t size[2];
-	int32_t bearing[2];
+	ncx_ivec2_t size;
+	ncx_ivec2_t bearing;
 	uint32_t advance;
 } ncx_character_t;
 
@@ -21,8 +23,8 @@ ncx_shader_t ncx_font_shader_create(const char *font_path_vert,
 ncx_font_t ncx_font_create(const char *path);
 void ncx_font_destroy(ncx_font_t *font);
 
-void ncx_font_draw(const ncx_font_t font, const char *string, float *pos,
-		const float *color, const float scale, float *window_size,
-		const ncx_shader_t shader);
+void ncx_font_draw(ncx_font_t font, const char *string, ncx_vec2_t pos,
+		ncx_vec3_t color, float scale, ncx_vec2_t window_size,
+		ncx_shader_t shader);
 
 #endif

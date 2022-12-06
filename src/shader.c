@@ -25,7 +25,11 @@ ncx_shader_t ncx_shader_create(const char *vert_path,
 
 		shaders[i] = glCreateShader(shader_types[i]);
 		shader_sources[i] = ncx_file_load(paths[i]);
-		assert(shader_sources[i]);
+		if(!shader_sources[i]) {
+			fprintf(stderr, "SHADER ERROR: Failed to load %s Shader code"
+					" from file '%s'.\n", shader_type_names[i], paths[i]);
+			assert(0);
+		}
 
 		glShaderSource(shaders[i], 1,
 				(const char * const *)&shader_sources[i], NULL);
@@ -72,8 +76,9 @@ void ncx_shader_uniform_float(const ncx_shader_t shader, const char *uniform,
 }
 
 void ncx_shader_uniform_vec3(const ncx_shader_t shader, const char *uniform,
-		const vec3 value) {
-	glUniform3fv(glGetUniformLocation(shader, uniform), 1, value);
+		const ncx_vec3_t value) {
+	glUniform3f(glGetUniformLocation(shader, uniform),
+			value.x, value.y, value.z);
 }
 
 void ncx_shader_uniform_mat4(const ncx_shader_t shader, const char *uniform,

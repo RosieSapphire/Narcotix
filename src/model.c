@@ -21,13 +21,13 @@ ncx_shader_t ncx_model_shader_create(const ncx_light_point_t *lights,
 		char buffer[128] = { 0 };
 		const ncx_light_point_t light_cur = lights[i];
 		const char *properties[7] = {
-			"pos", "ambient_color", "diffuse_color", "specular_color",
+			"pos", "ambi_col", "diff_col", "spec_col",
 			"constant", "linear", "quadratic"
 		};
 
-		const float *vectors[4] = {
-			light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color,
-			light_cur.specular_color
+		const ncx_vec3_t vectors[4] = {
+			light_cur.pos, light_cur.ambi_col,
+			light_cur.diff_col, light_cur.spec_col,
 		};
 
 		const float values[3] = {
@@ -52,7 +52,7 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 		const ncx_light_point_t *lights, const uint8_t light_count) {
 	ncx_shader_use(shader);
 	const char *properties[7] = {
-		"pos", "ambient_color", "diffuse_color", "specular_color",
+		"pos", "ambi_col", "diff_col", "spec_col",
 		"constant", "linear", "quadratic",
 	};
 
@@ -63,7 +63,7 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			ncx_shader_uniform_vec3(shader, buffer, GLM_VEC3_ZERO);
+			ncx_shader_uniform_vec3(shader, buffer, ncx_vec3_zero());
 		}
 
 		for(; j < 7; j++) {
@@ -77,9 +77,9 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 		uint8_t j;
 		char buffer[128] = { 0 };
 		const ncx_light_point_t light_cur = lights[i];
-		const float *vectors[4] = {
-			light_cur.pos, light_cur.ambient_color, light_cur.diffuse_color,
-			light_cur.specular_color
+		const ncx_vec3_t vectors[4] = {
+			light_cur.pos, light_cur.ambi_col, light_cur.diff_col,
+			light_cur.spec_col
 		};
 
 		const float values[3] = {

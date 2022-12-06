@@ -21,8 +21,10 @@ void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending) {
 
-	uint32_t glfw_status = glfwInit();
-	assert(glfw_status);
+	if(!glfwInit()) {
+		fprintf(stderr, "GLFW ERROR: GLFW failed to initialize.\n");
+		assert(0);
+	}
 
 	glfwSetErrorCallback((void *)&glfw_error_callback);
 
@@ -32,7 +34,12 @@ void ncx_init(const float width, const float height,
 
 	window = glfwCreateWindow((int32_t)width, (int32_t)height,
 			window_name, NULL, NULL);
-	assert(window);
+	if(!window) {
+		fprintf(stderr, "GLFW ERROR: Failed to create window '%s' (%d x %d)\n",
+			   window_name, (int)width, (int)height);
+		assert(0);
+	}
+
 	glfwMakeContextCurrent(window);
 
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -47,8 +54,11 @@ void ncx_init(const float width, const float height,
 	window_size[0] = width;
 	window_size[1] = height;
 
-	uint32_t glad_status = gladLoadGL();
-	assert(glad_status);
+	if(!gladLoadGL()) {
+		fprintf(stderr, "OPENGL ERROR: Glad failed"
+				" to load OpenGL Functions.\n");
+		assert(0);
+	}
 
 	/* set up the render buffer vertex data */
 	glGenVertexArrays(1, &render_quad_vao);
@@ -190,7 +200,6 @@ uint8_t ncx_key_released(int32_t key) {
 }
 
 uint8_t ncx_mouse_button_down(int32_t button) {
-
 	mouse_states[button] = glfwGetMouseButton(window, button);
 	return mouse_states[button];
 }

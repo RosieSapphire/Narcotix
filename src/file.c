@@ -10,7 +10,11 @@ char *ncx_file_load(const char *path) {
 	char *buffer;
 
 	file = fopen(path, "rb");
-	assert(file);
+	if(!file) {
+		fprintf(stderr, "FILE ERROR: Failed to load file from path '%s'.\n",
+				path);
+		assert(0);
+	}
 
     fseek(file, 0L, SEEK_END);
     size = (uint32_t)ftell(file);

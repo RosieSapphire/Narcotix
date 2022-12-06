@@ -4,9 +4,6 @@
 #include <cglm/cglm.h>
 
 #define EPSILON	0.001f
-#define GLM_VEC4(X, Y, Z, W) ((vec4){X, Y, Z, W})
-#define GLM_VEC3(X, Y, Z) ((vec3){X, Y, Z})
-#define GLM_VEC2(X, Y) ((vec2){X, Y})
 
 float ncx_clampf(const float val, const float min, const float max);
 float ncx_clampf01(const float val);

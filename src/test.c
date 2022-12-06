@@ -11,7 +11,7 @@
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
 #define WINDOW_NAME "NARCOTIX ENGINE TEST"
-#define WINDOW_SIZE ((vec2){WINDOW_WIDTH, WINDOW_HEIGHT})
+#define WINDOW_SIZE ncx_vec2(WINDOW_WIDTH, WINDOW_HEIGHT)
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
 int main() {
@@ -30,13 +30,13 @@ int main() {
 			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
 	ncx_light_point_t lights[2] = {
-		ncx_light_point_create(GLM_VEC3(1.0f, 0.0f, 1.0f),
-				GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(1.0f, 0.0f, 0.0f),
-				GLM_VEC3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f),
+		ncx_light_point_create(ncx_vec3(1.0f, 0.0f, 1.0f),
+				ncx_vec3(0.1f, 0.1f, 0.1f), ncx_vec3(1.0f, 0.0f, 0.0f),
+				ncx_vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f),
 
-		ncx_light_point_create(GLM_VEC3(-1.0f, 0.0f, 1.0f),
-				GLM_VEC3(0.1f, 0.1f, 0.1f), GLM_VEC3(0.0f, 1.0f, 1.0f),
-				GLM_VEC3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f),
+		ncx_light_point_create(ncx_vec3(-1.0f, 0.0f, 1.0f),
+				ncx_vec3(0.1f, 0.1f, 0.1f), ncx_vec3(0.0f, 1.0f, 1.0f),
+				ncx_vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f),
 	};
 
 	/* load models */
@@ -86,14 +86,15 @@ int main() {
 	ncx_texture_t ui_test_tex = ncx_texture_create(ui_test_tex_path,
 			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
 	ncx_ui_element_t ui_test =
-		ncx_ui_element_create(GLM_VEC3_ZERO, (vec2){256, 256}, &ui_test_tex, 1);
+		ncx_ui_element_create(ncx_vec2_zero(), ncx_vec2(256, 256),
+				&ui_test_tex, 1);
 
 	mat4 projection;
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
 	
 	mat4 view;
 	glm_mat4_identity(view);
-	glm_translate(view, GLM_VEC3(0.0f, 0.0f, -1.0f));
+	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
@@ -107,7 +108,7 @@ int main() {
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
 		ncx_shader_uniform_mat4(model_shader, "projection", projection);
 		ncx_shader_uniform_mat4(model_shader, "view", view);
-		ncx_shader_uniform_vec3(model_shader, "view_pos", GLM_VEC3_ZERO);
+		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_zero());
 
 		const float trip_intensity = 0.0f;
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
@@ -121,21 +122,21 @@ int main() {
 		/* drawing pistol */
 		mat4 model_mat;
 		glm_mat4_identity(model_mat);
-		glm_translate(model_mat, GLM_VEC3(-0.2f, 0.0f, 0.0f));
+		glm_translate(model_mat, (vec3){-0.2f, 0.0f, 0.0f});
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
 		glm_mat4_identity(model_mat);
-		glm_scale(model_mat, GLM_VEC3(1.32f, 1.32f, 1.32f));
-		glm_translate(model_mat, GLM_VEC3(0.2f, -0.14f, 0.0f));
+		glm_scale(model_mat, (vec3){1.32f, 1.32f, 1.32f});
+		glm_translate(model_mat, (vec3){0.2f, -0.14f, 0.0f});
 		glm_rotate(model_mat, time_now, GLM_YUP);
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
 		/* drawing bricks */
 		glm_mat4_identity(model_mat);
-		glm_translate(model_mat, GLM_VEC3(sinf(time_now), 0.0f, -1.5f));
+		glm_translate(model_mat, (vec3){sinf(time_now), 0.0f, -1.5f});
 		glm_rotate(model_mat, sinf(time_now), GLM_YUP);
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
@@ -144,12 +145,12 @@ int main() {
 
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
-				GLM_VEC2(0.02f, 0.92f), GLM_VEC3_ONE, 0.8f, WINDOW_SIZE,
+				ncx_vec2(0.02f, 0.92f), ncx_vec3_one(), 0.8f, WINDOW_SIZE,
 				font_shader);
 		ncx_font_draw(normal_font,
 				"Music: 'Sandworms - Andy Caldwell VS. Darkhorse'"
-				" from Mushroom Jazz 2", GLM_VEC2(0.02f, 0.04f),
-				GLM_VEC3_ONE, 0.5f, WINDOW_SIZE,
+				" from Mushroom Jazz 2", ncx_vec2(0.02f, 0.04f),
+				ncx_vec3_one(), 0.5f, WINDOW_SIZE,
 				font_shader);
 
 		ncx_ui_element_draw(ui_test, 0);

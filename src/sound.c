@@ -11,10 +11,16 @@ static ALCcontext *sound_context;
 
 void ncx_sound_init(void) {
 	sound_device = alcOpenDevice(NULL);
-	assert(sound_device);
+	if(!sound_device) {
+		fprintf(stderr, "OPENAL ERROR: Failed to load sound device.\n");
+		assert(0);
+	}
 	
 	sound_context = alcCreateContext(sound_device, NULL);
-	assert(sound_context);
+	if(!sound_context) {
+		fprintf(stderr, "OPENAL ERROR: Failed to create sound context.\n");
+		assert(0);
+	}
 	alcMakeContextCurrent(sound_context);
 }
 
@@ -64,10 +70,18 @@ ncx_sound_t ncx_sound_create(const char *paths,
 		uint64_t size;
 
 		snd_file = sf_open(current_path, SFM_READ, &file_info);
-		assert(snd_file);
+		if(!snd_file) {
+			fprintf(stderr, "SOUND ERROR: Failed to load sound from '%s'.\n",
+					current_path);
+			assert(0);
+		}
 
 		format = formats[file_info.channels - 1];
-		assert(format);
+		if(!format) {
+			fprintf(stderr, "SOUND ERROR: Sound from '%s' doesn't have"
+					" proper format.\n", current_path);
+			assert(0);
+		}
 
 		data = malloc((size_t)(file_info.frames * file_info.channels) *
 				sizeof(int16_t));

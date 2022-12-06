@@ -21,7 +21,11 @@ ncx_texture_t ncx_texture_create(const char *path, const int32_t wrap_mode,
 
 	stbi_set_flip_vertically_on_load(1);
 	uint8_t *data = stbi_load(path, &width, &height, &channels, 0);
-	assert(data);
+	if(!data) {
+		fprintf(stderr, "Failed to load texture data from '%s'.\n", path);
+		assert(0);
+	}
+
 	glTexImage2D(GL_TEXTURE_2D, 0, color_formats[channels], width, height,
 			0, color_formats[channels], GL_UNSIGNED_BYTE, data);
 	stbi_image_free(data);

@@ -1,20 +1,20 @@
 #ifndef __NCX_LIGHT_POINT_H_
 #define __NCX_LIGHT_POINT_H_
 
-#include <stdint.h>
+#include "narcotix/vec3.h"
 
 typedef struct {
-	float pos[3];
-	float ambient_color[3];
-	float diffuse_color[3];
-	float specular_color[3];
+	ncx_vec3_t pos;
+	ncx_vec3_t ambi_col;
+	ncx_vec3_t diff_col;
+	ncx_vec3_t spec_col;
 	float constant;
 	float linear;
 	float quadratic;
 } ncx_light_point_t;
 
-ncx_light_point_t ncx_light_point_create(float *pos,
-		float *ambient_color, float *diffuse_color, float *specular_color,
-		const float constant, const float linear, const float quadratic);
+ncx_light_point_t ncx_light_point_create(ncx_vec3_t pos, ncx_vec3_t ambi_col,
+		ncx_vec3_t diff_col, ncx_vec3_t spec_col, const float constant,
+		const float linear, const float quadratic);
 
 #endif

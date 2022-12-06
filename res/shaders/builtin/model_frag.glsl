@@ -16,9 +16,9 @@ in mat3  o_tbn;
 
 struct light_point_t {
 	vec3  pos;
-	vec3  ambient_color;
-	vec3  diffuse_color;
-	vec3  specular_color;
+	vec3  ambi_col;
+	vec3  diff_col;
+	vec3  spec_col;
 	float constant;
 	float linear;
 	float quadratic;
@@ -56,13 +56,13 @@ vec3 get_light_point(light_point_t l, vec3 normal) {
 	float attenuation =         1.0 / (l.constant + l.linear * distance + l.quadratic * (distance * distance));
 
 	vec2 trip_uv =              vec2(o_uv.x + sin(o_time * 0.1f + o_trip_intensity) * o_trip_intensity * 0.24f, o_uv.y + cos(o_time * 0.2f + o_trip_intensity) * o_trip_intensity * 0.04f);
-	vec3 final_ambient_color =  l.ambient_color * vec3(texture(material.tex_diffuse, trip_uv));
-	vec3 final_diffuse_color =  l.diffuse_color * diffuse_amount * vec3(texture(material.tex_diffuse, trip_uv));
-	vec3 final_specular_color = l.specular_color * specular_amount * vec3(texture(material.tex_specular, trip_uv).r);
-	final_ambient_color *=      attenuation;
-	final_diffuse_color *=      attenuation;
-	final_specular_color *=     attenuation;
-	return final_ambient_color + final_diffuse_color + final_specular_color;
+	vec3 final_ambi_col =  l.ambi_col * vec3(texture(material.tex_diffuse, trip_uv));
+	vec3 final_diff_col =  l.diff_col * diffuse_amount * vec3(texture(material.tex_diffuse, trip_uv));
+	vec3 final_spec_col = l.spec_col * specular_amount * vec3(texture(material.tex_specular, trip_uv).r);
+	final_ambi_col *=      attenuation;
+	final_diff_col *=      attenuation;
+	final_spec_col *=     attenuation;
+	return final_ambi_col + final_diff_col + final_spec_col;
 }
 
 /* TODO: Add directional lights at some point */

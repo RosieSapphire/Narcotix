@@ -42,14 +42,14 @@ void ncx_ui_elements_set_flash(const float flash) {
 	ncx_shader_uniform_float(ui_shader, "flash_amount", flash);
 }
 
-ncx_ui_element_t ncx_ui_element_create(float *pos, float *size,
+ncx_ui_element_t ncx_ui_element_create(ncx_vec2_t pos, ncx_vec2_t size,
 		const ncx_texture_t *textures, const uint8_t texture_count) {
 
 	ncx_ui_element_t element;
 	element.textures = malloc(texture_count * sizeof(ncx_texture_t));
 	memcpy(element.textures, textures, texture_count * sizeof(ncx_texture_t));
-	memcpy(element.pos, pos, sizeof(vec2));
-	memcpy(element.size, size, sizeof(vec2));
+	element.pos = pos;
+	element.size = size;
 
 	return element;
 }
@@ -59,8 +59,8 @@ void ncx_ui_element_draw(const ncx_ui_element_t element,
 	mat4 model;
 	glDisable(GL_DEPTH_TEST);
 	glm_mat4_identity(model);
-	glm_translate(model, (vec3){element.pos[0], element.pos[1], 0.0f});
-	glm_scale(model, (vec3){element.size[0], element.size[1], 1.0f});
+	glm_translate(model, (vec3){element.pos.x, element.pos.y, 0.0f});
+	glm_scale(model, (vec3){element.size.x, element.size.y, 1.0f});
 	
 	glBindVertexArray(vao);
 	ncx_texture_use(element.textures[index], 0);
