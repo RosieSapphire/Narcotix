@@ -211,16 +211,14 @@ uint8_t ncx_mouse_button_pressed(int32_t button) {
 	return mouse_pressed_now;
 }
 
-void ncx_mouse_pos(vec2 mouse_pos) {
-	double mouse_x, mouse_y;
-	glfwGetCursorPos(window, &mouse_x, &mouse_y);
-	mouse_pos[0] = (float)mouse_x;
-	mouse_pos[1] = (float)mouse_y;
+ncx_vec2_t ncx_mouse_pos_get(void) {
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	return (ncx_vec2_t){x, y};
 }
 
-void ncx_mouse_pos_set(vec2 mouse_pos) {
-	glfwSetCursorPos(window,
-			(double)mouse_pos[0], (double)mouse_pos[1]);
+void ncx_mouse_pos_set(ncx_vec2_t new_pos) {
+	glfwSetCursorPos(window, new_pos.x, new_pos.y);
 }
 
 void ncx_mouse_input_raw(const uint8_t toggle) {

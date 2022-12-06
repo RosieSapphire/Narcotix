@@ -5,6 +5,7 @@
 #include "narcotix/helpers.h"
 #include "narcotix/model.h"
 #include "narcotix/ui.h"
+#include "narcotix/mat4.h"
 
 #include "test_paths.h"
 
@@ -91,16 +92,8 @@ int main() {
 	mat4 projection;
 	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
 	
-	mat4 view;
-	glm_mat4_identity(view);
-	glm_translate(view, (vec3){0.0f, 0.0f, -1.0f});
-
-	{
-		ncx_vec3_t a = {1, 0, 0};
-		ncx_vec3_t b = {0, 1, 0};
-		ncx_vec3_t c = ncx_vec3_cross(a, b);
-		printf("%f, %f, %f\n", c.x, c.y, c.z);
-	}
+	ncx_mat4_t view = ncx_mat4_identity();
+	ncx_mat4_translate(&view, ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
@@ -112,8 +105,9 @@ int main() {
 
 		ncx_shader_use(model_shader);
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
-		ncx_shader_uniform_mat4(model_shader, "projection", projection);
-		ncx_shader_uniform_mat4(model_shader, "view", view);
+		ncx_shader_uniform_mat4(model_shader, "projection",
+				(const float *)projection);
+		ncx_shader_uniform_mat4(model_shader, "view", (const float *)&view.a);
 		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_zero());
 
 		const float trip_intensity = 0.0f;

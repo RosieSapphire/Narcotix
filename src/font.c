@@ -11,7 +11,8 @@ ncx_shader_t ncx_font_shader_create(const char *font_path_vert,
 	ncx_shader_t font_shader = ncx_shader_create(font_path_vert, NULL,
 			font_path_frag);
 	ncx_shader_use(font_shader);
-	ncx_shader_uniform_mat4(font_shader, "projection", matrix_projection);
+	ncx_shader_uniform_mat4(font_shader, "projection",
+			(float *)matrix_projection);
 	return font_shader;
 }
 

@@ -86,7 +86,7 @@ ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
 void ncx_meshes_draw(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 		const ncx_shader_t shader, mat4 mat_base) {
 	ncx_shader_use(shader);
-	ncx_shader_uniform_mat4(shader, "model", mat_base);
+	ncx_shader_uniform_mat4(shader, "model", (float *)mat_base);
 	ncx_shader_uniform_int(shader, "material.tex_diffuse", 0);
 	ncx_shader_uniform_int(shader, "material.tex_specular", 1);
 	ncx_shader_uniform_int(shader, "material.tex_normal", 2);
@@ -111,7 +111,7 @@ void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 	ncx_animation_get_matrix(anim, 0, mat_root);
 
 	ncx_shader_use(shader);
-	ncx_shader_uniform_mat4(shader, "model", mat_root);
+	ncx_shader_uniform_mat4(shader, "model", (float *)mat_root);
 	for(uint32_t i = 0; i < mesh_count; i++) {
 		const ncx_mesh_t *const mesh_cur = meshes + i;
 		glBindVertexArray(mesh_cur->buffers[VAO]);
@@ -124,7 +124,7 @@ void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 		}
 		glm_mat4_mul(mat_base, mat_model, mat_model);
 
-		ncx_shader_uniform_mat4(shader, "model", mat_model);
+		ncx_shader_uniform_mat4(shader, "model", (float *)mat_model);
 
 		ncx_texture_use(mesh_cur->material.diffuse, 0);
 		ncx_texture_use(mesh_cur->material.specular, 1);

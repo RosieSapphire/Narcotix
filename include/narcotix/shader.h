@@ -17,6 +17,6 @@ void ncx_shader_uniform_float(const ncx_shader_t shader, const char *uniform,
 void ncx_shader_uniform_vec3(const ncx_shader_t shader, const char *uniform,
 		const ncx_vec3_t value);
 void ncx_shader_uniform_mat4(const ncx_shader_t shader, const char *uniform,
-		const mat4 value);
+		const float *value);
 
 #endif

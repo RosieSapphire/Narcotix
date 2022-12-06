@@ -34,7 +34,7 @@ void ncx_ui_elements_init(const float width, const float height) {
 	ui_shader = ncx_shader_create("res/shaders/builtin/ui_vert.glsl", NULL,
 			"res/shaders/builtin/ui_frag.glsl");
 	ncx_shader_use(ui_shader);
-	ncx_shader_uniform_mat4(ui_shader, "projection", projection);
+	ncx_shader_uniform_mat4(ui_shader, "projection", (float *)projection);
 }
 
 void ncx_ui_elements_set_flash(const float flash) {
@@ -66,7 +66,7 @@ void ncx_ui_element_draw(const ncx_ui_element_t element,
 	ncx_texture_use(element.textures[index], 0);
 
 	ncx_shader_use(ui_shader);
-	ncx_shader_uniform_mat4(ui_shader, "model", model);
+	ncx_shader_uniform_mat4(ui_shader, "model", (float *)model);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
