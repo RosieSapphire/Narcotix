@@ -60,8 +60,10 @@ void ncx_ui_element_draw(const ncx_ui_element_t element,
 		const uint8_t index) {
 	ncx_mat4_t model = ncx_mat4_identity();
 	glDisable(GL_DEPTH_TEST);
-	ncx_mat4_translate(&model, ncx_vec3(element.pos.x, element.pos.y, 0.0f));
-	ncx_mat4_scale(&model, ncx_vec3(element.size.x, element.size.y, 1.0f));
+	model = ncx_mat4_translate(model,
+			ncx_vec3(element.pos.x, element.pos.y, 0.0f));
+	model = ncx_mat4_scale(model,
+			ncx_vec3(element.size.x, element.size.y, 1.0f));
 	
 	glBindVertexArray(vao);
 	ncx_texture_use(element.textures[index], 0);

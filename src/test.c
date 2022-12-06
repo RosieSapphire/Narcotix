@@ -89,11 +89,12 @@ int main() {
 		ncx_ui_element_create(ncx_vec2_zero(), ncx_vec2(256, 256),
 				&ui_test_tex, 1);
 
-	mat4 projection;
-	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f, projection);
+	ncx_mat4_t projection;
+	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f,
+			(vec4 *)projection.mat);
 	
 	ncx_mat4_t view = ncx_mat4_identity();
-	ncx_mat4_translate(&view, ncx_vec3(0, 0, -1));
+	view = ncx_mat4_translate(view, ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
@@ -121,23 +122,23 @@ int main() {
 
 		/* drawing pistol */
 		ncx_mat4_t model_mat = ncx_mat4_identity();
-		ncx_mat4_translate(&model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
+		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
 		model_mat = ncx_mat4_identity();
-		ncx_mat4_translate(&model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
-		ncx_mat4_scale_uni(&model_mat, 1.32f);
-		ncx_mat4_rotate(&model_mat, ncx_vec3_y_up(), time_now * 4);
-		ncx_mat4_print(model_mat);
+		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
+		model_mat = ncx_mat4_scale_uni(model_mat, 1.32f);
+		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), time_now * 4);
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
 		/* drawing bricks */
 		model_mat = ncx_mat4_identity();
-		ncx_mat4_translate(&model_mat, ncx_vec3(sinf(time_now), 0.0f, -1.5f));
-		ncx_mat4_rotate(&model_mat, ncx_vec3_y_up(), sinf(time_now));
+		model_mat = ncx_mat4_translate(model_mat,
+				ncx_vec3(sinf(time_now), 0.0f, -1.5f));
+		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), sinf(time_now));
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
 		ncx_render_buffer_bind(1);

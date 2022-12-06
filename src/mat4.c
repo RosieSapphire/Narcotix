@@ -13,23 +13,25 @@ ncx_mat4_t ncx_mat4_identity(void) {
 	}};
 }
 
-void ncx_mat4_translate(ncx_mat4_t *mat, ncx_vec3_t vec) {
-	mat->mat[3][0] += vec.x;
-	mat->mat[3][1] += vec.y;
-	mat->mat[3][2] += vec.z;
+ncx_mat4_t ncx_mat4_translate(ncx_mat4_t mat, ncx_vec3_t vec) {
+	mat.mat[3][0] += vec.x;
+	mat.mat[3][1] += vec.y;
+	mat.mat[3][2] += vec.z;
+	return mat;
 }
 
-void ncx_mat4_scale(ncx_mat4_t *mat, ncx_vec3_t vec) {
-	mat->mat[0][0] *= vec.x;
-	mat->mat[1][1] *= vec.y;
-	mat->mat[2][2] *= vec.z;
+ncx_mat4_t ncx_mat4_scale(ncx_mat4_t mat, ncx_vec3_t vec) {
+	mat.mat[0][0] *= vec.x;
+	mat.mat[1][1] *= vec.y;
+	mat.mat[2][2] *= vec.z;
+	return mat;
 }
 
-void ncx_mat4_scale_uni(ncx_mat4_t *mat, float s) {
-	ncx_mat4_scale(mat, ncx_vec3(s, s, s));
+ncx_mat4_t ncx_mat4_scale_uni(ncx_mat4_t mat, float s) {
+	return ncx_mat4_scale(mat, ncx_vec3(s, s, s));
 }
 
-void ncx_mat4_rotate(ncx_mat4_t *mat, ncx_vec3_t axis, float angle_rad) {
+ncx_mat4_t ncx_mat4_rotate(ncx_mat4_t mat, ncx_vec3_t axis, float angle_rad) {
 	ncx_mat4_t rot;
 	memset(&rot, 0, sizeof(rot));
 
@@ -49,7 +51,7 @@ void ncx_mat4_rotate(ncx_mat4_t *mat, ncx_vec3_t axis, float angle_rad) {
 
 	rot.mat[3][3] = 1.0f;
 
-	*mat = ncx_mat4_mul(*mat, rot);
+	return ncx_mat4_mul(mat, rot);
 }
 
 ncx_mat4_t ncx_mat4_mul(ncx_mat4_t a, ncx_mat4_t b) {
