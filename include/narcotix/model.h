@@ -3,6 +3,7 @@
 
 #include "narcotix/mesh.h"
 #include "narcotix/light_point.h"
+#include "narcotix/mat4.h"
 
 typedef struct {
 	uint32_t mesh_count;
@@ -20,7 +21,8 @@ void ncx_model_destroy(ncx_model_t *model);
 
 void ncx_model_shader_lights_update(const ncx_shader_t shader,
 		const ncx_light_point_t *lights, const uint8_t light_count);
-void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader, mat4 root);
+void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader,
+		ncx_mat4_t root);
 void ncx_model_animation_set(ncx_model_t *model, const uint32_t anim_index);
 void ncx_model_animation_update(ncx_model_t *model, const float dt,
 		const uint8_t loop);

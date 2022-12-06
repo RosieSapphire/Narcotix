@@ -120,7 +120,8 @@ ncx_model_t ncx_model_create(const char *path, const ncx_material_t *materials,
 	return model;
 }
 
-void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader, mat4 root) {
+void ncx_model_draw(ncx_model_t model, const ncx_shader_t shader,
+		ncx_mat4_t root) {
 	if(model.anims) {
 		ncx_meshes_draw_anim(model.meshes, model.mesh_count, shader,
 				model.anims[model.anim_selected], root);

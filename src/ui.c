@@ -4,7 +4,7 @@
 #include <cglm/cglm.h>
 #include <string.h>
 
-static mat4 projection;
+static ncx_mat4_t projection;
 static uint32_t vao, vbo;
 static ncx_shader_t ui_shader;
 
@@ -29,12 +29,14 @@ void ncx_ui_elements_init(const float width, const float height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, projection);
+	mat4 proj_temp;
+	glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, proj_temp);
+	memcpy(projection.mat, proj_temp, sizeof(ncx_mat4_t));
 
 	ui_shader = ncx_shader_create("res/shaders/builtin/ui_vert.glsl", NULL,
 			"res/shaders/builtin/ui_frag.glsl");
 	ncx_shader_use(ui_shader);
-	ncx_shader_uniform_mat4(ui_shader, "projection", (float *)projection);
+	ncx_shader_uniform_mat4(ui_shader, "projection", projection);
 }
 
 void ncx_ui_elements_set_flash(const float flash) {
@@ -56,17 +58,16 @@ ncx_ui_element_t ncx_ui_element_create(ncx_vec2_t pos, ncx_vec2_t size,
 
 void ncx_ui_element_draw(const ncx_ui_element_t element,
 		const uint8_t index) {
-	mat4 model;
+	ncx_mat4_t model = ncx_mat4_identity();
 	glDisable(GL_DEPTH_TEST);
-	glm_mat4_identity(model);
-	glm_translate(model, (vec3){element.pos.x, element.pos.y, 0.0f});
-	glm_scale(model, (vec3){element.size.x, element.size.y, 1.0f});
+	ncx_mat4_translate(&model, ncx_vec3(element.pos.x, element.pos.y, 0.0f));
+	ncx_mat4_scale(&model, ncx_vec3(element.size.x, element.size.y, 1.0f));
 	
 	glBindVertexArray(vao);
 	ncx_texture_use(element.textures[index], 0);
 
 	ncx_shader_use(ui_shader);
-	ncx_shader_uniform_mat4(ui_shader, "model", (float *)model);
+	ncx_shader_uniform_mat4(ui_shader, "model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);

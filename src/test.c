@@ -106,8 +106,8 @@ int main() {
 		ncx_shader_use(model_shader);
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
 		ncx_shader_uniform_mat4(model_shader, "projection",
-				(const float *)projection);
-		ncx_shader_uniform_mat4(model_shader, "view", (const float *)&view.a);
+				*(ncx_mat4_t *)&projection);
+		ncx_shader_uniform_mat4(model_shader, "view", view);
 		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_zero());
 
 		const float trip_intensity = 0.0f;
@@ -120,24 +120,24 @@ int main() {
 		const float time_delta = ncx_time_delta();
 
 		/* drawing pistol */
-		mat4 model_mat;
-		glm_mat4_identity(model_mat);
-		glm_translate(model_mat, (vec3){-0.2f, 0.0f, 0.0f});
+		ncx_mat4_t model_mat = ncx_mat4_identity();
+		ncx_mat4_translate(&model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
-		glm_mat4_identity(model_mat);
-		glm_scale(model_mat, (vec3){1.32f, 1.32f, 1.32f});
-		glm_translate(model_mat, (vec3){0.2f, -0.14f, 0.0f});
-		glm_rotate(model_mat, time_now, GLM_YUP);
+		model_mat = ncx_mat4_identity();
+		ncx_mat4_translate(&model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
+		ncx_mat4_scale_uni(&model_mat, 1.32f);
+		ncx_mat4_rotate(&model_mat, ncx_vec3_y_up(), time_now * 4);
+		ncx_mat4_print(model_mat);
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
 		/* drawing bricks */
-		glm_mat4_identity(model_mat);
-		glm_translate(model_mat, (vec3){sinf(time_now), 0.0f, -1.5f});
-		glm_rotate(model_mat, sinf(time_now), GLM_YUP);
+		model_mat = ncx_mat4_identity();
+		ncx_mat4_translate(&model_mat, ncx_vec3(sinf(time_now), 0.0f, -1.5f));
+		ncx_mat4_rotate(&model_mat, ncx_vec3_y_up(), sinf(time_now));
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
 		ncx_render_buffer_bind(1);

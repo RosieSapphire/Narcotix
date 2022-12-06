@@ -5,6 +5,7 @@
 #include "narcotix/material.h"
 #include "narcotix/shader.h"
 #include "narcotix/animation.h"
+#include "narcotix/mat4.h"
 
 #include <assimp/scene.h>
 
@@ -27,8 +28,8 @@ typedef struct {
 ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
 		const ncx_material_t *materials,uint32_t *mesh_count);
 void ncx_meshes_draw(const ncx_mesh_t *meshes, const uint32_t mesh_count,
-		const ncx_shader_t shader, mat4 mat_base);
+		const ncx_shader_t shader, ncx_mat4_t mat_base);
 void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
-		const ncx_shader_t shader, NCXAnimation anim, mat4 mat_base);
+		const ncx_shader_t shader, NCXAnimation anim, ncx_mat4_t mat_base);
 
 #endif

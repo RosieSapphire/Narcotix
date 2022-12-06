@@ -3,6 +3,7 @@
 
 #include <cglm/cglm.h>
 #include "narcotix/vec3.h"
+#include "narcotix/mat4.h"
 
 typedef uint32_t ncx_shader_t;
 ncx_shader_t ncx_shader_create(const char *vert_path,
@@ -17,6 +18,6 @@ void ncx_shader_uniform_float(const ncx_shader_t shader, const char *uniform,
 void ncx_shader_uniform_vec3(const ncx_shader_t shader, const char *uniform,
 		const ncx_vec3_t value);
 void ncx_shader_uniform_mat4(const ncx_shader_t shader, const char *uniform,
-		const float *value);
+		const ncx_mat4_t value);
 
 #endif

@@ -36,7 +36,9 @@ NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 	return anims;
 }
 
-void ncx_animation_get_matrix(const NCXAnimation anim, uint32_t mesh_index, mat4 out) {
+void ncx_animation_get_matrix(const NCXAnimation anim,
+		uint32_t mesh_index, ncx_mat4_t *out) {
+
 	int anim_frame_a = (int)anim.timer;
 	int anim_frame_b = (anim_frame_a + 1) %
 		anim.channels->tick_count;
@@ -61,5 +63,6 @@ void ncx_animation_get_matrix(const NCXAnimation anim, uint32_t mesh_index, mat4
 	mat4 model_trans;
 	glm_mat4_identity(model_trans);
 	glm_translate(model_trans, anim_pos_lerped);
-	glm_mat4_mul(model_trans, model_rot, out);
+	*out = ncx_mat4_mul(*((ncx_mat4_t *)&model_trans),
+			*((ncx_mat4_t *)&model_rot));
 }
