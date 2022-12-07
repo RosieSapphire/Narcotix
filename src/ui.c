@@ -58,7 +58,7 @@ ncx_ui_element_t ncx_ui_element_create(ncx_vec2_t pos, ncx_vec2_t size,
 
 void ncx_ui_element_draw(const ncx_ui_element_t element,
 		const uint8_t index) {
-	ncx_mat4_t model = ncx_mat4_identity();
+	ncx_mat4_t model = ncx_mat4_id();
 	glDisable(GL_DEPTH_TEST);
 	model = ncx_mat4_translate(model,
 			ncx_vec3(element.pos.x, element.pos.y, 0.0f));

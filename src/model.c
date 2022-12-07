@@ -63,7 +63,7 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			ncx_shader_uniform_vec3(shader, buffer, ncx_vec3_zero());
+			ncx_shader_uniform_vec3(shader, buffer, ncx_vec3_0());
 		}
 
 		for(; j < 7; j++) {

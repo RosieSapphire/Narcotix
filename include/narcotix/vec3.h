@@ -5,15 +5,19 @@ typedef struct {
 	float x, y, z;
 } ncx_vec3_t;
 
-ncx_vec3_t ncx_vec3(float x, float y, float z);
-ncx_vec3_t ncx_vec3_zero(void);
-ncx_vec3_t ncx_vec3_one(void);
-ncx_vec3_t ncx_vec3_x_up(void);
-ncx_vec3_t ncx_vec3_y_up(void);
-ncx_vec3_t ncx_vec3_z_up(void);
-ncx_vec3_t ncx_vec3_add(ncx_vec3_t a, ncx_vec3_t b);
-ncx_vec3_t ncx_vec3_sub(ncx_vec3_t a, ncx_vec3_t b);
-ncx_vec3_t ncx_vec3_scale(ncx_vec3_t x, float s);
-ncx_vec3_t ncx_vec3_cross(ncx_vec3_t a, ncx_vec3_t b);
+#define ncx_vec3(X, Y, Z) ((ncx_vec3_t){X, Y, Z})
+
+#define ncx_vec3_0() ((ncx_vec3_t){0, 0, 0})
+#define ncx_vec3_1() ((ncx_vec3_t){1, 1, 1})
+#define ncx_vec3_x_up() ((ncx_vec3_t){1, 0, 0})
+#define ncx_vec3_y_up() ((ncx_vec3_t){0, 1, 0})
+#define ncx_vec3_z_up() ((ncx_vec3_t){0, 0, 1})
+
+#define ncx_vec3_add(A, B) ((ncx_vec3_t){A.x + B.x, A.y + B.y, A.z + B.z})
+#define ncx_vec3_sub(A, B) ((ncx_vec3_t){A.x - B.x, A.y - B.y, A.z - B.z})
+#define ncx_vec3_scale(A, S) ((ncx_vec3_t){A.x * S, A.y * S, A.z * S})
+#define ncx_vec3_cross(A, B) ((ncx_vec3_t){ A.y * B.z - A.z * B.y, \
+		                                    A.z * B.x - A.x * B.z, \
+											A.x * B.y - A.y * B.x,})
 
 #endif

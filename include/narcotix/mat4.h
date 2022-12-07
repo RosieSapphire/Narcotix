@@ -7,7 +7,23 @@ typedef struct {
 	float mat[4][4];
 } ncx_mat4_t;
 
-ncx_mat4_t ncx_mat4_identity(void);
+#define ncx_mat4_0() ((ncx_mat4_t) {{ \
+			{0, 0, 0, 0}, \
+			{0, 0, 0, 0}, \
+			{0, 0, 0, 0}, \
+			{0, 0, 0, 0}, \
+		}})
+
+/* used for initializing identity matrix */
+#define ncx_mat4_id() ((ncx_mat4_t) {{ \
+			{1, 0, 0, 0}, \
+			{0, 1, 0, 0}, \
+			{0, 0, 1, 0}, \
+			{0, 0, 0, 1}, \
+		}})
+
+ncx_mat4_t ncx_mat4_perspective(float fov_deg, float aspect,
+		float near, float far);
 ncx_mat4_t ncx_mat4_translate(ncx_mat4_t mat, ncx_vec3_t vec);
 ncx_mat4_t ncx_mat4_scale(ncx_mat4_t mat, ncx_vec3_t vec);
 ncx_mat4_t ncx_mat4_scale_uni(ncx_mat4_t mat, float s);

@@ -83,18 +83,21 @@ int main() {
 	ncx_model_t brick_model =
 		ncx_model_create(brick_model_path, &brick_material, 0);
 
+	/*
 	ncx_texture_t ui_test_tex = ncx_texture_create(ui_test_tex_path,
 			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
-	ncx_ui_element_t ui_test =
-		ncx_ui_element_create(ncx_vec2_zero(), ncx_vec2(256, 256),
-				&ui_test_tex, 1);
 
-	ncx_mat4_t projection;
-	glm_perspective(glm_rad(45.0f), WINDOW_ASPECT, 0.1f, 32.0f,
-			(vec4 *)projection.mat);
+	ncx_ui_elements_init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	ncx_ui_element_t ui_test =
+		ncx_ui_element_create(ncx_vec2_0(), ncx_vec2(256, 256),
+				&ui_test_tex, 1);
+				*/
+
+	ncx_mat4_t projection =
+		ncx_mat4_perspective(45.0f, WINDOW_ASPECT, 0.1f, 32.0f);
+	ncx_mat4_print(projection);
 	
-	ncx_mat4_t view = ncx_mat4_identity();
-	view = ncx_mat4_translate(view, ncx_vec3(0, 0, -1));
+	ncx_mat4_t view = ncx_mat4_translate(ncx_mat4_id(), ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
@@ -109,7 +112,7 @@ int main() {
 		ncx_shader_uniform_mat4(model_shader, "projection",
 				*(ncx_mat4_t *)&projection);
 		ncx_shader_uniform_mat4(model_shader, "view", view);
-		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_zero());
+		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_0());
 
 		const float trip_intensity = 0.0f;
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
@@ -121,21 +124,22 @@ int main() {
 		const float time_delta = ncx_time_delta();
 
 		/* drawing pistol */
-		ncx_mat4_t model_mat = ncx_mat4_identity();
+		ncx_mat4_t model_mat = ncx_mat4_id();
 		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
-		model_mat = ncx_mat4_identity();
-		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
+		model_mat = ncx_mat4_id();
+		model_mat =
+			ncx_mat4_translate(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
 		model_mat = ncx_mat4_scale_uni(model_mat, 1.32f);
 		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), time_now * 4);
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
 		/* drawing bricks */
-		model_mat = ncx_mat4_identity();
+		model_mat = ncx_mat4_id();
 		model_mat = ncx_mat4_translate(model_mat,
 				ncx_vec3(sinf(time_now), 0.0f, -1.5f));
 		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), sinf(time_now));
@@ -144,17 +148,17 @@ int main() {
 		ncx_render_buffer_bind(1);
 		ncx_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
 
+		// ncx_ui_element_draw(ui_test, 0);
+
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
-				ncx_vec2(0.02f, 0.92f), ncx_vec3_one(), 0.8f, WINDOW_SIZE,
+				ncx_vec2(0.02f, 0.92f), ncx_vec3_1(), 0.8f, WINDOW_SIZE,
 				font_shader);
 		ncx_font_draw(normal_font,
 				"Music: 'Sandworms - Andy Caldwell VS. Darkhorse'"
 				" from Mushroom Jazz 2", ncx_vec2(0.02f, 0.04f),
-				ncx_vec3_one(), 0.5f, WINDOW_SIZE,
+				ncx_vec3_1(), 0.5f, WINDOW_SIZE,
 				font_shader);
-
-		ncx_ui_element_draw(ui_test, 0);
 
 		ncx_render_buffer_unbind();
 		ncx_buffer_display(0, time_now, trip_intensity);
@@ -168,7 +172,8 @@ int main() {
 	ncx_model_destroy(&pistol_model);
 
 	ncx_textures_destroy(&trippy_texture, 1);
-	ncx_textures_destroy(&ui_test_tex, 1);
+	// ncx_textures_destroy(&ui_test_tex, 1);
+	// ncx_ui_elements_terminate();
 
 	ncx_materials_destroy(bong_materials, 3);
 	ncx_materials_destroy(pistol_materials, 4);

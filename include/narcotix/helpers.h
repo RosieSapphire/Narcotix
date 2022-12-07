@@ -3,7 +3,12 @@
 
 #include <cglm/cglm.h>
 
-#define EPSILON	0.001f
+#define NCX_EPSILON	0.001f
+#define NCX_PI      3.141592653589f
+#define NCX_PI_INV  0.3183098861838710434f
+
+#define NCX_TO_DEG  57.29577951309678781159f
+#define NCX_TO_RAD  0.01745329251993888889f
 
 float ncx_clampf(const float val, const float min, const float max);
 float ncx_clampf01(const float val);

@@ -5,13 +5,15 @@ typedef struct {
 	float x, y;
 } ncx_vec2_t;
 
-ncx_vec2_t ncx_vec2(float x, float y);
-ncx_vec2_t ncx_vec2_zero(void);
-ncx_vec2_t ncx_vec2_one(void);
-ncx_vec2_t ncx_vec2_x_up(void);
-ncx_vec2_t ncx_vec2_y_up(void);
-ncx_vec2_t ncx_vec2_add(ncx_vec2_t a, ncx_vec2_t b);
-ncx_vec2_t ncx_vec2_sub(ncx_vec2_t a, ncx_vec2_t b);
-ncx_vec2_t ncx_vec2_scale(ncx_vec2_t x, float s);
+#define ncx_vec2(X, Y) ((ncx_vec2_t){X, Y})
+
+#define ncx_vec2_0() ((ncx_vec2_t){0, 0})
+#define ncx_vec2_1() ((ncx_vec2_t){1, 1})
+#define ncx_vec2_x_up() ((ncx_vec2_t){1, 0})
+#define ncx_vec2_y_up() ((ncx_vec2_t){0, 1})
+
+#define ncx_vec2_add(A, B) ((ncx_vec2_t){A.x + B.x, A.y + B.y})
+#define ncx_vec2_sub(A, B) ((ncx_vec2_t){A.x - B.x, A.y - B.y})
+#define ncx_vec2_scale(A, S) ((ncx_vec2_t){A.x * S, A.y * S})
 
 #endif

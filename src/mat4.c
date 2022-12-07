@@ -1,16 +1,26 @@
 #include "narcotix/mat4.h"
+#include "narcotix/helpers.h"
+
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 
-ncx_mat4_t ncx_mat4_identity(void) {
-	return (ncx_mat4_t) {{
-		{1, 0, 0, 0},
-		{0, 1, 0, 0},
-		{0, 0, 1, 0},
-		{0, 0, 0, 1},
-	}};
+ncx_mat4_t ncx_mat4_perspective(float fov_deg, float aspect,
+		float near, float far) {
+
+	ncx_mat4_t mat = ncx_mat4_0();
+
+	float fov_itan = 1.0f / tanf(fov_deg * NCX_TO_RAD * 0.5f);
+	mat.mat[0][0] = fov_itan / aspect;
+	mat.mat[1][1] = fov_itan;
+
+	float z_range = 1.0f / (near - far);
+	mat.mat[2][2] = (near + far) * z_range;
+	mat.mat[2][3] = -1.0f;
+	mat.mat[3][2] = 2.0f * near * far * z_range;
+
+	return mat;
 }
 
 ncx_mat4_t ncx_mat4_translate(ncx_mat4_t mat, ncx_vec3_t vec) {
