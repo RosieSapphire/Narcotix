@@ -10,7 +10,7 @@ in vec3  o_frag_pos;
 in vec3  o_view_pos;
 in float o_time;
 in float o_trip_intensity;
-in mat4  o_projection;
+in mat4  o_proj;
 in mat4  o_model;
 in mat3  o_tbn;
 

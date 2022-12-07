@@ -8,7 +8,7 @@ layout(location = 2) in vec2  a_uv;
 layout(location = 3) in vec3  a_tangent;
 layout(location = 4) in vec3  a_bitangent;
 
-uniform mat4 projection;
+uniform mat4 proj;
 uniform mat4 view;
 uniform mat4 model;
 
@@ -22,7 +22,7 @@ out vec3  o_frag_pos;
 out vec3  o_view_pos;
 out float o_time;
 out float o_trip_intensity;
-out mat4  o_projection;
+out mat4  o_proj;
 out mat4  o_model;
 out mat3  o_tbn;
 
@@ -38,7 +38,7 @@ float perlin_noise(float p) {
 
 void main() {
 	// total_normal =   vec4(mat3(transpose(inverse(model))) * a_normal, 0.0);
-	gl_Position = projection * view * model * vec4(a_pos, 1.0);
+	gl_Position = proj * view * model * vec4(a_pos, 1.0);
 
 	vec2 trip_offset;
 	trip_offset.x = perlin_noise((time * 1.57) + gl_Position.y) * (trip_intensity / 5);
@@ -55,6 +55,6 @@ void main() {
 	o_view_pos =       o_tbn * view_pos;
 	o_time =           time;
 	o_trip_intensity = trip_intensity;
-	o_projection =     projection;
+	o_proj =     proj;
 	o_model =          model;
 }

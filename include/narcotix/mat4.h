@@ -22,8 +22,8 @@ typedef struct {
 			{0, 0, 0, 1}, \
 		}})
 
-ncx_mat4_t ncx_mat4_perspective(float fov_deg, float aspect,
-		float near, float far);
+ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far);
+ncx_mat4_t ncx_mat4_ortho(float l, float r, float t, float b);
 ncx_mat4_t ncx_mat4_translate(ncx_mat4_t mat, ncx_vec3_t vec);
 ncx_mat4_t ncx_mat4_scale(ncx_mat4_t mat, ncx_vec3_t vec);
 ncx_mat4_t ncx_mat4_scale_uni(ncx_mat4_t mat, float s);

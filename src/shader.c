@@ -84,5 +84,5 @@ void ncx_shader_uniform_vec3(const ncx_shader_t shader, const char *uniform,
 void ncx_shader_uniform_mat4(const ncx_shader_t shader, const char *uniform,
 		const ncx_mat4_t value) {
 	glUniformMatrix4fv(glGetUniformLocation(shader, uniform),
-			1, GL_FALSE, &value.mat[0][0]);
+			1, GL_FALSE, (const float *)value.mat);
 }

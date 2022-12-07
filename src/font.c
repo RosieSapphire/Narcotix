@@ -6,14 +6,11 @@
 ncx_shader_t ncx_font_shader_create(const char *font_path_vert,
 		const char *font_path_frag) {
 
-	ncx_mat4_t matrix_projection;
-	mat4 mat_proj_temp;
-	glm_ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f, mat_proj_temp);
-	memcpy(&matrix_projection.mat[0][0], mat_proj_temp, sizeof(ncx_mat4_t));
 	ncx_shader_t font_shader = ncx_shader_create(font_path_vert, NULL,
 			font_path_frag);
 	ncx_shader_use(font_shader);
-	ncx_shader_uniform_mat4(font_shader, "projection", matrix_projection);
+	ncx_shader_uniform_mat4(font_shader, "proj",
+			ncx_mat4_ortho(0, 1920, 1080, 0));
 	return font_shader;
 }
 

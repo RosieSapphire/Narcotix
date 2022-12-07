@@ -93,10 +93,7 @@ int main() {
 				&ui_test_tex, 1);
 				*/
 
-	ncx_mat4_t projection =
-		ncx_mat4_perspective(45.0f, WINDOW_ASPECT, 0.1f, 32.0f);
-	ncx_mat4_print(projection);
-	
+	ncx_mat4_t proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
 	ncx_mat4_t view = ncx_mat4_translate(ncx_mat4_id(), ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
@@ -109,8 +106,7 @@ int main() {
 
 		ncx_shader_use(model_shader);
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
-		ncx_shader_uniform_mat4(model_shader, "projection",
-				*(ncx_mat4_t *)&projection);
+		ncx_shader_uniform_mat4(model_shader, "proj", proj);
 		ncx_shader_uniform_mat4(model_shader, "view", view);
 		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_0());
 

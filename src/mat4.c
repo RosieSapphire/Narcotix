@@ -6,9 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 
-ncx_mat4_t ncx_mat4_perspective(float fov_deg, float aspect,
-		float near, float far) {
-
+ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far) {
 	ncx_mat4_t mat = ncx_mat4_0();
 
 	float fov_itan = 1.0f / tanf(fov_deg * NCX_TO_RAD * 0.5f);
@@ -19,6 +17,22 @@ ncx_mat4_t ncx_mat4_perspective(float fov_deg, float aspect,
 	mat.mat[2][2] = (near + far) * z_range;
 	mat.mat[2][3] = -1.0f;
 	mat.mat[3][2] = 2.0f * near * far * z_range;
+
+	return mat;
+}
+
+ncx_mat4_t ncx_mat4_ortho(float l, float r, float t, float b) {
+	ncx_mat4_t mat = ncx_mat4_0();
+
+	float rl = 1 / (r - l);
+	float tb = 1 / (t - b);
+	mat.mat[0][0] = 2 * rl;
+	mat.mat[1][1] = 2 * tb;
+	mat.mat[2][2] = -1;
+	mat.mat[3][0] = -(r + l) * rl;
+	mat.mat[3][1] = -(t + b) * tb;
+	mat.mat[3][2] = 0;
+	mat.mat[3][3] = 1;
 
 	return mat;
 }
@@ -82,7 +96,7 @@ ncx_mat4_t ncx_mat4_mul(ncx_mat4_t a, ncx_mat4_t b) {
 void ncx_mat4_print(ncx_mat4_t m) {
 	for(uint8_t i = 0; i < 4; i++) {
 		for(uint8_t j = 0; j < 4; j++) {
-			printf("%.2f\t", m.mat[j][i]);
+			printf("%.6f\t", m.mat[j][i]);
 		}
 		printf("\n");
 	}
