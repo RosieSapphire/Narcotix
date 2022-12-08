@@ -6,8 +6,7 @@
 #include "narcotix/model.h"
 #include "narcotix/ui.h"
 #include "narcotix/mat4.h"
-
-#include "test_paths.h"
+#include "narcotix/tex.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -15,42 +14,54 @@
 #define WINDOW_SIZE ncx_vec2(WINDOW_WIDTH, WINDOW_HEIGHT)
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
-int main() {
+int main()
+{
 	ncx_init(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
-	ncx_sound_init();
 
-	ncx_sound_t test_sound = ncx_sound_create("res/audio/test.wav", 1, 0);
+	ncx_sound_init();
+	ncx_sound_t test_sound = ncx_sound_create("res/sfx/test.wav", 1, 0);
 
 	ncx_shader_t font_shader =
-		ncx_font_shader_create(font_shader_vert_path, font_shader_frag_path);
+		ncx_font_shader_create("res/shdr/internal/font_vert.glsl",
+				"res/shdr/internal/font_frag.glsl");
 
-	ncx_font_t trippy_font = ncx_font_create(trippy_font_path);
-	ncx_font_t normal_font = ncx_font_create(normal_font_path);
+	struct ncx_font trippy_font =
+		ncx_font_create("res/font/shagadelic.ttf");
 
-	ncx_texture_t trippy_texture = ncx_texture_create(trippy_tex_path,
-			GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+	struct ncx_font norm_font =
+		ncx_font_create("res/font/jetbrainsmono-bold.ttf");
 
-	ncx_light_point_t lights[2] = {
-		ncx_light_point_create(ncx_vec3(1.0f, 0.0f, 1.0f),
-				ncx_vec3(0.1f, 0.1f, 0.1f), ncx_vec3(1.0f, 0.0f, 0.0f),
-				ncx_vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f),
+	ncx_tex_t trippy_tex =
+		ncx_tex_create("res/tex/trippy.png", GL_MIRRORED_REPEAT,
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
 
-		ncx_light_point_create(ncx_vec3(-1.0f, 0.0f, 1.0f),
-				ncx_vec3(0.1f, 0.1f, 0.1f), ncx_vec3(0.0f, 1.0f, 1.0f),
-				ncx_vec3(0.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f),
+	struct ncx_light_point lights[2] = {
+		ncx_light_point_create(
+				ncx_vec3(1.0f, 0.0f, 1.0f),
+				ncx_vec3(0.1f, 0.1f, 0.1f),
+				ncx_vec3(1.0f, 0.0f, 0.0f),
+				ncx_vec3(1.0f, 0.0f, 0.0f),
+				1.0f, 0.09f, 0.032f),
+
+		ncx_light_point_create(
+				ncx_vec3(-1.0f, 0.0f, 1.0f),
+				ncx_vec3(0.1f, 0.1f, 0.1f),
+				ncx_vec3(0.0f, 1.0f, 1.0f),
+				ncx_vec3(0.0f, 1.0f, 1.0f),
+				1.0f, 0.09f, 0.032f),
 	};
 
 	/* load models */
 	ncx_shader_t model_shader = ncx_model_shader_create(lights, 2);
 
-	const ncx_material_data_t pistol_tex_data = {
-		.diffuse_path = "res/models/weapons/pistol/pistol_diffuse.png",
-		.specular_path = "res/models/weapons/pistol/pistol_specular.png",
-		.normal_path = "res/models/weapons/pistol/pistol_normal.png",
+	const struct ncx_material_data pistol_tex_data = {
+		.diff_path = "res/mdl/wep/pist/pist_diff.png",
+		.spec_path = "res/mdl/wep/pist/pist_spec.png",
+		.norm_path = "res/mdl/wep/pist/pist_norm.png",
 		.shininess = 8,
 	};
 
-	ncx_material_t pistol_materials[4] = {
+	struct ncx_material pistol_materials[4] = {
 		ncx_material_create(pistol_tex_data),
 	};
 
@@ -58,33 +69,35 @@ int main() {
 		pistol_materials[i] = pistol_materials[0];
 	}
 
-	ncx_model_t pistol_model = ncx_model_create(pistol_model_path,
-			pistol_materials, 1);
+	struct ncx_model pistol_model =
+		ncx_model_create("res/mdl/wep/pist/pist.glb",
+				pistol_materials, 1);
 
 	ncx_model_animation_set(&pistol_model, 1);
 
-	ncx_material_t bong_materials[3] = {
+	struct ncx_material bong_materials[3] = {
 		pistol_materials[0],
 		pistol_materials[0],
 		pistol_materials[0],
 	};
 
-	ncx_model_t bong_model =
-		ncx_model_create("res/models/weapons/bong/bong.glb", bong_materials, 0);
+	struct ncx_model bong_model =
+		ncx_model_create("res/mdl/wep/bong/bong.glb",
+				bong_materials, 0);
 
-	const ncx_material_data_t brick_tex_data = {
-		.diffuse_path = "res/textures/bricks_diffuse.png",
-		.specular_path = "res/textures/bricks_specular.png",
-		.normal_path = "res/textures/bricks_normal.png",
+	const struct ncx_material_data plane_tex_data = {
+		.diff_path = "res/tex/brick_diff.png",
+		.spec_path = "res/tex/brick_spec.png",
+		.norm_path = "res/tex/brick_norm.png",
 		.shininess = 16,
 	};
 
-	ncx_material_t brick_material = ncx_material_create(brick_tex_data);
-	ncx_model_t brick_model =
-		ncx_model_create(brick_model_path, &brick_material, 0);
+	struct ncx_material plane_material = ncx_material_create(plane_tex_data);
+	struct ncx_model plane_model =
+		ncx_model_create("res/mdl/plane.glb", &plane_material, 0);
 
 	/*
-	ncx_texture_t ui_test_tex = ncx_texture_create(ui_test_tex_path,
+	ncx_tex_t ui_test_tex = ncx_tex_create(ui_test_tex_path,
 			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
 
 	ncx_ui_elements_init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -93,10 +106,12 @@ int main() {
 				&ui_test_tex, 1);
 				*/
 
-	ncx_mat4_t proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
-	ncx_mat4_t view = ncx_mat4_translate(NCX_MAT4_ID, ncx_vec3(0, 0, -1));
+	struct ncx_mat4 proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
+	struct ncx_mat4 view = ncx_mat4_trans(NCX_MAT4_ID, ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
+
+	ncx_sound_play(test_sound, 0.5f, 1.0f, NCX_VEC3_0, 1, 0);
 	while(ncx_window_is_running()) {
 
 		/* drawing gun */
@@ -120,26 +135,35 @@ int main() {
 		const float time_delta = ncx_time_delta();
 
 		/* drawing pistol */
-		ncx_mat4_t model_mat = NCX_MAT4_ID;
-		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
+		struct ncx_mat4 model_mat =
+			ncx_mat4_trans(NCX_MAT4_ID,
+					ncx_vec3(-0.2f, 0.0f, 0.0f));
+
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
 		model_mat = NCX_MAT4_ID;
+
 		model_mat =
-			ncx_mat4_translate(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
+			ncx_mat4_trans(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
+
 		model_mat = ncx_mat4_scale_uni(model_mat, 1.32f);
-		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y, time_now * 4);
+		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y,
+				time_now * 4);
+
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
-		/* drawing bricks */
+		/* drawing brick */
 		model_mat = NCX_MAT4_ID;
-		model_mat = ncx_mat4_translate(model_mat,
+		model_mat = ncx_mat4_trans(model_mat,
 				ncx_vec3(sinf(time_now), 0.0f, -1.5f));
-		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y, sinf(time_now));
-		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
+
+		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y,
+				sinf(time_now));
+
+		ncx_meshes_draw(plane_model.meshes, 1, model_shader, model_mat);
 
 		ncx_render_buffer_bind(1);
 		ncx_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -148,13 +172,14 @@ int main() {
 
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
-				ncx_vec2(0.02f, 0.92f), NCX_VEC3_1, 0.8f, WINDOW_SIZE,
-				font_shader);
-		ncx_font_draw(normal_font,
-				"Music: 'Sandworms - Andy Caldwell VS. Darkhorse'"
-				" from Mushroom Jazz 2", ncx_vec2(0.02f, 0.04f),
-				NCX_VEC3_1, 0.5f, WINDOW_SIZE,
-				font_shader);
+				ncx_vec2(0.02f, 0.92f), NCX_VEC3_1,
+				0.8f, WINDOW_SIZE, font_shader);
+
+		ncx_font_draw(norm_font,
+				"Music: 'Sandworms - Andy Caldwell VS. "
+				"Darkhorse' from Mushroom Jazz 2",
+				ncx_vec2(0.02f, 0.04f),
+				NCX_VEC3_1, 0.5f, WINDOW_SIZE, font_shader);
 
 		ncx_render_buffer_unbind();
 		ncx_buffer_display(0, time_now, trip_intensity);
@@ -167,14 +192,14 @@ int main() {
 	ncx_model_destroy(&bong_model);
 	ncx_model_destroy(&pistol_model);
 
-	ncx_textures_destroy(&trippy_texture, 1);
-	// ncx_textures_destroy(&ui_test_tex, 1);
+	ncx_tex_destroy(&trippy_tex, 1);
+	// ncx_tex_destroy(&ui_test_tex, 1);
 	// ncx_ui_elements_terminate();
 
 	ncx_materials_destroy(bong_materials, 3);
 	ncx_materials_destroy(pistol_materials, 4);
 
-	ncx_font_destroy(&normal_font);
+	ncx_font_destroy(&norm_font);
 	ncx_font_destroy(&trippy_font);
 	ncx_shader_destroy(font_shader);
 

@@ -19,9 +19,15 @@ int   ncx_sprintfv1(char *dest, const char *format, const float *vec);
 int   ncx_sprintfv2(char *dest, const char *format, const float *vec);
 int   ncx_sprintfv3(char *dest, const char *format, const float *vec);
 float ncx_fmod(const float val, const float mod);
-
-float ncx_lerpf(const float a, const float b, const float t);
+float ncx_lerp(float a, float b, float t);
+float ncx_lerpc(float a, float b, float t);
 
 void glfw_error_callback(int code, const char *log);
+
+/*
+ * This is a tidied up version of the Fast Inverse Square Root
+ * function from Quake III Arena. Originally written by John Carmack
+ */
+float ncx_quake_rsqrt(float x);
 
 #endif

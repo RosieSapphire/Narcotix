@@ -10,28 +10,31 @@
 static ALCdevice *sound_device;
 static ALCcontext *sound_context;
 
-void ncx_sound_init(void) {
+void ncx_sound_init(void)
+{
 	sound_device = alcOpenDevice(NULL);
 	if(!sound_device) {
-		fprintf(stderr, "OPENAL ERROR: Failed to load sound device.\n");
+		fprintf(stderr, "OPENAL ERROR: Failed to open device.\n");
 		assert(0);
 	}
 	
 	sound_context = alcCreateContext(sound_device, NULL);
 	if(!sound_context) {
-		fprintf(stderr, "OPENAL ERROR: Failed to create sound context.\n");
+		fprintf(stderr, "OPENAL ERROR: Failed to create context.\n");
 		assert(0);
 	}
 	alcMakeContextCurrent(sound_context);
 }
 
-void ncx_sound_terminate(void) {
+void ncx_sound_terminate(void)
+{
 	alcDestroyContext(sound_context);
 	alcCloseDevice(sound_device);
 }
 
-ncx_sound_t ncx_sound_create(const char *paths,
-		uint8_t sample_count, uint8_t use_delay) {
+ncx_sound_t ncx_sound_create(const char *paths, uint8_t smpl_count,
+		uint8_t use_delay)
+{
 	uint32_t path_length;
 	int32_t formats[2] = {
 		AL_FORMAT_MONO16,
@@ -39,8 +42,8 @@ ncx_sound_t ncx_sound_create(const char *paths,
 	};
 
 	ncx_sound_t sound;
-	sound.buffer_count = sample_count;
-	sound.buffers = malloc(sample_count * sizeof(uint32_t));
+	sound.buffer_count = smpl_count;
+	sound.buffers = malloc(smpl_count * sizeof(uint32_t));
 	sound.delay_timer = 500.0f;
 
 	alGenSources(1, &sound.source);
@@ -61,7 +64,7 @@ ncx_sound_t ncx_sound_create(const char *paths,
 		path_length = (uint32_t)(c - paths) + 1;
 	}
 	
-	for(uint8_t i = 0; i < sample_count; i++) {
+	for(uint8_t i = 0; i < smpl_count; i++) {
 		const char *current_path = paths + (i * path_length);
 		SNDFILE *snd_file;
 		SF_INFO file_info;
@@ -72,15 +75,17 @@ ncx_sound_t ncx_sound_create(const char *paths,
 
 		snd_file = sf_open(current_path, SFM_READ, &file_info);
 		if(!snd_file) {
-			fprintf(stderr, "SOUND ERROR: Failed to load sound from '%s'.\n",
+			fprintf(stderr, "SOUND ERROR: Couldn't "
+					"load sound from '%s'.\n",
 					current_path);
 			assert(0);
 		}
 
 		format = formats[file_info.channels - 1];
 		if(!format) {
-			fprintf(stderr, "SOUND ERROR: Sound from '%s' doesn't have"
-					" proper format.\n", current_path);
+			fprintf(stderr, "SOUND ERROR: Sound from"
+					" '%s' doesn't have proper format.\n",
+					current_path);
 			assert(0);
 		}
 
@@ -88,10 +93,12 @@ ncx_sound_t ncx_sound_create(const char *paths,
 				sizeof(int16_t));
 		assert(data);
 
-		frame_count = (size_t)sf_readf_short(snd_file, data, file_info.frames);
+		frame_count =
+			(size_t)sf_readf_short(snd_file,
+					data, file_info.frames);
 		assert(frame_count);
 
-		size = frame_count * (uint64_t)file_info.channels * sizeof(int16_t);
+		size = frame_count * file_info.channels * sizeof(int16_t);
 
 		alGenBuffers(1, &sound.buffers[i]);
 		alBufferData(sound.buffers[i], format, (void *)data,
@@ -106,22 +113,22 @@ ncx_sound_t ncx_sound_create(const char *paths,
 	return sound;
 }
 
-void ncx_sound_play(ncx_sound_t sound, float gain,
-		float pitch, float *pos,
-		uint8_t looping, uint8_t index) {
+void ncx_sound_play(ncx_sound_t sound, float gain, float pitch,
+		struct ncx_vec3 pos, uint8_t looping, uint8_t index)
+{
 	alSourceStop(sound.source);
 	alSourcef(sound.source, AL_GAIN, gain);
 	alSourcef(sound.source, AL_PITCH, pitch);
-	alSourcefv(sound.source, AL_POSITION, pos);
+	alSource3f(sound.source, AL_POSITION, pos.x, pos.y, pos.z);
 	alSourcei(sound.source, AL_LOOPING, looping);
 	alSourcei(sound.source, AL_BUFFER, (int32_t)sound.buffers[index]);
 	alSourcePlay(sound.source);
 }
 
-void ncx_sound_play_delay(ncx_sound_t *sound, float gain,
-		float pitch, float *pos,
-		uint8_t index, float time_delta) {
-	float delay_timer_last = sound->delay_timer;
+void ncx_sound_play_delay(ncx_sound_t *sound, float gain, float pitch,
+		struct ncx_vec3 pos, uint8_t index, float time_delta)
+{
+	float delay_last = sound->delay_timer;
 	float times[8];
 	float gains[8];
 	sound->delay_timer += time_delta;
@@ -132,20 +139,24 @@ void ncx_sound_play_delay(ncx_sound_t *sound, float gain,
 				(int32_t)sound->buffers[index]);
 		alSourcef(sound->delay_sources[i], AL_GAIN, gains[i]);
 		alSourcef(sound->delay_sources[i], AL_PITCH, pitch + pitch / i);
-		alSourcefv(sound->delay_sources[i], AL_POSITION, pos);
+		alSource3f(sound->delay_sources[i], AL_POSITION,
+				pos.x, pos.y, pos.z);
 		alSourcei(sound->delay_sources[i], AL_LOOPING, 0);
 
-		if(sound->delay_timer >= times[i] && delay_timer_last < times[i]) {
-			alSourcePlay(sound->delay_sources[i]);
-		}
+		if(sound->delay_timer < times[i] || delay_last >= times[i])
+			continue;
+
+		alSourcePlay(sound->delay_sources[i]);
 	}
 }
 
-void ncx_sound_stop(ncx_sound_t sound) {
+void ncx_sound_stop(ncx_sound_t sound)
+{
 	alSourceStop(sound.source);
 }
 
-void ncx_sound_destroy(ncx_sound_t *sound) {
+void ncx_sound_destroy(ncx_sound_t *sound)
+{
 	alDeleteBuffers(sound->buffer_count, sound->buffers);
 	free(sound->buffers);
 
@@ -155,6 +166,7 @@ void ncx_sound_destroy(ncx_sound_t *sound) {
 	}
 }
 
-void ncx_sound_set_float(ncx_sound_t sound, uint32_t prop, float f) {
+void ncx_sound_set_float(ncx_sound_t sound, uint32_t prop, float f)
+{
 	alSourcef(sound.source, prop, f);
 }

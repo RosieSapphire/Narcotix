@@ -3,7 +3,7 @@
 #define POINT_LIGHT_MAX 32
 
 layout(location = 0) in vec3  a_pos;
-layout(location = 1) in vec3  a_normal;
+layout(location = 1) in vec3  a_norm;
 layout(location = 2) in vec2  a_uv;
 layout(location = 3) in vec3  a_tangent;
 layout(location = 4) in vec3  a_bitangent;
@@ -37,7 +37,7 @@ float perlin_noise(float p) {
 }
 
 void main() {
-	// total_normal =   vec4(mat3(transpose(inverse(model))) * a_normal, 0.0);
+	// total_norm =   vec4(mat3(transpose(inverse(model))) * a_norm, 0.0);
 	gl_Position = proj * view * model * vec4(a_pos, 1.0);
 
 	vec2 trip_offset;
@@ -47,7 +47,7 @@ void main() {
 
 	vec3 t = normalize(vec3(model * vec4(a_tangent,   0.0)));
 	vec3 b = normalize(vec3(model * vec4(a_bitangent, 0.0)));
-	vec3 n = normalize(vec3(model * vec4(a_normal,    0.0)));
+	vec3 n = normalize(vec3(model * vec4(a_norm,    0.0)));
 	o_tbn =            transpose(mat3(t, b, n));
 
 	o_uv =             a_uv;

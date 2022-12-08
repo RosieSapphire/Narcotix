@@ -1,19 +1,22 @@
 #ifndef __NCX_IVEC2_H_
 #define __NCX_IVEC2_H_
 
-typedef struct {
+#include "narcotix/helpers.h"
+
+struct ncx_ivec2 {
 	int x, y;
-} ncx_ivec2_t;
+};
 
-#define NCX_IVEC2_0   ((ncx_ivec2_t){0, 0})
-#define NCX_IVEC2_1   ((ncx_ivec2_t){1, 1})
-#define NCX_IVEC2_XUP ((ncx_ivec2_t){1, 0})
-#define NCX_IVEC2_YUP ((ncx_ivec2_t){0, 1})
-#define NCX_IVEC2_ZUP ((ncx_ivec2_t){0, 0})
+#define ncx_ivec2(X, Y) ((struct ncx_ivec2){X, Y})
+#define NCX_IVEC2_0     ncx_ivec2(0, 0)
+#define NCX_IVEC2_1     ncx_ivec2(1, 1)
+#define NCX_IVEC2_X     ncx_ivec2(1, 0)
+#define NCX_IVEC2_Y     ncx_ivec2(0, 1)
 
-#define ncx_ivec2(X, Y)       ((ncx_ivec2_t){X, Y})
-#define ncx_ivec2_add(A, B)   ((ncx_ivec2_t){A.x + B.x, A.y + B.y})
-#define ncx_ivec2_sub(A, B)   ((ncx_ivec2_t){A.x - B.x, A.y - B.y})
-#define ncx_ivec2_scale(A, S) ((ncx_ivec2_t){A.x * S, A.y * S})
+struct ncx_ivec2 ncx_ivec2_add(struct ncx_ivec2 a, struct ncx_ivec2 b);
+struct ncx_ivec2 ncx_ivec2_sub(struct ncx_ivec2 a, struct ncx_ivec2 b);
+struct ncx_ivec2 ncx_ivec2_scale(struct ncx_ivec2 a, float s);
+struct ncx_ivec2 ncx_ivec2_neg(struct ncx_ivec2 x);
+float ncx_ivec2_dot(struct ncx_ivec2 a, struct ncx_ivec2 b);
 
 #endif

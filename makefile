@@ -5,10 +5,13 @@ CORES=-j8
 
 CFLAGS=-std=c99
 
-SRC=glad.c context.c texture.c font.c ui.c sound.c helpers.c shader.c file.c \
-	model.c mesh.c light_point.c material.c animation.c mat4.c quat.c
-OBJ=glad.o context.o texture.o font.o ui.o sound.o helpers.o shader.o file.o \
-	model.o mesh.o light_point.o material.o animation.o mat4.o quat.o
+SRC=glad.c context.c tex.c font.c ui.c sound.c helpers.c shader.c file.c \
+	model.c mesh.c light_point.c material.c animation.c vec2.c vec3.c \
+	vec4.c mat4.c quat.c ray.c
+
+OBJ=glad.o context.o tex.o font.o ui.o sound.o helpers.o shader.o file.o \
+	model.o mesh.o light_point.o material.o animation.o vec2.o vec3.o \
+	vec4.o mat4.o quat.o ray.o
 
 BIN=libnarcotix.a
 
@@ -33,7 +36,9 @@ test: $(BIN)
 	clear
 	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)
 	rm -rf *.o
+	gdb ./test --tui
 
+run: CFLAGS += -O2 -Wall -Wextra
 run:
 	clear
 	make clean

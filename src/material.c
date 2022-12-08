@@ -2,22 +2,25 @@
 #include "narcotix/glad/glad.h"
 #include <malloc.h>
 
-ncx_material_t ncx_material_create(const ncx_material_data_t data) {
-	return (ncx_material_t) {
+struct ncx_material ncx_material_create(const struct ncx_material_data data)
+{
+	return (struct ncx_material) {
 		data,
-		ncx_texture_create(data.diffuse_path, GL_REPEAT,
+		ncx_tex_create(data.diff_path, GL_REPEAT,
 				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
-		ncx_texture_create(data.specular_path, GL_REPEAT,
+		ncx_tex_create(data.spec_path, GL_REPEAT,
 				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
-		ncx_texture_create(data.normal_path, GL_REPEAT,
+		ncx_tex_create(data.norm_path, GL_REPEAT,
 				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
 	};
 }
 
-ncx_material_t *ncx_materials_create(const ncx_material_data_t *data,
-		const uint32_t mat_count) {
+struct ncx_material *ncx_materials_create(const struct ncx_material_data *data,
+		const uint32_t mat_count)
+{
+	struct ncx_material *materials =
+		malloc(mat_count * sizeof(struct ncx_material));
 
-	ncx_material_t *materials = malloc(mat_count * sizeof(ncx_material_t));
 	for(uint32_t i = 0; i < mat_count; i++) {
 		materials[i] = ncx_material_create(data[i]);
 	}
@@ -25,14 +28,16 @@ ncx_material_t *ncx_materials_create(const ncx_material_data_t *data,
 	return materials;
 }
 
-void ncx_material_destroy(ncx_material_t *mat) {
-	ncx_textures_destroy(&mat->diffuse, M_TEX_COUNT);
+void ncx_material_destroy(struct ncx_material *mat)
+{
+	ncx_tex_destroy(&mat->diff, M_TEX_CNT);
 }
 
-void ncx_materials_destroy(ncx_material_t *mat_start,
-		const uint32_t mat_count) {
-	const ncx_material_t *const mat_end = mat_start + mat_count;
-	for(ncx_material_t *i = mat_start; i != mat_end; i++) {
+void ncx_materials_destroy(struct ncx_material *mat_start,
+		const uint32_t mat_count)
+{
+	const struct ncx_material *const mat_end = mat_start + mat_count;
+	for(struct ncx_material *i = mat_start; i != mat_end; i++) {
 		ncx_material_destroy(i);
 	}
 }

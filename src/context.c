@@ -7,8 +7,8 @@
 #include <malloc.h>
 
 static GLFWwindow *window;
-static ncx_vec2_t window_size;
-static ncx_ivec2_t window_position;
+static struct ncx_vec2 window_size;
+static struct ncx_ivec2 window_position;
 
 static uint32_t render_quad_vao;
 static uint32_t render_quad_vbo;
@@ -23,7 +23,8 @@ static uint8_t mouse_states[2];
 
 void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
-		const uint8_t use_blending) {
+		const uint8_t use_blending)
+{
 
 	if(!glfwInit()) {
 		fprintf(stderr, "GLFW ERROR: GLFW failed to initialize.\n");
@@ -39,8 +40,9 @@ void ncx_init(const float width, const float height,
 	window = glfwCreateWindow((int32_t)width, (int32_t)height,
 			window_name, NULL, NULL);
 	if(!window) {
-		fprintf(stderr, "GLFW ERROR: Failed to create window '%s' (%d x %d)\n",
-			   window_name, (int)width, (int)height);
+		fprintf(stderr, "GLFW ERROR: Failed to create window '%s' "
+				"(%d x %d)\n", window_name, (int)width,
+				(int)height);
 		assert(0);
 	}
 
@@ -83,7 +85,9 @@ void ncx_init(const float width, const float height,
 	glBufferData(GL_ARRAY_BUFFER, sizeof(render_quad_vertices),
 			render_quad_vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
+			4 * sizeof(float), NULL);
+
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -92,8 +96,8 @@ void ncx_init(const float width, const float height,
 
 	/* load in the render buffer's shader */
 	render_quad_shader = ncx_shader_create(
-			"res/shaders/builtin/screen_vert.glsl", NULL,
-			"res/shaders/builtin/screen_frag.glsl");
+			"res/shdr/internal/screen_vert.glsl", NULL,
+			"res/shdr/internal/screen_frag.glsl");
 
 	render_buffer_count = rb_count;
 	render_buffers =
@@ -104,23 +108,36 @@ void ncx_init(const float width, const float height,
 		glGenFramebuffers(1, &rb_cur->fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, rb_cur->fbo);
 
-		glGenTextures(1, &rb_cur->texture);
-		glBindTexture(GL_TEXTURE_2D, rb_cur->texture);
+		glGenTextures(1, &rb_cur->tex);
+		glBindTexture(GL_TEXTURE_2D, rb_cur->tex);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
 				0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+				GL_MIRRORED_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+				GL_MIRRORED_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				GL_LINEAR);
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-				GL_TEXTURE_2D, rb_cur->texture, 0);
+				GL_TEXTURE_2D, rb_cur->tex, 0);
 
 		glGenRenderbuffers(1, &rb_cur->rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER, rb_cur->rbo);
+
 		glRenderbufferStorage(GL_RENDERBUFFER,
 				GL_DEPTH24_STENCIL8, width, height);
+
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER,
-				GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb_cur->rbo);
+				GL_DEPTH_STENCIL_ATTACHMENT,
+				GL_RENDERBUFFER, rb_cur->rbo);
 
 		#ifdef DEBUG
 			if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
@@ -147,14 +164,15 @@ void ncx_init(const float width, const float height,
 	glFrontFace(GL_CCW);
 }
 
-void ncx_terminate() {
+void ncx_terminate()
+{
 	ncx_render_buffer_t *rb_end = render_buffers +
 		render_buffer_count;
 	for(ncx_render_buffer_t *rb_cur = render_buffers;
 			rb_cur < rb_end; rb_cur++) {
 		glDeleteFramebuffers(1, &rb_cur->fbo);
 		glDeleteRenderbuffers(1, &rb_cur->rbo);
-		glDeleteTextures(1, &rb_cur->texture);
+		glDeleteTextures(1, &rb_cur->tex);
 	}
 	free(render_buffers);
 
@@ -162,101 +180,117 @@ void ncx_terminate() {
 	glfwTerminate();
 }
 
-float ncx_time(void) {
+float ncx_time(void)
+{
 	return (float)glfwGetTime();
 }
 
-void ncx_time_delta_init(void) {
+void ncx_time_delta_init(void)
+{
 	time_last = ncx_time();
 }
 
-float ncx_time_delta(void) {
+float ncx_time_delta(void)
+{
 	float time_now = ncx_time();
 	float time_delta = time_now - time_last;
 	time_last = time_now;
 	return time_delta;
 }
 
-void ncx_mouse_center() {
+void ncx_mouse_center()
+{
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPos(window,
 			(double)window_size.x / 2,
 			(double)window_size.y / 2);
 }
 
-uint8_t ncx_key_down(const int32_t key) {
+uint8_t ncx_key_down(const int32_t key)
+{
 	key_states[key] = glfwGetKey(window, key);
 	return key_states[key];
 }
 
-uint8_t ncx_key_pressed(int32_t key) {
+uint8_t ncx_key_pressed(int32_t key)
+{
 	uint8_t key_state_new = glfwGetKey(window, key);
 	uint8_t key_pressed_now = key_state_new && !key_states[key];
 	key_states[key] = key_state_new;
 	return key_pressed_now;
 }
 
-uint8_t ncx_key_released(int32_t key) {
+uint8_t ncx_key_released(int32_t key)
+{
 	uint8_t key_state_new = glfwGetKey(window, key);
 	uint8_t key_released_now = !key_state_new && key_states[key];
 	key_states[key] = key_state_new;
 	return key_released_now;
 }
 
-uint8_t ncx_mouse_button_down(int32_t button) {
+uint8_t ncx_mouse_button_down(int32_t button)
+{
 	mouse_states[button] = glfwGetMouseButton(window, button);
 	return mouse_states[button];
 }
 
-uint8_t ncx_mouse_button_pressed(int32_t button) {
+uint8_t ncx_mouse_button_pressed(int32_t button)
+{
 	uint8_t mouse_state_new = glfwGetMouseButton(window, button);
 	uint8_t mouse_pressed_now = mouse_state_new && !mouse_states[button];
 	mouse_states[button] = mouse_state_new;
 	return mouse_pressed_now;
 }
 
-ncx_vec2_t ncx_mouse_pos_get(void) {
+struct ncx_vec2 ncx_mouse_pos_get(void)
+{
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	return (ncx_vec2_t){x, y};
+	return (struct ncx_vec2){x, y};
 }
 
-void ncx_mouse_pos_set(ncx_vec2_t new_pos) {
+void ncx_mouse_pos_set(struct ncx_vec2 new_pos)
+{
 	glfwSetCursorPos(window, new_pos.x, new_pos.y);
 }
 
-void ncx_mouse_input_raw(const uint8_t toggle) {
+void ncx_mouse_input_raw(const uint8_t toggle)
+{
 	assert(glfwRawMouseMotionSupported());
 	glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, toggle);
 }
 
 void ncx_clear_color(const float r, const float g,
-		const float b, const float a) {
+		const float b, const float a)
+{
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void ncx_clear_depth(void) {
+void ncx_clear_depth(void)
+{
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void ncx_render_buffer_bind(const uint8_t index) {
+void ncx_render_buffer_bind(const uint8_t index)
+{
 	assert(index < render_buffer_count);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_buffers[index].fbo);
 }
 
-void ncx_render_buffer_unbind(void) {
+void ncx_render_buffer_unbind(void)
+{
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ncx_buffer_display(const ncx_texture_t overlay, const float time,
-		const float trip_intensity) {
-
+void ncx_buffer_display(const ncx_tex_t overlay, const float time,
+		const float trip_intensity)
+{
 	for(uint8_t i = 0; i < render_buffer_count; i++) {
 		glDisable(GL_DEPTH_TEST);
 		ncx_shader_use(render_quad_shader);
-		ncx_shader_uniform_int(render_quad_shader, "screen_texture", 0);
-		ncx_shader_uniform_int(render_quad_shader, "trippy_texture", 1);
+		ncx_shader_uniform_int(render_quad_shader, "screen_tex", 0);
+		ncx_shader_uniform_int(render_quad_shader, "trippy_tex", 1);
 		ncx_shader_uniform_int(render_quad_shader,
 				"use_trippy_effect", overlay);
 		ncx_shader_uniform_float(render_quad_shader, "time", time);
@@ -264,23 +298,25 @@ void ncx_buffer_display(const ncx_texture_t overlay, const float time,
 				"trip_intensity", trip_intensity);
 
 		glBindVertexArray(render_quad_vao);
-		ncx_texture_use(render_buffers[i].texture, 0);
-		ncx_texture_use(overlay, 1);
+		ncx_tex_use(render_buffers[i].tex, 0);
+		ncx_tex_use(overlay, 1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		ncx_texture_use(0, 0);
-		ncx_texture_use(0, 1);
+		ncx_tex_use(0, 0);
+		ncx_tex_use(0, 1);
 		glBindVertexArray(0);
 		glEnable(GL_DEPTH_TEST);
 	}
 }
 
-void ncx_buffer_swap() {
+void ncx_buffer_swap()
+{
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
 
-uint8_t ncx_window_is_running() {
+uint8_t ncx_window_is_running()
+{
 	if(ncx_key_pressed(GLFW_KEY_ESCAPE)) {
 		ncx_window_close();
 		return 0;
@@ -289,6 +325,7 @@ uint8_t ncx_window_is_running() {
 	return !glfwWindowShouldClose(window);
 }
 
-void ncx_window_close() {
+void ncx_window_close()
+{
 	glfwSetWindowShouldClose(window, 1);
 }

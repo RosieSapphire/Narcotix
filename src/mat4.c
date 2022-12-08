@@ -7,8 +7,10 @@
 #include <string.h>
 #include <stdio.h>
 
-ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far) {
-	ncx_mat4_t mat = NCX_MAT4_0;
+struct ncx_mat4 ncx_mat4_persp(float fov_deg,
+		float aspect, float near, float far)
+{
+	struct ncx_mat4 mat = NCX_MAT4_0;
 
 	float fov_itan = 1.0f / tanf(fov_deg * NCX_TO_RAD * 0.5f);
 	mat.mat[0][0] = fov_itan / aspect;
@@ -22,8 +24,9 @@ ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far) {
 	return mat;
 }
 
-ncx_mat4_t ncx_mat4_ortho(float l, float r, float t, float b) {
-	ncx_mat4_t mat = NCX_MAT4_0;
+struct ncx_mat4 ncx_mat4_ortho(float l, float r, float t, float b)
+{
+	struct ncx_mat4 mat = NCX_MAT4_0;
 
 	float rl = 1 / (r - l);
 	float tb = 1 / (t - b);
@@ -38,26 +41,31 @@ ncx_mat4_t ncx_mat4_ortho(float l, float r, float t, float b) {
 	return mat;
 }
 
-ncx_mat4_t ncx_mat4_translate(ncx_mat4_t mat, ncx_vec3_t vec) {
+struct ncx_mat4 ncx_mat4_trans(struct ncx_mat4 mat, struct ncx_vec3 vec)
+{
 	mat.mat[3][0] += vec.x;
 	mat.mat[3][1] += vec.y;
 	mat.mat[3][2] += vec.z;
 	return mat;
 }
 
-ncx_mat4_t ncx_mat4_scale(ncx_mat4_t mat, ncx_vec3_t vec) {
+struct ncx_mat4 ncx_mat4_scale(struct ncx_mat4 mat, struct ncx_vec3 vec)
+{
 	mat.mat[0][0] *= vec.x;
 	mat.mat[1][1] *= vec.y;
 	mat.mat[2][2] *= vec.z;
 	return mat;
 }
 
-ncx_mat4_t ncx_mat4_scale_uni(ncx_mat4_t mat, float s) {
+struct ncx_mat4 ncx_mat4_scale_uni(struct ncx_mat4 mat, float s)
+{
 	return ncx_mat4_scale(mat, ncx_vec3(s, s, s));
 }
 
-ncx_mat4_t ncx_mat4_rotate(ncx_mat4_t mat, ncx_vec3_t axis, float angle_rad) {
-	ncx_mat4_t rot;
+struct ncx_mat4 ncx_mat4_rotate(struct ncx_mat4 mat,
+		struct ncx_vec3 axis, float angle_rad)
+{
+	struct ncx_mat4 rot;
 	memset(&rot, 0, sizeof(rot));
 
 	const float angle_sin = sinf(angle_rad);
@@ -79,14 +87,31 @@ ncx_mat4_t ncx_mat4_rotate(ncx_mat4_t mat, ncx_vec3_t axis, float angle_rad) {
 	return ncx_mat4_mul(mat, rot);
 }
 
-ncx_mat4_t ncx_mat4_mul(ncx_mat4_t a, ncx_mat4_t b) {
-	ncx_mat4_t c;
+struct ncx_mat4 ncx_mat4_rotate_x(struct ncx_mat4 mat, float angle_rad)
+{
+	return ncx_mat4_rotate(mat, NCX_VEC3_X, angle_rad);
+}
+
+struct ncx_mat4 ncx_mat4_rotate_y(struct ncx_mat4 mat, float angle_rad)
+{
+	return ncx_mat4_rotate(mat, NCX_VEC3_Y, angle_rad);
+}
+
+struct ncx_mat4 ncx_mat4_rotate_z(struct ncx_mat4 mat, float angle_rad)
+{
+	return ncx_mat4_rotate(mat, NCX_VEC3_Z, angle_rad);
+}
+
+struct ncx_mat4 ncx_mat4_mul(struct ncx_mat4 a, struct ncx_mat4 b)
+{
+	struct ncx_mat4 c;
 	memset(&c, 0, sizeof(c));
 
 	for(uint8_t row = 0; row < 4; row++) {
 		for(uint8_t col = 0; col < 4; col++) {
 			for(uint8_t ind = 0; ind < 4; ind++) {
-				c.mat[col][row] += a.mat[ind][row] * b.mat[col][ind];
+				c.mat[col][row] +=
+					a.mat[ind][row] * b.mat[col][ind];
 			}
 		}
 	}
@@ -94,14 +119,15 @@ ncx_mat4_t ncx_mat4_mul(ncx_mat4_t a, ncx_mat4_t b) {
 	return c;
 }
 
-ncx_mat4_t ncx_mat4_from_quat(ncx_vec4_t quat) {
+struct ncx_mat4 ncx_mat4_from_quat(struct ncx_vec4 quat)
+{
 	float norm = sqrtf(ncx_quat_dot(quat, quat));
 	float s = 0.0f;
 	if(norm > 0) {
  		s = (2.0f / norm);
 	}
 
-	return (ncx_mat4_t) {{
+	return (struct ncx_mat4) {{
 		{
 			1.0f - (s * quat.y * quat.y) - (s * quat.z * quat.z),
 			(s * quat.x * quat.y) + (s * quat.w * quat.z),
@@ -129,7 +155,27 @@ ncx_mat4_t ncx_mat4_from_quat(ncx_vec4_t quat) {
 	}};
 }
 
-void ncx_mat4_print(ncx_mat4_t m) {
+struct ncx_mat4 ncx_mat4_lookat(struct ncx_vec3 eye, struct ncx_vec3 focus)
+{
+	struct ncx_vec3 f = ncx_vec3_norm(ncx_vec3_sub(focus, eye));
+	struct ncx_vec3 s = ncx_vec3_norm(ncx_vec3_cross(NCX_VEC3_Y, f));
+	struct ncx_vec3 u = ncx_vec3_cross(f, s);
+
+	return (struct ncx_mat4) {{
+		{s.x, u.x, f.x, 0.0f},
+		{s.y, u.y, f.y, 0.0f},
+		{s.z, u.z, f.z, 0.0f},
+		{
+			-ncx_vec3_dot(s, eye),
+			-ncx_vec3_dot(u, eye),
+			-ncx_vec3_dot(f, eye),
+			1.0f
+		},
+	}};
+}
+
+void ncx_mat4_print(struct ncx_mat4 m)
+{
 	for(uint8_t i = 0; i < 4; i++) {
 		for(uint8_t j = 0; j < 4; j++) {
 			printf("%.6f\t", m.mat[j][i]);

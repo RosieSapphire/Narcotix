@@ -1,18 +1,18 @@
 #include "narcotix/light_point.h"
 #include <string.h>
 
-ncx_light_point_t ncx_light_point_create(ncx_vec3_t pos, ncx_vec3_t ambi_col,
-		ncx_vec3_t diff_col, ncx_vec3_t spec_col, const float constant,
-		const float linear, const float quadratic) {
-
-	ncx_light_point_t light;
-	light.pos = pos;
-	light.ambi_col = ambi_col;
-	light.diff_col = diff_col;
-	light.spec_col = spec_col;
-	light.constant = constant;
-	light.linear = linear;
-	light.quadratic = quadratic;
-
-	return light;
+struct ncx_light_point ncx_light_point_create(struct ncx_vec3 pos,
+		struct ncx_vec3 ambi_col, struct ncx_vec3 diff_col,
+		struct ncx_vec3 spec_col, const float constant,
+		const float linear, const float quadratic)
+{
+	return (struct ncx_light_point) {
+		.pos = pos,
+		.ambi_col = ambi_col,
+		.diff_col = diff_col,
+		.spec_col = spec_col,
+		.constant = constant,
+		.linear = linear,
+		.quadratic = quadratic,
+	};
 }

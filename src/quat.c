@@ -3,17 +3,19 @@
 
 #include <math.h>
 
-ncx_vec4_t ncx_quat_lerp(ncx_vec4_t a, ncx_vec4_t b, float t) {
+struct ncx_vec4 ncx_quat_lerp(struct ncx_vec4 a, struct ncx_vec4 b, float t)
+{
 	t = ncx_clampf01(t);
-	return (ncx_vec4_t) {
-		ncx_lerpf(a.x, b.x, t),
-		ncx_lerpf(a.y, b.y, t),
-		ncx_lerpf(a.z, b.z, t),
-		ncx_lerpf(a.w, b.w, t),
+	return (struct ncx_vec4) {
+		ncx_lerp(a.x, b.x, t),
+		ncx_lerp(a.y, b.y, t),
+		ncx_lerp(a.z, b.z, t),
+		ncx_lerp(a.w, b.w, t),
 	};
 }
 
-ncx_vec4_t ncx_quat_slerp(ncx_vec4_t a, ncx_vec4_t b, float t) {
+struct ncx_vec4 ncx_quat_slerp(struct ncx_vec4 a, struct ncx_vec4 b, float t)
+{
 	t = ncx_clampf01(t);
 
 	float cos_angle = ncx_quat_dot(a, b);

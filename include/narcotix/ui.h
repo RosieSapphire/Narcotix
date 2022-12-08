@@ -1,24 +1,26 @@
 #ifndef __NCX_UI_H_
 #define __NCX_UI_H_
 
-#include "narcotix/texture.h"
+#include "narcotix/tex.h"
 #include "narcotix/vec2.h"
 
-typedef struct {
-	ncx_vec2_t pos;
-	ncx_vec2_t size;
-	ncx_texture_t *textures;
-	uint8_t texture_count;
-} ncx_ui_element_t;
+struct ncx_ui_elem_t {
+	struct ncx_vec2 pos;
+	struct ncx_vec2 size;
+	ncx_tex_t *tex;
+	uint8_t tex_count;
+};
 
-void ncx_ui_elements_init(const float width, const float height);
-void ncx_ui_elements_set_flash(const float flash);
+void ncx_ui_elems_init(const float width, const float height);
+void ncx_ui_elems_set_flash(const float flash);
 
-ncx_ui_element_t ncx_ui_element_create(ncx_vec2_t pos, ncx_vec2_t size,
-		const ncx_texture_t *textures, const uint8_t texture_count);
-void ncx_ui_element_draw(const ncx_ui_element_t ui,
-		const uint8_t texture_index);
+struct ncx_ui_elem_t ncx_ui_elem_create(struct ncx_vec2 pos,
+		struct ncx_vec2 size, const ncx_tex_t *texs,
+		const uint8_t tex_count);
 
-void ncx_ui_elements_terminate(void);
+void ncx_ui_elem_draw(const struct ncx_ui_elem_t ui,
+		const uint8_t tex_index);
+
+void ncx_ui_elems_terminate(void);
 
 #endif
