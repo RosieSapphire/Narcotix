@@ -1,8 +1,9 @@
 #include "narcotix/sound.h"
+#include "narcotix/vec3.h"
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <malloc.h>
-#include <cglm/cglm.h>
 #include <sndfile.h>
 #include <assert.h>
 
@@ -43,7 +44,7 @@ ncx_sound_t ncx_sound_create(const char *paths,
 	sound.delay_timer = 500.0f;
 
 	alGenSources(1, &sound.source);
-	alSourcefv(sound.source, AL_VELOCITY, GLM_VEC3_ZERO);
+	alSource3f(sound.source, AL_VELOCITY, 0, 0, 0);
 
 	sound.delay_sources = NULL;
 	sound.use_delay = use_delay;

@@ -1,7 +1,7 @@
 #ifndef __NCX_HELPERS_H_
 #define __NCX_HELPERS_H_
 
-#include <cglm/cglm.h>
+#include <stdint.h>
 
 #define NCX_EPSILON	0.001f
 #define NCX_PI      3.141592653589f
@@ -20,9 +20,7 @@ int   ncx_sprintfv2(char *dest, const char *format, const float *vec);
 int   ncx_sprintfv3(char *dest, const char *format, const float *vec);
 float ncx_fmod(const float val, const float mod);
 
-void  ncx_vec3_lerpc(vec3 a, vec3 b, const float t, vec3 out);
-void  ncx_vec2_lerpc(vec2 a, vec2 b, const float t, vec2 out);
-float ncx_lerpc(const float a, const float b, const float t);
+float ncx_lerpf(const float a, const float b, const float t);
 
 void glfw_error_callback(int code, const char *log);
 

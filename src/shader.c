@@ -1,7 +1,9 @@
 #include "narcotix/shader.h"
 #include "narcotix/glad/glad.h"
 #include "narcotix/file.h"
+
 #include <assert.h>
+#include <stdio.h>
 
 ncx_shader_t ncx_shader_create(const char *vert_path,
 		const char *geom_path, const char *frag_path) {

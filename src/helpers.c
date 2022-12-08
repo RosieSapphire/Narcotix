@@ -1,6 +1,6 @@
 #include "narcotix/helpers.h"
 
-#include <stdint.h>
+#include <stdio.h>
 
 /* NOTICE: This code was made by OwenTheProgrammer, and can be found at
  * https://github.com/OwenTheProgrammer/DemoScripts/blob/main/Branchless_FastClamp.c */
@@ -62,16 +62,8 @@ float ncx_fmod(const float val, const float mod) {
 	return (val_scaled - (float)((int32_t)val_scaled)) * mod;
 }
 
-void  ncx_vec3_lerpc(vec3 a, vec3 b, const float t, vec3 out) {
-	glm_vec3_lerpc(a, b, ncx_clampf01(t), out);
-}
-
-void  ncx_vec2_lerpc(vec2 a, vec2 b, const float t, vec2 out) {
-	glm_vec2_lerp(a, b, ncx_clampf01(t), out);
-}
-
-float ncx_lerpc(const float a, const float b, const float t) {
-	return glm_lerp(a, b, ncx_clampf01(t));
+float ncx_lerpf(const float a, const float b, const float t) {
+	return a + (b - a) * t;
 }
 
 void glfw_error_callback(int code, const char *log) {

@@ -1,8 +1,9 @@
 #include "narcotix/ui.h"
 #include "narcotix/shader.h"
 #include "narcotix/glad/glad.h"
-#include <cglm/cglm.h>
+
 #include <string.h>
+#include <malloc.h>
 
 static ncx_mat4_t projection;
 static uint32_t vao, vbo;
@@ -29,10 +30,7 @@ void ncx_ui_elements_init(const float width, const float height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	mat4 proj_temp;
-	glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, proj_temp);
-	memcpy(projection.mat, proj_temp, sizeof(ncx_mat4_t));
-
+	projection = ncx_mat4_ortho(0, width, height, 0);
 	ui_shader = ncx_shader_create("res/shaders/builtin/ui_vert.glsl", NULL,
 			"res/shaders/builtin/ui_frag.glsl");
 	ncx_shader_use(ui_shader);
@@ -58,7 +56,7 @@ ncx_ui_element_t ncx_ui_element_create(ncx_vec2_t pos, ncx_vec2_t size,
 
 void ncx_ui_element_draw(const ncx_ui_element_t element,
 		const uint8_t index) {
-	ncx_mat4_t model = ncx_mat4_id();
+	ncx_mat4_t model = NCX_MAT4_ID;
 	glDisable(GL_DEPTH_TEST);
 	model = ncx_mat4_translate(model,
 			ncx_vec3(element.pos.x, element.pos.y, 0.0f));

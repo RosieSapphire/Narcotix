@@ -1,7 +1,7 @@
 #ifndef __NCX_SHADER_H_
 #define __NCX_SHADER_H_
 
-#include <cglm/cglm.h>
+#include <stdint.h>
 #include "narcotix/vec3.h"
 #include "narcotix/mat4.h"
 

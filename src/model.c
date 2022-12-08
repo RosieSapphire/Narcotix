@@ -1,7 +1,10 @@
 #include "narcotix/model.h"
+
 #include <assimp/scene.h>
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
+#include <stdio.h>
+#include <malloc.h>
 
 #define POINT_LIGHT_MAX 32
 
@@ -63,7 +66,7 @@ void ncx_model_shader_lights_update(const ncx_shader_t shader,
 
 		for(j = 0; j < 4; j++) {
 			sprintf(buffer, "light_points[%u].%s", i, properties[j]);
-			ncx_shader_uniform_vec3(shader, buffer, ncx_vec3_0());
+			ncx_shader_uniform_vec3(shader, buffer, NCX_VEC3_0);
 		}
 
 		for(; j < 7; j++) {

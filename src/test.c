@@ -94,7 +94,7 @@ int main() {
 				*/
 
 	ncx_mat4_t proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
-	ncx_mat4_t view = ncx_mat4_translate(ncx_mat4_id(), ncx_vec3(0, 0, -1));
+	ncx_mat4_t view = ncx_mat4_translate(NCX_MAT4_ID, ncx_vec3(0, 0, -1));
 	
 	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
@@ -108,7 +108,7 @@ int main() {
 		ncx_shader_uniform_int(model_shader, "render_layer", 0);
 		ncx_shader_uniform_mat4(model_shader, "proj", proj);
 		ncx_shader_uniform_mat4(model_shader, "view", view);
-		ncx_shader_uniform_vec3(model_shader, "view_pos", ncx_vec3_0());
+		ncx_shader_uniform_vec3(model_shader, "view_pos", NCX_VEC3_0);
 
 		const float trip_intensity = 0.0f;
 		ncx_shader_uniform_float(model_shader, "trip_intensity",
@@ -120,25 +120,25 @@ int main() {
 		const float time_delta = ncx_time_delta();
 
 		/* drawing pistol */
-		ncx_mat4_t model_mat = ncx_mat4_id();
+		ncx_mat4_t model_mat = NCX_MAT4_ID;
 		model_mat = ncx_mat4_translate(model_mat, ncx_vec3(-0.2f, 0.0f, 0.0f));
 		ncx_model_animation_update(&pistol_model, time_delta, 1);
 		ncx_model_draw(pistol_model, model_shader, model_mat);
 
 		/* drawing bong */
-		model_mat = ncx_mat4_id();
+		model_mat = NCX_MAT4_ID;
 		model_mat =
 			ncx_mat4_translate(model_mat, ncx_vec3(0.2f, -0.14f, 0.0f));
 		model_mat = ncx_mat4_scale_uni(model_mat, 1.32f);
-		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), time_now * 4);
+		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y, time_now * 4);
 		ncx_meshes_draw(bong_model.meshes, bong_model.mesh_count,
 				model_shader, model_mat);
 
 		/* drawing bricks */
-		model_mat = ncx_mat4_id();
+		model_mat = NCX_MAT4_ID;
 		model_mat = ncx_mat4_translate(model_mat,
 				ncx_vec3(sinf(time_now), 0.0f, -1.5f));
-		model_mat = ncx_mat4_rotate(model_mat, ncx_vec3_y_up(), sinf(time_now));
+		model_mat = ncx_mat4_rotate(model_mat, NCX_VEC3_Y, sinf(time_now));
 		ncx_meshes_draw(brick_model.meshes, 1, model_shader, model_mat);
 
 		ncx_render_buffer_bind(1);
@@ -148,12 +148,12 @@ int main() {
 
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
-				ncx_vec2(0.02f, 0.92f), ncx_vec3_1(), 0.8f, WINDOW_SIZE,
+				ncx_vec2(0.02f, 0.92f), NCX_VEC3_1, 0.8f, WINDOW_SIZE,
 				font_shader);
 		ncx_font_draw(normal_font,
 				"Music: 'Sandworms - Andy Caldwell VS. Darkhorse'"
 				" from Mushroom Jazz 2", ncx_vec2(0.02f, 0.04f),
-				ncx_vec3_1(), 0.5f, WINDOW_SIZE,
+				NCX_VEC3_1, 0.5f, WINDOW_SIZE,
 				font_shader);
 
 		ncx_render_buffer_unbind();

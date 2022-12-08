@@ -1,4 +1,5 @@
 #include "narcotix/mat4.h"
+#include "narcotix/quat.h"
 #include "narcotix/helpers.h"
 
 #include <math.h>
@@ -7,7 +8,7 @@
 #include <stdio.h>
 
 ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far) {
-	ncx_mat4_t mat = ncx_mat4_0();
+	ncx_mat4_t mat = NCX_MAT4_0;
 
 	float fov_itan = 1.0f / tanf(fov_deg * NCX_TO_RAD * 0.5f);
 	mat.mat[0][0] = fov_itan / aspect;
@@ -22,7 +23,7 @@ ncx_mat4_t ncx_mat4_persp(float fov_deg, float aspect, float near, float far) {
 }
 
 ncx_mat4_t ncx_mat4_ortho(float l, float r, float t, float b) {
-	ncx_mat4_t mat = ncx_mat4_0();
+	ncx_mat4_t mat = NCX_MAT4_0;
 
 	float rl = 1 / (r - l);
 	float tb = 1 / (t - b);
@@ -91,6 +92,41 @@ ncx_mat4_t ncx_mat4_mul(ncx_mat4_t a, ncx_mat4_t b) {
 	}
 
 	return c;
+}
+
+ncx_mat4_t ncx_mat4_from_quat(ncx_vec4_t quat) {
+	float norm = sqrtf(ncx_quat_dot(quat, quat));
+	float s = 0.0f;
+	if(norm > 0) {
+ 		s = (2.0f / norm);
+	}
+
+	return (ncx_mat4_t) {{
+		{
+			1.0f - (s * quat.y * quat.y) - (s * quat.z * quat.z),
+			(s * quat.x * quat.y) + (s * quat.w * quat.z),
+			(s * quat.x * quat.z) - (s * quat.w * quat.y),
+			0.0f,
+		},
+		{
+			(s * quat.x * quat.y) - (s * quat.w * quat.z),
+			1.0f - (s * quat.x * quat.x) - (s * quat.z * quat.z),
+			(s * quat.y * quat.z) + (s * quat.w * quat.x),
+			0.0f,
+		},
+		{
+			(s * quat.x * quat.z) + (s * quat.w * quat.y),
+			(s * quat.y * quat.z) - (s * quat.w * quat.x),
+			1.0f - (s * quat.x * quat.x) - (s * quat.y * quat.y),
+			0.0f,
+		},
+		{
+			0.0f,
+			0.0f,
+			0.0f,
+			1.0f,
+		},
+	}};
 }
 
 void ncx_mat4_print(ncx_mat4_t m) {

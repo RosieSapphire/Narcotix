@@ -1,10 +1,10 @@
 #include "narcotix/mesh.h"
+#include "narcotix/vec2.h"
+#include "narcotix/glad/glad.h"
 
 #include <stdio.h>
 #include <string.h>
-#include "narcotix/glad/glad.h"
 #include <malloc.h>
-#include <cglm/cglm.h>
 
 ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
 		const ncx_material_t *materials,uint32_t *mesh_count) {
@@ -21,15 +21,15 @@ ncx_mesh_t *ncx_meshes_create(const struct aiScene *scene,
 				mesh_cur->vertex_count * sizeof(ncx_vertex_t));
 		for(size_t j = 0; j < mesh_cur->vertex_count; j++) {
 			memcpy(mesh_cur->vertices[j].pos,
-					&ai_mesh_cur->mVertices[j].x, sizeof(vec3));
+					&ai_mesh_cur->mVertices[j].x, sizeof(ncx_vec3_t));
 			memcpy(mesh_cur->vertices[j].norm,
-					&ai_mesh_cur->mNormals[j].x, sizeof(vec3));
+					&ai_mesh_cur->mNormals[j].x, sizeof(ncx_vec3_t));
 			memcpy(mesh_cur->vertices[j].uv,
-					&ai_mesh_cur->mTextureCoords[0][j].x, sizeof(vec2));
+					&ai_mesh_cur->mTextureCoords[0][j].x, sizeof(ncx_vec2_t));
 			memcpy(mesh_cur->vertices[j].tan,
-					&ai_mesh_cur->mTangents[j].x, sizeof(vec3));
+					&ai_mesh_cur->mTangents[j].x, sizeof(ncx_vec3_t));
 			memcpy(mesh_cur->vertices[j].bitan,
-					&ai_mesh_cur->mBitangents[j].x, sizeof(vec3));
+					&ai_mesh_cur->mBitangents[j].x, sizeof(ncx_vec3_t));
 		}
 
 		mesh_cur->index_count = 0;
@@ -108,8 +108,7 @@ void ncx_meshes_draw(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 		const ncx_shader_t shader, NCXAnimation anim, ncx_mat4_t mat_base) {
 
-	ncx_mat4_t mat_root;
-	ncx_animation_get_matrix(anim, 0, &mat_root);
+	ncx_mat4_t mat_root = ncx_animation_get_matrix(anim, 0);
 
 	ncx_shader_use(shader);
 	ncx_shader_uniform_mat4(shader, "model", mat_root);
@@ -118,7 +117,7 @@ void ncx_meshes_draw_anim(const ncx_mesh_t *meshes, const uint32_t mesh_count,
 		glBindVertexArray(mesh_cur->buffers[VAO]);
 
 		ncx_mat4_t mat_model;
-		ncx_animation_get_matrix(anim, i, &mat_model);
+		mat_model = ncx_animation_get_matrix(anim, i);
 
 		if(i) {
 			mat_model = ncx_mat4_mul(mat_root, mat_model);

@@ -1,10 +1,14 @@
 #include "narcotix/context.h"
 #include "narcotix/helpers.h"
+#include "narcotix/ivec2.h"
+
 #include <assert.h>
+#include <stdio.h>
+#include <malloc.h>
 
 static GLFWwindow *window;
-static vec2 window_size;
-static ivec2 window_position;
+static ncx_vec2_t window_size;
+static ncx_ivec2_t window_position;
 
 static uint32_t render_quad_vao;
 static uint32_t render_quad_vbo;
@@ -44,15 +48,15 @@ void ncx_init(const float width, const float height,
 
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
-	window_position[0] =
+	window_position.x =
 		(int32_t)((vidmode->width / 2) - (width / 2));
-	window_position[1] =
+	window_position.y =
 		(int32_t)((vidmode->height / 2) - (height / 2));
-	glfwSetWindowPos(window, window_position[0],
-			window_position[1]);
+	glfwSetWindowPos(window, window_position.x,
+			window_position.y);
 
-	window_size[0] = width;
-	window_size[1] = height;
+	window_size.x = width;
+	window_size.y = height;
 
 	if(!gladLoadGL()) {
 		fprintf(stderr, "OPENGL ERROR: Glad failed"
@@ -176,8 +180,8 @@ float ncx_time_delta(void) {
 void ncx_mouse_center() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPos(window,
-			(double)window_size[0] / 2,
-			(double)window_size[1] / 2);
+			(double)window_size.x / 2,
+			(double)window_size.y / 2);
 }
 
 uint8_t ncx_key_down(const int32_t key) {

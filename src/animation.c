@@ -1,4 +1,8 @@
 #include "narcotix/animation.h"
+#include "narcotix/vec3.h"
+#include "narcotix/quat.h"
+
+#include <malloc.h>
 
 NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 		uint32_t *anim_count) {
@@ -16,19 +20,23 @@ NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 				scene->mAnimations[i]->mChannels[j];
 			NCXAnimChannel *channel = &anim->channels[j];
 			channel->tick_count = ai_channel->mNumPositionKeys;
-			channel->pos_keys = malloc(sizeof(vec3) * channel->tick_count);
-			channel->quat_keys = malloc(sizeof(vec4) * channel->tick_count);
+			channel->pos_keys =
+				malloc(sizeof(ncx_vec3_t) * channel->tick_count);
+			channel->quat_keys =
+				malloc(sizeof(ncx_vec4_t) * channel->tick_count);
 			for(uint32_t k = 0; k < channel->tick_count; k++) {
-				const struct aiVectorKey pos_key = ai_channel->mPositionKeys[k];
-				memcpy(channel->pos_keys[k], &pos_key.mValue, sizeof(vec3));
+				const struct aiVectorKey pos_key =
+					ai_channel->mPositionKeys[k];
+
+				channel->pos_keys[k] = *(ncx_vec3_t *)&pos_key.mValue;
 
 				const struct aiQuatKey quat_key = ai_channel->mRotationKeys[k];
-				vec4 quat_corrected = {
+				ncx_vec4_t quat_corrected = {
 					quat_key.mValue.x, quat_key.mValue.y,
 					quat_key.mValue.z, quat_key.mValue.w,
 				};
 
-				memcpy(channel->quat_keys[k], quat_corrected, sizeof(vec4));
+				channel->quat_keys[k] = quat_corrected;
 			}
 		}
 	}
@@ -36,33 +44,23 @@ NCXAnimation *ncx_animations_create(const struct aiScene *scene,
 	return anims;
 }
 
-void ncx_animation_get_matrix(const NCXAnimation anim,
-		uint32_t mesh_index, ncx_mat4_t *out) {
+ncx_mat4_t ncx_animation_get_matrix(const NCXAnimation anim, uint32_t msh_id) {
 
 	int anim_frame_a = (int)anim.timer;
 	int anim_frame_b = (anim_frame_a + 1) %
 		anim.channels->tick_count;
 	float t = anim.timer - anim_frame_a;
 
-	mesh_index = anim.channel_count - 1 - mesh_index;
-	vec4 anim_quat_lerped;
-	glm_quat_slerp(
-			anim.channels[mesh_index].quat_keys[anim_frame_a],
-			anim.channels[mesh_index].quat_keys[anim_frame_b],
-			t, anim_quat_lerped);
+	msh_id = anim.channel_count - 1 - msh_id;
+	ncx_vec4_t anim_quat_lerped = ncx_quat_slerp(
+			anim.channels[msh_id].quat_keys[anim_frame_a],
+			anim.channels[msh_id].quat_keys[anim_frame_b], t);
 
-	mat4 model_rot;
-	glm_quat_mat4(anim_quat_lerped, model_rot);
+	ncx_mat4_t model_rot = ncx_mat4_from_quat(anim_quat_lerped);
+	ncx_vec3_t anim_pos_lerped = ncx_vec3_lerpc(
+			anim.channels[msh_id].pos_keys[anim_frame_a],
+			anim.channels[msh_id].pos_keys[anim_frame_b], t);
 
-	vec3 anim_pos_lerped;
-	glm_vec3_lerp(
-			anim.channels[mesh_index].pos_keys[anim_frame_a],
-			anim.channels[mesh_index].pos_keys[anim_frame_b],
-			t, anim_pos_lerped);
-
-	mat4 model_trans;
-	glm_mat4_identity(model_trans);
-	glm_translate(model_trans, anim_pos_lerped);
-	*out = ncx_mat4_mul(*((ncx_mat4_t *)&model_trans),
-			*((ncx_mat4_t *)&model_rot));
+	ncx_mat4_t model_trans = ncx_mat4_translate(NCX_MAT4_ID, anim_pos_lerped);
+	return ncx_mat4_mul(model_trans, model_rot);
 }
