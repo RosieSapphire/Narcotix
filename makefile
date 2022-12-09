@@ -1,9 +1,9 @@
 CC=gcc
 INC=-Iinclude -I/usr/include/freetype2
-LIB=-lglfw -lopenal -lfreetype -lsndfile -lassimp -ldl -lpthread -lm
+LIB=-lasan -lglfw -lopenal -lfreetype -lsndfile -lassimp -ldl -lpthread -lm
 CORES=-j8
 
-CFLAGS=-std=c99
+CFLAGS=-std=c99 -Wall -Wextra
 
 SRC=glad.c context.c tex.c font.c ui.c sound.c helpers.c shader.c file.c \
 	model.c mesh.c light_point.c material.c animation.c vec2.c vec3.c \
@@ -15,35 +15,26 @@ OBJ=glad.o context.o tex.o font.o ui.o sound.o helpers.o shader.o file.o \
 
 BIN=libnarcotix.a
 
-all: CFLAGS += -O2 -Wall -Wextra
+all: CFLAGS += -Ofast
 all: release
 
-release: CFLAGS += -O2 -Wall -Wextra
+release: CFLAGS += -Ofast
 release: $(BIN)
-	clear
 	rm -rf *.o
 
-debug: CFLAGS += -ggdb3 -Wall -Wextra -Werror -D DEBUG
+debug: CFLAGS += -Og -fsanitize=address -ggdb3 -Wall -Wextra -Werror -D DEBUG
 debug: $(BIN)
-	clear
 	rm -rf *.o
 
-test: CFLAGS += -ggdb3 -Wall -Wextra -Werror -D DEBUG
-test:
-	rm -f $(BIN)
+test: release
+	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)
+	rm -rf *.o
+	./test
 
-test: $(BIN)
-	clear
+testd: debug
 	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)
 	rm -rf *.o
 	gdb ./test --tui
-
-run: CFLAGS += -O2 -Wall -Wextra
-run:
-	clear
-	make clean
-	make test -j8
-	./test
 
 $(BIN): $(OBJ)
 	ar rcs $(BIN) $^
@@ -54,5 +45,5 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(INC) -c $^ $(LIB)
 
 clean:
-	rm -rf $(BIN) test *.o src/*.orig include/*.orig
 	clear
+	rm -rf $(BIN) test *.o src/*.orig include/*.orig

@@ -1,6 +1,7 @@
 #include "narcotix/helpers.h"
 
 #include <stdio.h>
+#include <string.h>
 
 /* NOTICE: This code was made by OwenTheProgrammer, and can be found at
  * https://github.com/OwenTheProgrammer/DemoScripts */
@@ -88,10 +89,12 @@ void glfw_error_callback(int code, const char *log)
 
 float ncx_quake_rsqrt(float x)
 {
-	uint32_t x_bytes = *(uint32_t *)&x;
-	x_bytes = 0x5f3759df - ( x_bytes >> 1 );
+	uint32_t x_bytes;
+	memcpy(&x_bytes, &x, sizeof(float));
+	x_bytes = 0x5f3759df - (x_bytes >> 1);
 
-	float result = *(float *)&x_bytes;
+	float result;
+	memcpy(&result, &x_bytes, sizeof(float));
 	result *= 1.5f - (x * 0.5f * result * result);
 
 	return result;

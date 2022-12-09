@@ -21,16 +21,21 @@ struct ncx_anim *ncx_animations_create(const struct aiScene *scene,
 			struct ncx_anim_channel *channel = &anim->channels[j];
 			channel->tick_count = ai_channel->mNumPositionKeys;
 			channel->pos_keys =
-				malloc(sizeof(struct ncx_vec3) * channel->tick_count);
+				malloc(sizeof(struct ncx_vec3) *
+						channel->tick_count);
 			channel->quat_keys =
-				malloc(sizeof(struct ncx_vec4) * channel->tick_count);
+				malloc(sizeof(struct ncx_vec4) *
+						channel->tick_count);
 			for(uint32_t k = 0; k < channel->tick_count; k++) {
 				const struct aiVectorKey pos_key =
 					ai_channel->mPositionKeys[k];
 
-				channel->pos_keys[k] = *(struct ncx_vec3 *)&pos_key.mValue;
+				memcpy(&channel->pos_keys[k], &pos_key.mValue,
+						sizeof(struct ncx_vec3));
 
-				const struct aiQuatKey quat_key = ai_channel->mRotationKeys[k];
+				const struct aiQuatKey quat_key =
+					ai_channel->mRotationKeys[k];
+
 				struct ncx_vec4 quat_corrected = {
 					quat_key.mValue.x, quat_key.mValue.y,
 					quat_key.mValue.z, quat_key.mValue.w,

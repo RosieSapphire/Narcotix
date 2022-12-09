@@ -92,19 +92,11 @@ int main()
 		.shininess = 16,
 	};
 
-	struct ncx_material plane_material = ncx_material_create(plane_tex_data);
+	struct ncx_material plane_material =
+		ncx_material_create(plane_tex_data);
+
 	struct ncx_model plane_model =
 		ncx_model_create("res/mdl/plane.glb", &plane_material, 0);
-
-	/*
-	ncx_tex_t ui_test_tex = ncx_tex_create(ui_test_tex_path,
-			GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, 0);
-
-	ncx_ui_elements_init(WINDOW_WIDTH, WINDOW_HEIGHT);
-	ncx_ui_element_t ui_test =
-		ncx_ui_element_create(ncx_vec2_0(), ncx_vec2(256, 256),
-				&ui_test_tex, 1);
-				*/
 
 	struct ncx_mat4 proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
 	struct ncx_mat4 view = ncx_mat4_trans(NCX_MAT4_ID, ncx_vec3(0, 0, -1));
@@ -168,8 +160,6 @@ int main()
 		ncx_render_buffer_bind(1);
 		ncx_clear_color(0.0f, 0.0f, 0.0f, 0.0f);
 
-		// ncx_ui_element_draw(ui_test, 0);
-
 		/* drawing text */
 		ncx_font_draw(trippy_font, "Narcotix Engine Test",
 				ncx_vec2(0.02f, 0.92f), NCX_VEC3_1,
@@ -193,8 +183,6 @@ int main()
 	ncx_model_destroy(&pistol_model);
 
 	ncx_tex_destroy(&trippy_tex, 1);
-	// ncx_tex_destroy(&ui_test_tex, 1);
-	// ncx_ui_elements_terminate();
 
 	ncx_materials_destroy(bong_materials, 3);
 	ncx_materials_destroy(pistol_materials, 4);
