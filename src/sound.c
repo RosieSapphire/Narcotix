@@ -1,5 +1,5 @@
-#include "narcotix/sound.h"
-#include "narcotix/vec3.h"
+#include "ncx/sound.h"
+#include "ncx/vec3.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -32,7 +32,7 @@ void ncx_sound_terminate(void)
 	alcCloseDevice(sound_device);
 }
 
-ncx_sound_t ncx_sound_create(const char *paths, uint8_t smpl_count,
+struct ncx_sound ncx_sound_create(const char *paths, uint8_t smpl_count,
 		uint8_t use_delay)
 {
 	uint32_t path_length;
@@ -41,7 +41,7 @@ ncx_sound_t ncx_sound_create(const char *paths, uint8_t smpl_count,
 		AL_FORMAT_STEREO16,
 	};
 
-	ncx_sound_t sound;
+	struct ncx_sound sound;
 	sound.buffer_count = smpl_count;
 	sound.buffers = malloc(smpl_count * sizeof(uint32_t));
 	sound.delay_timer = 500.0f;
@@ -113,7 +113,7 @@ ncx_sound_t ncx_sound_create(const char *paths, uint8_t smpl_count,
 	return sound;
 }
 
-void ncx_sound_play(ncx_sound_t sound, float gain, float pitch,
+void ncx_sound_play(struct ncx_sound sound, float gain, float pitch,
 		struct ncx_vec3 pos, uint8_t looping, uint8_t index)
 {
 	alSourceStop(sound.source);
@@ -125,7 +125,7 @@ void ncx_sound_play(ncx_sound_t sound, float gain, float pitch,
 	alSourcePlay(sound.source);
 }
 
-void ncx_sound_play_delay(ncx_sound_t *sound, float gain, float pitch,
+void ncx_sound_play_delay(struct ncx_sound *sound, float gain, float pitch,
 		struct ncx_vec3 pos, uint8_t index, float time_delta)
 {
 	float delay_last = sound->delay_timer;
@@ -150,12 +150,12 @@ void ncx_sound_play_delay(ncx_sound_t *sound, float gain, float pitch,
 	}
 }
 
-void ncx_sound_stop(ncx_sound_t sound)
+void ncx_sound_stop(struct ncx_sound sound)
 {
 	alSourceStop(sound.source);
 }
 
-void ncx_sound_destroy(ncx_sound_t *sound)
+void ncx_sound_destroy(struct ncx_sound *sound)
 {
 	alDeleteBuffers(sound->buffer_count, sound->buffers);
 	free(sound->buffers);
@@ -166,7 +166,7 @@ void ncx_sound_destroy(ncx_sound_t *sound)
 	}
 }
 
-void ncx_sound_set_float(ncx_sound_t sound, uint32_t prop, float f)
+void ncx_sound_set_float(struct ncx_sound sound, uint32_t prop, float f)
 {
 	alSourcef(sound.source, prop, f);
 }

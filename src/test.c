@@ -1,12 +1,12 @@
-#include "narcotix/context.h"
-#include "narcotix/sound.h"
-#include "narcotix/font.h"
-#include "narcotix/light_point.h"
-#include "narcotix/helpers.h"
-#include "narcotix/model.h"
-#include "narcotix/ui.h"
-#include "narcotix/mat4.h"
-#include "narcotix/tex.h"
+#include "ncx/context.h"
+#include "ncx/sound.h"
+#include "ncx/font.h"
+#include "ncx/light_point.h"
+#include "ncx/helpers.h"
+#include "ncx/model.h"
+#include "ncx/ui.h"
+#include "ncx/mat4.h"
+#include "ncx/tex.h"
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -14,16 +14,17 @@
 #define WINDOW_SIZE ncx_vec2(WINDOW_WIDTH, WINDOW_HEIGHT)
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
 
-int main()
+int main(void)
 {
 	ncx_init(WINDOW_WIDTH, WINDOW_HEIGHT, 2, WINDOW_NAME, 1);
 
 	ncx_sound_init();
-	ncx_sound_t test_sound = ncx_sound_create("res/sfx/test.wav", 1, 0);
+	struct ncx_sound test_sound =
+		ncx_sound_create("res/sfx/test.wav", 1, 0);
 
 	ncx_shader_t font_shader =
 		ncx_font_shader_create("res/shdr/internal/font_vert.glsl",
-				"res/shdr/internal/font_frag.glsl");
+					"res/shdr/internal/font_frag.glsl");
 
 	struct ncx_font trippy_font =
 		ncx_font_create("res/font/shagadelic.ttf");
@@ -101,9 +102,9 @@ int main()
 	struct ncx_mat4 proj = ncx_mat4_persp(45.0f, WINDOW_ASPECT, 0.1f, 4.0f);
 	struct ncx_mat4 view = ncx_mat4_trans(NCX_MAT4_ID, ncx_vec3(0, 0, -1));
 	
-	ncx_time_delta_init();
-
 	ncx_sound_play(test_sound, 0.5f, 1.0f, NCX_VEC3_0, 1, 0);
+
+	ncx_time_delta_init();
 	while(ncx_window_is_running()) {
 
 		/* drawing gun */

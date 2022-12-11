@@ -1,4 +1,4 @@
-#include "narcotix/helpers.h"
+#include "ncx/helpers.h"
 
 #include <stdio.h>
 #include <string.h>

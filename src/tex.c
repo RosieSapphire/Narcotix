@@ -1,8 +1,8 @@
-#include "narcotix/tex.h"
-#include "narcotix/glad/glad.h"
+#include "ncx/tex.h"
+#include <glad/gl.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "narcotix/stb_image.h"
+#include "ncx/stb_image.h"
 
 ncx_tex_t ncx_tex_create(const char *path, const int32_t wrap_mode,
 		const int32_t min_filter, const int32_t mag_filter,

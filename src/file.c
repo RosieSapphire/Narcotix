@@ -1,4 +1,4 @@
-#include "narcotix/file.h"
+#include "ncx/file.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -11,8 +11,8 @@ char *ncx_file_load(const char *path) {
 
 	file = fopen(path, "rb");
 	if(!file) {
-		fprintf(stderr, "FILE ERROR: Failed to load file from path '%s'.\n",
-				path);
+		fprintf(stderr, "FILE ERROR: Failed to load"
+				" file from path '%s'.\n", path);
 		assert(0);
 	}
 

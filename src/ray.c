@@ -1,4 +1,4 @@
-#include "narcotix/ray.h"
+#include "ncx/ray.h"
 
 uint8_t ncx_ray_triangle(struct ncx_vec3 eye,
 		struct ncx_vec3 dir, struct ncx_vec3 *verts, float *distance)

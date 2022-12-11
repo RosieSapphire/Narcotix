@@ -1,6 +1,6 @@
-#include "narcotix/mesh.h"
-#include "narcotix/vec2.h"
-#include "narcotix/glad/glad.h"
+#include "ncx/mesh.h"
+#include "ncx/vec2.h"
+#include <glad/gl.h>
 
 #include <stdio.h>
 #include <string.h>

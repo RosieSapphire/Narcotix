@@ -1,6 +1,6 @@
-#include "narcotix/mat4.h"
-#include "narcotix/quat.h"
-#include "narcotix/helpers.h"
+#include "ncx/mat4.h"
+#include "ncx/quat.h"
+#include "ncx/helpers.h"
 
 #include <math.h>
 #include <stdint.h>

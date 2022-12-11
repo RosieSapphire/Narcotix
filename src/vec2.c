@@ -1,4 +1,4 @@
-#include "narcotix/vec2.h"
+#include "ncx/vec2.h"
 
 struct ncx_vec2 ncx_vec2_add(struct ncx_vec2 a, struct ncx_vec2 b)
 {

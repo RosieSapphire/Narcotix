@@ -1,6 +1,6 @@
-#include "narcotix/context.h"
-#include "narcotix/helpers.h"
-#include "narcotix/ivec2.h"
+#include "ncx/context.h"
+#include "ncx/helpers.h"
+#include "ncx/ivec2.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -25,7 +25,6 @@ void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending)
 {
-
 	if(!glfwInit()) {
 		fprintf(stderr, "GLFW ERROR: GLFW failed to initialize.\n");
 		assert(0);
@@ -36,7 +35,6 @@ void ncx_init(const float width, const float height,
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 	window = glfwCreateWindow((int32_t)width, (int32_t)height,
 			window_name, NULL, NULL);
 	if(!window) {
@@ -50,17 +48,13 @@ void ncx_init(const float width, const float height,
 
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
-	window_position.x =
-		(int32_t)((vidmode->width / 2) - (width / 2));
-	window_position.y =
-		(int32_t)((vidmode->height / 2) - (height / 2));
-	glfwSetWindowPos(window, window_position.x,
-			window_position.y);
-
+	window_position.x = ((float)vidmode->width / 2) - (width / 2);
+	window_position.y = ((float)vidmode->height / 2) - (height / 2);
+	glfwSetWindowPos(window, window_position.x, window_position.y);
 	window_size.x = width;
 	window_size.y = height;
 
-	if(!gladLoadGL()) {
+	if(!gladLoadGL(glfwGetProcAddress)) {
 		fprintf(stderr, "OPENGL ERROR: Glad failed"
 				" to load OpenGL Functions.\n");
 		assert(0);
@@ -82,13 +76,13 @@ void ncx_init(const float width, const float height,
 		 1.0f,  1.0f,	1.0f, 1.0f,
 		-1.0f,  1.0f,	0.0f, 1.0f,
 	};
+
 	glBufferData(GL_ARRAY_BUFFER, sizeof(render_quad_vertices),
 			render_quad_vertices, GL_STATIC_DRAW);
 
+	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
 			4 * sizeof(float), NULL);
-
-	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -201,45 +195,35 @@ float ncx_time_delta(void)
 void ncx_mouse_center()
 {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(window,
-			(double)window_size.x / 2,
-			(double)window_size.y / 2);
+	glfwSetCursorPos(window, window_size.x / 2, window_size.y / 2);
 }
 
-uint8_t ncx_key_down(const int32_t key)
-{
-	key_states[key] = glfwGetKey(window, key);
-	return key_states[key];
-}
-
-uint8_t ncx_key_pressed(int32_t key)
+uint8_t ncx_key_get(const int32_t key, uint32_t state_wanted)
 {
 	uint8_t key_state_new = glfwGetKey(window, key);
-	uint8_t key_pressed_now = key_state_new && !key_states[key];
 	key_states[key] = key_state_new;
-	return key_pressed_now;
+
+	uint8_t return_values[3] = {
+		key_state_new && !key_states[key],
+		key_state_new,
+		!key_state_new && key_states[key],
+	};
+
+	return return_values[state_wanted];
 }
 
-uint8_t ncx_key_released(int32_t key)
-{
-	uint8_t key_state_new = glfwGetKey(window, key);
-	uint8_t key_released_now = !key_state_new && key_states[key];
-	key_states[key] = key_state_new;
-	return key_released_now;
-}
-
-uint8_t ncx_mouse_button_down(int32_t button)
-{
-	mouse_states[button] = glfwGetMouseButton(window, button);
-	return mouse_states[button];
-}
-
-uint8_t ncx_mouse_button_pressed(int32_t button)
+uint8_t ncx_mouse_button_get(int32_t button, uint32_t state_wanted)
 {
 	uint8_t mouse_state_new = glfwGetMouseButton(window, button);
-	uint8_t mouse_pressed_now = mouse_state_new && !mouse_states[button];
 	mouse_states[button] = mouse_state_new;
-	return mouse_pressed_now;
+
+	uint8_t return_values[3] = {
+		mouse_state_new && !mouse_states[button],
+		mouse_state_new,
+		!mouse_state_new && mouse_states[button],
+	};
+
+	return return_values[state_wanted];
 }
 
 struct ncx_vec2 ncx_mouse_pos_get(void)
@@ -317,7 +301,7 @@ void ncx_buffer_swap()
 
 uint8_t ncx_window_is_running()
 {
-	if(ncx_key_pressed(GLFW_KEY_ESCAPE)) {
+	if(ncx_key_get(GLFW_KEY_ESCAPE, NCX_PRESS)) {
 		ncx_window_close();
 		return 0;
 	}

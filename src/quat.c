@@ -1,5 +1,5 @@
-#include "narcotix/quat.h"
-#include "narcotix/helpers.h"
+#include "ncx/quat.h"
+#include "ncx/helpers.h"
 
 #include <math.h>
 

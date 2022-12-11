@@ -1,7 +1,7 @@
-#include "narcotix/glad/glad.h"
-#include "narcotix/font.h"
+#include "ncx/font.h"
 #include <freetype/freetype.h>
 #include <assert.h>
+#include <glad/gl.h>
 
 ncx_shader_t ncx_font_shader_create(const char *vert, const char *frag)
 {

@@ -1,6 +1,6 @@
-#include "narcotix/shader.h"
-#include "narcotix/glad/glad.h"
-#include "narcotix/file.h"
+#include "ncx/shader.h"
+#include "ncx/file.h"
+#include <glad/gl.h>
 
 #include <assert.h>
 #include <stdio.h>

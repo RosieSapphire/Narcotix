@@ -1,4 +1,4 @@
-#include "narcotix/light_point.h"
+#include "ncx/light_point.h"
 #include <string.h>
 
 struct ncx_light_point ncx_light_point_create(struct ncx_vec3 pos,

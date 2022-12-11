@@ -1,4 +1,4 @@
-#include "narcotix/model.h"
+#include "ncx/model.h"
 
 #include <assimp/scene.h>
 #include <assimp/cimport.h>

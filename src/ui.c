@@ -1,6 +1,6 @@
-#include "narcotix/ui.h"
-#include "narcotix/shader.h"
-#include "narcotix/glad/glad.h"
+#include "ncx/ui.h"
+#include "ncx/shader.h"
+#include <glad/gl.h>
 
 #include <string.h>
 #include <malloc.h>

@@ -1,0 +1,26 @@
+\hypertarget{tex_8h_source}{}\doxysection{tex.\+h}
+\label{tex_8h_source}\index{include/ncx/tex.h@{include/ncx/tex.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_TEX\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_TEX\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#define T\_LINEAR GL\_LINEAR}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#define T\_LINEAR\_MIP GL\_LINEAR\_MIPMAP\_LINEAR}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#define T\_REPEAT\_FLIP GL\_MIRRORED\_REPEAT}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#define T\_CLAMP GL\_CLAMP\_TO\_EDGE}}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11 \textcolor{keyword}{typedef} uint32\_t ncx\_tex\_t;}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 ncx\_tex\_t ncx\_tex\_create(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *path,}
+\DoxyCodeLine{14         \textcolor{keyword}{const} int32\_t wrap\_mode, \textcolor{keyword}{const} int32\_t min\_filter,}
+\DoxyCodeLine{15         \textcolor{keyword}{const} int32\_t mag\_filter, \textcolor{keyword}{const} uint8\_t mipmap);}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{keywordtype}{void} ncx\_tex\_destroy(ncx\_tex\_t *start, \textcolor{keyword}{const} uint8\_t tex\_count);}
+\DoxyCodeLine{18 \textcolor{keywordtype}{void} ncx\_tex\_use(ncx\_tex\_t tex, \textcolor{keyword}{const} uint32\_t slot);}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

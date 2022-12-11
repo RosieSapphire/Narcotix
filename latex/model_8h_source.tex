@@ -1,0 +1,44 @@
+\hypertarget{model_8h_source}{}\doxysection{model.\+h}
+\label{model_8h_source}\index{include/ncx/model.h@{include/ncx/model.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_MODEL\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_MODEL\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ncx/mesh.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}ncx/light\_point.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}ncx/mat4.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__model}{ncx\_model}} \{}
+\DoxyCodeLine{9     uint32\_t mesh\_count;}
+\DoxyCodeLine{10     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__mesh}{ncx\_mesh}} *meshes;}
+\DoxyCodeLine{11     \textcolor{keyword}{const} \textcolor{keyword}{struct }aiScene *scene;}
+\DoxyCodeLine{12     uint32\_t anim\_count, anim\_selected;}
+\DoxyCodeLine{13     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__anim}{ncx\_anim}} *anims;}
+\DoxyCodeLine{14 \};}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 ncx\_shader\_t ncx\_model\_shader\_create(\textcolor{keyword}{const} \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__light__point}{ncx\_light\_point}} *lights,}
+\DoxyCodeLine{17         \textcolor{keyword}{const} uint8\_t light\_count);}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__model}{ncx\_model}} ncx\_model\_create(const char *path,}
+\DoxyCodeLine{20         \textcolor{keyword}{const} \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__material}{ncx\_material}} *materials,}
+\DoxyCodeLine{21         \textcolor{keyword}{const} uint8\_t is\_animated);}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{keywordtype}{void} ncx\_model\_destroy(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__model}{ncx\_model}} *model);}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25 \textcolor{keywordtype}{void} ncx\_model\_shader\_lights\_update(\textcolor{keyword}{const} ncx\_shader\_t shader,}
+\DoxyCodeLine{26         \textcolor{keyword}{const} \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__light__point}{ncx\_light\_point}} *lights,}
+\DoxyCodeLine{27         \textcolor{keyword}{const} uint8\_t light\_count);}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29 \textcolor{keywordtype}{void} ncx\_model\_draw(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__model}{ncx\_model}} model,}
+\DoxyCodeLine{30         \textcolor{keyword}{const} ncx\_shader\_t shader, \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__mat4}{ncx\_mat4}} root);}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{32 \textcolor{keywordtype}{void} ncx\_model\_animation\_set(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__model}{ncx\_model}} *model,}
+\DoxyCodeLine{33         \textcolor{keyword}{const} uint32\_t anim\_index);}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35 \textcolor{keywordtype}{void} ncx\_model\_animation\_update(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__model}{ncx\_model}} *model, \textcolor{keyword}{const} \textcolor{keywordtype}{float} dt,}
+\DoxyCodeLine{36         \textcolor{keyword}{const} uint8\_t loop);}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

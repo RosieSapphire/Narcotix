@@ -1,15 +1,15 @@
 CC=gcc
 INC=-Iinclude -I/usr/include/freetype2
-LIB=-lasan -lglfw -lopenal -lfreetype -lsndfile -lassimp -ldl -lpthread -lm
+LIB=-lglfw -lopenal -lfreetype -lsndfile -lassimp -ldl -lpthread -lm
 CORES=-j8
 
 CFLAGS=-std=c99 -Wall -Wextra
 
-SRC=glad.c context.c tex.c font.c ui.c sound.c helpers.c shader.c file.c \
+SRC=gl.c context.c tex.c font.c ui.c sound.c helpers.c shader.c file.c \
 	model.c mesh.c light_point.c material.c animation.c vec2.c vec3.c \
 	vec4.c mat4.c quat.c ray.c
 
-OBJ=glad.o context.o tex.o font.o ui.o sound.o helpers.o shader.o file.o \
+OBJ=gl.o context.o tex.o font.o ui.o sound.o helpers.o shader.o file.o \
 	model.o mesh.o light_point.o material.o animation.o vec2.o vec3.o \
 	vec4.o mat4.o quat.o ray.o
 
@@ -22,14 +22,14 @@ release: CFLAGS += -Ofast
 release: $(BIN)
 	rm -rf *.o
 
-debug: CFLAGS += -Og -fsanitize=address -ggdb3 -Wall -Wextra -Werror -D DEBUG
-debug: $(BIN)
-	rm -rf *.o
-
 test: release
 	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)
 	rm -rf *.o
 	./test
+
+debug: CFLAGS += -Og -ggdb3 -Wall -Wextra -Werror -D DEBUG
+debug: $(BIN)
+	rm -rf *.o
 
 testd: debug
 	$(CC) $(CFLAGS) $(INC) -o test src/test.c -L. -lnarcotix -Llib $(LIB)

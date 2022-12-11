@@ -1,6 +1,6 @@
-#include "narcotix/animation.h"
-#include "narcotix/vec3.h"
-#include "narcotix/quat.h"
+#include "ncx/animation.h"
+#include "ncx/vec3.h"
+#include "ncx/quat.h"
 
 #include <malloc.h>
 

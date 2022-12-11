@@ -1,5 +1,5 @@
-#include "narcotix/material.h"
-#include "narcotix/glad/glad.h"
+#include "ncx/material.h"
+#include <glad/gl.h>
 #include <malloc.h>
 
 struct ncx_material ncx_material_create(const struct ncx_material_data data)
