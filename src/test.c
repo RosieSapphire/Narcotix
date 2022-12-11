@@ -8,8 +8,8 @@
 #include "ncx/mat4.h"
 #include "ncx/tex.h"
 
-#define WINDOW_WIDTH  1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT 720
 #define WINDOW_NAME "NARCOTIX ENGINE TEST"
 #define WINDOW_SIZE ncx_vec2(WINDOW_WIDTH, WINDOW_HEIGHT)
 #define WINDOW_ASPECT ((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT)
