@@ -1,3 +1,0 @@
-/home/rosie/dev/narcotix/build/CMakeFiles/ncx.dir
-/home/rosie/dev/narcotix/build/CMakeFiles/edit_cache.dir
-/home/rosie/dev/narcotix/build/CMakeFiles/rebuild_cache.dir
