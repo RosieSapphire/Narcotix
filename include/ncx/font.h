@@ -5,6 +5,9 @@
 #include "ncx/ivec2.h"
 #include "ncx/vec2.h"
 
+/**
+ * @brief An individual graphical character imported from FreeType 2.
+ ********************************************************************/
 struct ncx_char {
 	uint32_t texture;
 	struct ncx_ivec2 size;
@@ -12,6 +15,10 @@ struct ncx_char {
 	uint32_t advance;
 };
 
+/**
+ * @brief An collection of 'ncx_char' structs that has an accompanying
+ * vao and vbo to draw to the screen with 'ncx_font_draw'.
+ *********************************************************/
 struct ncx_font {
 	uint32_t vao;
 	uint32_t vbo;

@@ -1,0 +1,32 @@
+\hypertarget{ui_8h_source}{}\doxysection{ui.\+h}
+\label{ui_8h_source}\index{include/ncx/ui.h@{include/ncx/ui.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_UI\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_UI\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ncx/tex.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}ncx/vec2.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__ui__elem__t}{ncx\_ui\_elem\_t}} \{}
+\DoxyCodeLine{8     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} pos;}
+\DoxyCodeLine{9     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} size;}
+\DoxyCodeLine{10     ncx\_tex\_t *tex;}
+\DoxyCodeLine{11     uint8\_t tex\_count;}
+\DoxyCodeLine{12 \};}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keywordtype}{void} ncx\_ui\_elems\_init(\textcolor{keyword}{const} \textcolor{keywordtype}{float} width, \textcolor{keyword}{const} \textcolor{keywordtype}{float} height);}
+\DoxyCodeLine{15 \textcolor{keywordtype}{void} ncx\_ui\_elems\_set\_flash(\textcolor{keyword}{const} \textcolor{keywordtype}{float} flash);}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__ui__elem__t}{ncx\_ui\_elem\_t}} ncx\_ui\_elem\_create(struct \mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} pos,}
+\DoxyCodeLine{18         struct \mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} size, const ncx\_tex\_t *texs,}
+\DoxyCodeLine{19         \textcolor{keyword}{const} uint8\_t tex\_count);}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{keywordtype}{void} ncx\_ui\_elem\_draw(\textcolor{keyword}{const} \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__ui__elem__t}{ncx\_ui\_elem\_t}} ui,}
+\DoxyCodeLine{22         \textcolor{keyword}{const} uint8\_t tex\_index);}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24 \textcolor{keywordtype}{void} ncx\_ui\_elems\_terminate(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

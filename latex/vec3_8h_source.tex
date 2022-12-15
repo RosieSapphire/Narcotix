@@ -1,0 +1,35 @@
+\hypertarget{vec3_8h_source}{}\doxysection{vec3.\+h}
+\label{vec3_8h_source}\index{include/ncx/vec3.h@{include/ncx/vec3.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_VEC3\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_VEC3\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ncx/helpers.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} \{}
+\DoxyCodeLine{7     \textcolor{keywordtype}{float} x, y, z;}
+\DoxyCodeLine{8 \};}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define ncx\_vec3(X, Y, Z) ((struct ncx\_vec3)\{X, Y, Z\})}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#define NCX\_VEC3\_0 ncx\_vec3(0, 0, 0)}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define NCX\_VEC3\_1 ncx\_vec3(1, 1, 1)}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#define NCX\_VEC3\_X ncx\_vec3(1, 0, 0)}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#define NCX\_VEC3\_Y ncx\_vec3(0, 1, 0)}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#define NCX\_VEC3\_Z ncx\_vec3(0, 0, 1)}}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_add(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b);}
+\DoxyCodeLine{18 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_sub(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b);}
+\DoxyCodeLine{19 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_scale(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, float s);}
+\DoxyCodeLine{20 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_neg(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} x);}
+\DoxyCodeLine{21 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_cross(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b);}
+\DoxyCodeLine{22 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_lerp(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b, float t);}
+\DoxyCodeLine{23 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_lerpc(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b, float t);}
+\DoxyCodeLine{24 \textcolor{keywordtype}{float} ncx\_vec3\_dot(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} a, \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} b);}
+\DoxyCodeLine{25 \textcolor{keywordtype}{float} ncx\_vec3\_mag\_inv(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} x);}
+\DoxyCodeLine{26 \textcolor{keywordtype}{float} ncx\_vec3\_mag(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} x);}
+\DoxyCodeLine{27 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} ncx\_vec3\_norm(struct \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} x);}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

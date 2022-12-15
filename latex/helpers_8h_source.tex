@@ -1,0 +1,35 @@
+\hypertarget{helpers_8h_source}{}\doxysection{helpers.\+h}
+\label{helpers_8h_source}\index{include/ncx/helpers.h@{include/ncx/helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_HELPERS\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_HELPERS\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#define NCX\_EPSILON 0.001f}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#define NCX\_PI      3.141592653589f}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#define NCX\_PI\_INV  0.3183098861838710434f}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define NCX\_TO\_DEG  57.29577951309678781159f}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#define NCX\_TO\_RAD  0.01745329251993888889f}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keywordtype}{float} ncx\_clampf(\textcolor{keyword}{const} \textcolor{keywordtype}{float} val, \textcolor{keyword}{const} \textcolor{keywordtype}{float} min, \textcolor{keyword}{const} \textcolor{keywordtype}{float} max);}
+\DoxyCodeLine{14 \textcolor{keywordtype}{float} ncx\_clampf01(\textcolor{keyword}{const} \textcolor{keywordtype}{float} val);}
+\DoxyCodeLine{15 \textcolor{keywordtype}{void}  ncx\_printfv(\textcolor{keyword}{const} \textcolor{keywordtype}{float} *vec, \textcolor{keyword}{const} uint8\_t size);}
+\DoxyCodeLine{16 \textcolor{keywordtype}{void}  ncx\_printfm(\textcolor{keyword}{const} \textcolor{keywordtype}{float} **mat, \textcolor{keyword}{const} uint8\_t size);}
+\DoxyCodeLine{17 \textcolor{keywordtype}{void}  ncx\_printfvi(\textcolor{keyword}{const} int32\_t *vec, \textcolor{keyword}{const} uint8\_t size);}
+\DoxyCodeLine{18 \textcolor{keywordtype}{int}   ncx\_sprintfv1(\textcolor{keywordtype}{char} *dest, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *format, \textcolor{keyword}{const} \textcolor{keywordtype}{float} *vec);}
+\DoxyCodeLine{19 \textcolor{keywordtype}{int}   ncx\_sprintfv2(\textcolor{keywordtype}{char} *dest, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *format, \textcolor{keyword}{const} \textcolor{keywordtype}{float} *vec);}
+\DoxyCodeLine{20 \textcolor{keywordtype}{int}   ncx\_sprintfv3(\textcolor{keywordtype}{char} *dest, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *format, \textcolor{keyword}{const} \textcolor{keywordtype}{float} *vec);}
+\DoxyCodeLine{21 \textcolor{keywordtype}{float} ncx\_fmod(\textcolor{keyword}{const} \textcolor{keywordtype}{float} val, \textcolor{keyword}{const} \textcolor{keywordtype}{float} mod);}
+\DoxyCodeLine{22 \textcolor{keywordtype}{float} ncx\_lerp(\textcolor{keywordtype}{float} a, \textcolor{keywordtype}{float} b, \textcolor{keywordtype}{float} t);}
+\DoxyCodeLine{23 \textcolor{keywordtype}{float} ncx\_lerpc(\textcolor{keywordtype}{float} a, \textcolor{keywordtype}{float} b, \textcolor{keywordtype}{float} t);}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25 \textcolor{keywordtype}{void} glfw\_error\_callback(\textcolor{keywordtype}{int} code, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *log);}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{31 \textcolor{keywordtype}{float} ncx\_quake\_rsqrt(\textcolor{keywordtype}{float} x);}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

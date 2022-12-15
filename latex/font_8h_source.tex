@@ -1,0 +1,37 @@
+\hypertarget{font_8h_source}{}\doxysection{font.\+h}
+\label{font_8h_source}\index{include/ncx/font.h@{include/ncx/font.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_FONT\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_FONT\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ncx/shader.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}ncx/ivec2.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}ncx/vec2.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{11 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__char}{ncx\_char}} \{}
+\DoxyCodeLine{12     uint32\_t texture;}
+\DoxyCodeLine{13     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__ivec2}{ncx\_ivec2}} size;}
+\DoxyCodeLine{14     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__ivec2}{ncx\_ivec2}} bearing;}
+\DoxyCodeLine{15     uint32\_t advance;}
+\DoxyCodeLine{16 \};}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{22 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__font}{ncx\_font}} \{}
+\DoxyCodeLine{23     uint32\_t vao;}
+\DoxyCodeLine{24     uint32\_t vbo;}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26     \textcolor{comment}{/* TODO: This might be able to be a static-\/sized array */}}
+\DoxyCodeLine{27     \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__char}{ncx\_char}} *chars;}
+\DoxyCodeLine{28 \};}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30 ncx\_shader\_t ncx\_font\_shader\_create(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *vert, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *frag);}
+\DoxyCodeLine{31 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__font}{ncx\_font}} ncx\_font\_create(const char *path);}
+\DoxyCodeLine{32 \textcolor{keywordtype}{void} ncx\_font\_destroy(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__font}{ncx\_font}} *font);}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34 \textcolor{keywordtype}{void} ncx\_font\_draw(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__font}{ncx\_font}} font, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *\textcolor{keywordtype}{string},}
+\DoxyCodeLine{35         \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} pos, \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} color, \textcolor{keywordtype}{float} scale,}
+\DoxyCodeLine{36         \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} window\_size, ncx\_shader\_t shader);}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

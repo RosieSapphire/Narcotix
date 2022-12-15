@@ -1,0 +1,29 @@
+\hypertarget{shader_8h_source}{}\doxysection{shader.\+h}
+\label{shader_8h_source}\index{include/ncx/shader.h@{include/ncx/shader.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_SHADER\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_SHADER\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}ncx/vec3.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}ncx/mat4.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{typedef} uint32\_t ncx\_shader\_t;}
+\DoxyCodeLine{9 ncx\_shader\_t ncx\_shader\_create(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *vert\_path,}
+\DoxyCodeLine{10         \textcolor{keyword}{const} \textcolor{keywordtype}{char} *geom\_path, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *frag\_path);}
+\DoxyCodeLine{11 \textcolor{keywordtype}{void} ncx\_shader\_destroy(\textcolor{keyword}{const} ncx\_shader\_t shader);}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keywordtype}{void} ncx\_shader\_use(\textcolor{keyword}{const} ncx\_shader\_t shader);}
+\DoxyCodeLine{14 \textcolor{keywordtype}{void} ncx\_shader\_uniform\_int(\textcolor{keyword}{const} ncx\_shader\_t shader, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *uniform,}
+\DoxyCodeLine{15         \textcolor{keyword}{const} \textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{16 \textcolor{keywordtype}{void} ncx\_shader\_uniform\_float(\textcolor{keyword}{const} ncx\_shader\_t shader, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *uniform,}
+\DoxyCodeLine{17         \textcolor{keyword}{const} \textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{18 \textcolor{keywordtype}{void} ncx\_shader\_uniform\_vec3(\textcolor{keyword}{const} ncx\_shader\_t shader, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *uniform,}
+\DoxyCodeLine{19         \textcolor{keyword}{const} \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec3}{ncx\_vec3}} value);}
+\DoxyCodeLine{20 \textcolor{keywordtype}{void} ncx\_shader\_uniform\_mat4(\textcolor{keyword}{const} ncx\_shader\_t shader, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *uniform,}
+\DoxyCodeLine{21         \textcolor{keyword}{const} \textcolor{keyword}{struct} \mbox{\hyperlink{structncx__mat4}{ncx\_mat4}} value);}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

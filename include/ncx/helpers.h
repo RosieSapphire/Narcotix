@@ -24,7 +24,7 @@ float ncx_lerpc(float a, float b, float t);
 
 void glfw_error_callback(int code, const char *log);
 
-/*
+/**
  * This is a tidied up version of the Fast Inverse Square Root
  * function from Quake III Arena. Originally written by John Carmack
  */

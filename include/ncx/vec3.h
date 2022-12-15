@@ -3,8 +3,13 @@
 
 #include "ncx/helpers.h"
 
+/**
+ * A 3-component vector of floating point values.
+ ************************************************/
 struct ncx_vec3 {
-	float x, y, z;
+	float x; ///< @brief The X component
+	float y; ///< @brief The Y component
+	float z; ///< @brief The Z component
 };
 
 #define ncx_vec3(X, Y, Z) ((struct ncx_vec3){X, Y, Z})

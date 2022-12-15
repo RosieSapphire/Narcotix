@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "ncx/tex.h"
 
+/**
+ * @brief An object that holds information for a single render layer
+ */
 typedef struct {
 	uint32_t fbo, rbo;
 	ncx_tex_t tex;

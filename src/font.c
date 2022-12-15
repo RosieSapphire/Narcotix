@@ -99,6 +99,10 @@ void ncx_font_destroy(struct ncx_font *ncx_font)
 	free(ncx_font->chars);
 }
 
+/**
+ * @brief Draws a font with a specified string to the currently bound
+ * 'ncx_render_buffer'
+ *********************/
 void ncx_font_draw(struct ncx_font font, const char *string,
 		struct ncx_vec2 pos, struct ncx_vec3 color, float scale,
 		struct ncx_vec2 window_size, ncx_shader_t shader)

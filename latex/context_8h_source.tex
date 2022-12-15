@@ -1,0 +1,70 @@
+\hypertarget{context_8h_source}{}\doxysection{context.\+h}
+\label{context_8h_source}\index{include/ncx/context.h@{include/ncx/context.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_NCX\_CONTEXT\_H\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_NCX\_CONTEXT\_H\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ncx/shader.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}ncx/render\_buffer.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}ncx/vec2.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <glad/gl.h>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <GLFW/glfw3.h>}}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{14 \textcolor{keyword}{enum} ncx\_mouse\_buttons \{}
+\DoxyCodeLine{15     NCX\_MB\_LEFT,}
+\DoxyCodeLine{16     NCX\_MB\_RIGHT,}
+\DoxyCodeLine{17 \};}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{22 \textcolor{keyword}{enum} input\_state \{}
+\DoxyCodeLine{23     NCX\_PRESS,}
+\DoxyCodeLine{24     NCX\_HOLD,}
+\DoxyCodeLine{25     NCX\_RELEASE,}
+\DoxyCodeLine{26 \};}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{35 \textcolor{keywordtype}{void} ncx\_init(\textcolor{keyword}{const} \textcolor{keywordtype}{float} width, \textcolor{keyword}{const} \textcolor{keywordtype}{float} height,}
+\DoxyCodeLine{36         \textcolor{keyword}{const} uint8\_t rb\_count, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *window\_name,}
+\DoxyCodeLine{37         \textcolor{keyword}{const} uint8\_t use\_blending);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{42 \textcolor{keywordtype}{void} ncx\_terminate(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{47 \textcolor{keywordtype}{float} ncx\_time(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{56 \textcolor{keywordtype}{void} ncx\_time\_delta\_init(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{61 \textcolor{keywordtype}{float} ncx\_time\_delta(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{70 uint8\_t ncx\_key\_get(\textcolor{keyword}{const} int32\_t key, uint32\_t state\_wanted);}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{78 uint8\_t ncx\_mouse\_button\_get(int32\_t button, uint32\_t state\_wanted);}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{83 \textcolor{keywordtype}{void} ncx\_mouse\_center(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{88 \textcolor{keyword}{struct }\mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} ncx\_mouse\_pos\_get(void);}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{94 \textcolor{keywordtype}{void} ncx\_mouse\_pos\_set(\textcolor{keyword}{struct} \mbox{\hyperlink{structncx__vec2}{ncx\_vec2}} new\_pos);}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{99 \textcolor{keywordtype}{void} ncx\_mouse\_input\_raw(\textcolor{keyword}{const} uint8\_t toggle);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{108 \textcolor{keywordtype}{void} ncx\_clear\_color(\textcolor{keyword}{const} \textcolor{keywordtype}{float} r, \textcolor{keyword}{const} \textcolor{keywordtype}{float} g,}
+\DoxyCodeLine{109         \textcolor{keyword}{const} \textcolor{keywordtype}{float} b, \textcolor{keyword}{const} \textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{114 \textcolor{keywordtype}{void} ncx\_clear\_depth(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{115 }
+\DoxyCodeLine{120 \textcolor{keywordtype}{void} ncx\_render\_buffer\_bind(\textcolor{keyword}{const} uint8\_t index);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{125 \textcolor{keywordtype}{void} ncx\_render\_buffer\_unbind(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{133 \textcolor{keywordtype}{void} ncx\_buffer\_display(\textcolor{keyword}{const} ncx\_tex\_t overlay, \textcolor{keyword}{const} \textcolor{keywordtype}{float} time,}
+\DoxyCodeLine{134         \textcolor{keyword}{const} \textcolor{keywordtype}{float} trip\_intensity);}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{139 \textcolor{keywordtype}{void} ncx\_buffer\_swap(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{140 }
+\DoxyCodeLine{144 uint8\_t ncx\_window\_is\_running(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{149 \textcolor{keywordtype}{void} ncx\_window\_close(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{151 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

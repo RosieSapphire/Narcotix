@@ -3,6 +3,9 @@
 
 #include "ncx/helpers.h"
 
+/**
+ * @brief A 2-component vector with integers as their types.
+ ****************************************************/
 struct ncx_ivec2 {
 	int x, y;
 };

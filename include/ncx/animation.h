@@ -6,7 +6,11 @@
 
 #include <assimp/scene.h>
 
-#define ANIM_FPS 60.0f
+/**
+ * @brief The default framerate of animations (will be interpolated)
+ ************************************************************/
+#define ANIM_FPS 60.0f 
+		       
 
 /**
  * @brief A single thread of animation, containing it's XYZ position, and 
