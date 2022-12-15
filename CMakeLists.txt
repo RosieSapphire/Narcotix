@@ -1,4 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
+
+set(RES_DIR "\"${CMAKE_SOURCE_DIR}/res/\"" CACHE STRING "The 'res' directory")
+set(WIN_WIDTH "1280" CACHE STRING "The width of the window")
+set(WIN_HEIGHT "720" CACHE STRING "The height of the window")
+add_definitions(-DRES_DIR=${RES_DIR})
+add_definitions(-DWIN_WIDTH=${WIN_WIDTH})
+add_definitions(-DWIN_HEIGHT=${WIN_HEIGHT})
+
 project(ncx)
 add_library(ncx src/context.c src/shader.c src/gl.c
 	src/material.c src/tex.c src/font.c src/mesh.c src/model.c src/mat4.c

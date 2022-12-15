@@ -13,8 +13,8 @@ ncx_shader_t ncx_model_shader_create(const struct ncx_light_point *lights,
 		const uint8_t light_count)
 {
 	ncx_shader_t model_shader =
-		ncx_shader_create("res/shdr/internal/model_vert.glsl", NULL,
-				"res/shdr/internal/model_frag.glsl");
+		ncx_shader_create(RES_DIR"shdr/internal/model_vert.glsl", NULL,
+				RES_DIR"shdr/internal/model_frag.glsl");
 	ncx_shader_use(model_shader);
 	ncx_shader_uniform_int(model_shader, "light_points_count_current",
 			light_count);

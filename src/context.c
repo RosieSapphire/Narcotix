@@ -25,6 +25,13 @@ void ncx_init(const float width, const float height,
 		const uint8_t rb_count, const char *window_name,
 		const uint8_t use_blending)
 {
+	#ifndef RES_DIR
+	printf("RESOURCE ERROR: 'RES_DIR' was not specified at compile-time. "
+			"To do so, write "
+			"'-DRES_DIR=<path to resource dir>'.\n");
+	return 1;
+	#endif
+
 	if(!glfwInit()) {
 		fprintf(stderr, "GLFW ERROR: GLFW failed to initialize.\n");
 		assert(0);
@@ -90,8 +97,8 @@ void ncx_init(const float width, const float height,
 
 	/* load in the render buffer's shader */
 	render_quad_shader = ncx_shader_create(
-			"res/shdr/internal/screen_vert.glsl", NULL,
-			"res/shdr/internal/screen_frag.glsl");
+			RES_DIR"shdr/internal/screen_vert.glsl", NULL,
+			RES_DIR"shdr/internal/screen_frag.glsl");
 
 	render_buffer_count = rb_count;
 	render_buffers =
