@@ -1,18 +1,29 @@
 #include "ncx/material.h"
 #include <glad/gl.h>
 #include <malloc.h>
+#include <string.h>
+#include <assert.h>
 
 struct ncx_material ncx_material_create(const struct ncx_material_data data)
 {
-	return (struct ncx_material) {
-		data,
-		ncx_tex_create(data.diff_path, GL_REPEAT,
-				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
-		ncx_tex_create(data.spec_path, GL_REPEAT,
-				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
-		ncx_tex_create(data.norm_path, GL_REPEAT,
-				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1),
-	};
+	struct ncx_material ret;
+	ret.data = data;
+	ret.diff = ncx_tex_create(data.diff_path, GL_REPEAT, 
+			GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+
+	assert(data.diff_path);
+
+	if(data.spec_path) {
+		ret.spec = ncx_tex_create(data.spec_path, GL_REPEAT, 
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+	}
+
+	if(data.norm_path) {
+		ret.norm = ncx_tex_create(data.norm_path, GL_REPEAT, 
+				GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1);
+	}
+
+	return ret;
 }
 
 struct ncx_material *ncx_materials_create(const struct ncx_material_data *data,

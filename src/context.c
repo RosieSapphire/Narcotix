@@ -97,8 +97,8 @@ void ncx_init(const float width, const float height,
 
 	/* load in the render buffer's shader */
 	render_quad_shader = ncx_shader_create(
-			RES_DIR"shdr/internal/screen_vert.glsl", NULL,
-			RES_DIR"shdr/internal/screen_frag.glsl");
+			RES_DIR "shdr/internal/screen_vert.glsl", NULL,
+			RES_DIR "shdr/internal/screen_frag.glsl");
 
 	render_buffer_count = rb_count;
 	render_buffers =

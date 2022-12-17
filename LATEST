@@ -1,0 +1,1 @@
+git commit -m "Made sure that there are no problems with trying to load only diffuse textures (not specular and normal)"
