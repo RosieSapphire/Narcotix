@@ -36,7 +36,7 @@ struct ncx_mesh {
 struct ncx_mesh *ncx_meshes_create(const struct aiScene *scene,
 		const struct ncx_material *materials,uint32_t *mesh_count);
 void ncx_meshes_draw(const struct ncx_mesh *meshes, const uint32_t mesh_count,
-		const ncx_shader_t shader, struct ncx_mat4 mat_base);
+		const ncx_shader_t shader);
 void ncx_meshes_draw_anim(const struct ncx_mesh *meshes,
 		const uint32_t mesh_count, const ncx_shader_t shader,
 		struct ncx_anim anim, struct ncx_mat4 mat_base);

@@ -27,6 +27,9 @@ struct ncx_mat4 ncx_mat4_persp(float fov_deg,
 
 struct ncx_mat4 ncx_mat4_ortho(float l, float r, float t, float b);
 struct ncx_mat4 ncx_mat4_trans(struct ncx_mat4 mat, struct ncx_vec3 vec);
+struct ncx_mat4 ncx_mat4_trans_x(struct ncx_mat4 mat, float val);
+struct ncx_mat4 ncx_mat4_trans_y(struct ncx_mat4 mat, float val);
+struct ncx_mat4 ncx_mat4_trans_z(struct ncx_mat4 mat, float val);
 struct ncx_mat4 ncx_mat4_scale(struct ncx_mat4 mat, struct ncx_vec3 vec);
 struct ncx_mat4 ncx_mat4_scale_uni(struct ncx_mat4 mat, float s);
 

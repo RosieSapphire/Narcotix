@@ -164,7 +164,7 @@ void ncx_model_draw(struct ncx_model model,
 		ncx_meshes_draw_anim(model.meshes, model.mesh_count, shader,
 				model.anims[model.anim_selected], root);
 	} else {
-		ncx_meshes_draw(model.meshes, model.mesh_count, shader, root);
+		ncx_meshes_draw(model.meshes, model.mesh_count, shader);
 	}
 }
 

@@ -115,11 +115,11 @@ struct ncx_mesh *ncx_meshes_create(const struct aiScene *scene,
 	return meshes;
 }
 
+/// TODO: Remove this function and shove all the code into 'ncx_model_draw'
 void ncx_meshes_draw(const struct ncx_mesh *meshes, const uint32_t mesh_count,
-		const ncx_shader_t shader, struct ncx_mat4 mat_base)
+		const ncx_shader_t shader)
 {
 	ncx_shader_use(shader);
-	ncx_shader_uniform_mat4(shader, "model", mat_base);
 	ncx_shader_uniform_int(shader, "material.tex_diff", 0);
 	ncx_shader_uniform_int(shader, "material.tex_spec", 1);
 	ncx_shader_uniform_int(shader, "material.tex_norm", 2);
@@ -128,6 +128,8 @@ void ncx_meshes_draw(const struct ncx_mesh *meshes, const uint32_t mesh_count,
 		const struct ncx_mesh *const mesh_cur = meshes + i;
 		glBindVertexArray(mesh_cur->buffers[VAO]);
 		ncx_tex_use(mesh_cur->material.diff, 0);
+
+		/// TODO: Maybe Have an if for this.
 		ncx_tex_use(mesh_cur->material.spec, 1);
 		ncx_tex_use(mesh_cur->material.norm, 2);
 		ncx_shader_uniform_float(shader, "material.shininess",
@@ -153,7 +155,7 @@ void ncx_meshes_draw_anim(const struct ncx_mesh *meshes,
 		struct ncx_mat4 mat_model;
 		mat_model = ncx_animation_get_matrix(anim, i);
 
-		if(i) {
+		if(i > 0) {
 			mat_model = ncx_mat4_mul(mat_root, mat_model);
 		}
 		mat_model = ncx_mat4_mul(mat_base, mat_model);

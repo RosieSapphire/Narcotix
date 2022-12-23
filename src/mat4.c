@@ -49,6 +49,24 @@ struct ncx_mat4 ncx_mat4_trans(struct ncx_mat4 mat, struct ncx_vec3 vec)
 	return mat;
 }
 
+struct ncx_mat4 ncx_mat4_trans_x(struct ncx_mat4 mat, float val)
+{
+	mat.mat[3][0] += val;
+	return mat;
+}
+
+struct ncx_mat4 ncx_mat4_trans_y(struct ncx_mat4 mat, float val)
+{
+	mat.mat[3][1] += val;
+	return mat;
+}
+
+struct ncx_mat4 ncx_mat4_trans_z(struct ncx_mat4 mat, float val)
+{
+	mat.mat[3][2] += val;
+	return mat;
+}
+
 struct ncx_mat4 ncx_mat4_scale(struct ncx_mat4 mat, struct ncx_vec3 vec)
 {
 	mat.mat[0][0] *= vec.x;
@@ -162,13 +180,13 @@ struct ncx_mat4 ncx_mat4_lookat(struct ncx_vec3 eye, struct ncx_vec3 focus)
 	struct ncx_vec3 u = ncx_vec3_cross(f, s);
 
 	return (struct ncx_mat4) {{
-		{s.x, u.x, f.x, 0.0f},
-		{s.y, u.y, f.y, 0.0f},
-		{s.z, u.z, f.z, 0.0f},
+		{s.x, u.x, -f.x, 0.0f},
+		{s.y, u.y, -f.y, 0.0f},
+		{s.z, u.z,  f.z, 0.0f},
 		{
 			-ncx_vec3_dot(s, eye),
 			-ncx_vec3_dot(u, eye),
-			-ncx_vec3_dot(f, eye),
+			 ncx_vec3_dot(f, eye),
 			1.0f
 		},
 	}};

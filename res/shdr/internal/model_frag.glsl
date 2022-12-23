@@ -1,8 +1,6 @@
 #version 330 core
 
 #define POINT_LIGHT_MAX 32
-#define NEAR 0.1
-#define FAR 1000.0
 
 in vec2  o_uv;
 in vec3  o_frag_pos;
@@ -69,6 +67,7 @@ vec3 get_light_point(light_point_t l, vec3 norm) {
 
 void main() {
 	vec3 norm = normalize(vec3(texture(material.tex_norm, o_uv).xyz) * 2.0 - 1.0);
+
 	vec3 final_color = vec3(0.0);
 
 	for(int i = 0; i < light_points_count_current; i++)
